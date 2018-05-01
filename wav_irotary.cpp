@@ -3,8 +3,6 @@
 #include "wav_irotary.h"
 
 static WavRotary *current=NULL;
-
-
  /**
   */
  
@@ -13,7 +11,7 @@ static void myInterrupt()
   if(!current) return;
   current->interrupt();
 }
-
+#define SETPIN(x) {    pinMode(x,INPUT_PULLUP);    attachInterrupt(x, myInterrupt, CHANGE); }
 /**
  */
  WavRotary::WavRotary(int pinA,int pinB ) : _rotary(pinA,pinB)
@@ -21,11 +19,8 @@ static void myInterrupt()
     current=this;
     _count=0;
     noInterrupts(); 
-#define SETPIN(x) {    pinMode(x,INPUT_PULLUP);    attachInterrupt(x, myInterrupt, CHANGE); }
-    
     SETPIN(pinA);
     SETPIN(pinB);
-
     interrupts();
  }
  int          WavRotary::getCount()
