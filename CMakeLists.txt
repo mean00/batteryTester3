@@ -38,9 +38,9 @@ link_directories( ${CUSTOM_LIB_DIR})
 SET(libPrefix ${ARDUINO_DEFAULT_BOARD}_)
 # This reduces size by 10% or so
 #ADD_DEFINITIONS("-ffunction-sections -fdata-sections ")
-generate_arduino_firmware(ili3941 
-                SKETCH graphicstest.ino
-                SRCS wav_irotary.cpp
+generate_arduino_firmware(BatteryTester2 
+                SKETCH batteryTester2.ino
+                SRCS wav_irotary.cpp mainCode.cpp
                 PORT ${ARDUINO_DEFAULT_PORT}
                 BOARD_CPU ${ARDUINO_CPU}
                 )
