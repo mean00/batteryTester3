@@ -20,7 +20,7 @@
 
 #define INA219_I2C_ADR  0x40
 #define MCP7245_I2C_ADR 0x60
-#define DISABLE_INA219
+//#define DISABLE_INA219
 
 //
 // Our globals
@@ -46,7 +46,7 @@ void mySetup()
   SPI.begin();
   SPI.setBitOrder(MSBFIRST); // Set the SPI bit order
   SPI.setDataMode(SPI_MODE0); //Set the  SPI data mode 0
-  SPI.setClockDivider (SPI_CLOCK_DIV2);
+  SPI.setClockDivider (SPI_CLOCK_DIV4); // Given for 10 Mhz...
   
   Serial.println("TFT"); 
   
@@ -112,8 +112,7 @@ void myLoop(void)
     tft->println((int)actual);
     
     
-    delay(100);
-     Serial.println("*"); 
+    
 #ifndef DISABLE_INA219  
     float voltage=ina219->getBusVoltage_V();
     tft->setCursor(10, 50);   
@@ -123,5 +122,7 @@ void myLoop(void)
     tft->setCursor(10, 80);   
     tft->println(current);
 #endif
+    delay(200);
+    Serial.println("*"); 
 }
 //--
