@@ -27,6 +27,7 @@ public:
             _config=NULL;
             _tft=NULL;
         }
+        virtual void      draw()=0;
         virtual batScreen *process(int mV,int mA,int currentTime,int leftRight,bool pressed)=0; // return NULL if the current screen stays the same
 protected:
         batConfig *_config;
