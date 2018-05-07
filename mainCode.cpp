@@ -13,6 +13,7 @@
 #include "simpler_INA219.h"
 #include "Adafruit_MCP4725.h"
 #include "push_button.h"
+#include "screenBase.h"
 
 // ILI9341 is using HW SPI + those pins
 #define TFT_DC          PB0
