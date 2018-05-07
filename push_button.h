@@ -5,23 +5,15 @@
  ****************************************************/
 
 #pragma once
+
 /**
  */
-enum WavDirection
-{
-  WavNone=0,
-  WavLeft,
-  WavRight
-};
-/**
- */
-class WavRotary
+class PushButton
 {
 public:
-                    WavRotary(int pinA,int pinB );
-        int         getCount();
+                    PushButton(int pin);
+        bool        pressed();
         void        interrupt();
-protected:
-        Rotary       _rotary;
-        int          _count;
+protected:        
+        int          _pressed;
 };
