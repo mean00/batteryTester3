@@ -30,6 +30,8 @@ public:
         virtual void      draw()=0;
         virtual batScreen *process(int mV,int mA,int currentTime,int leftRight,bool pressed)=0; // return NULL if the current screen stays the same
 protected:
+                void prettyPrint(int val,int x,int y,const char *unit);
+protected:
         batConfig *_config;
         Adafruit_ILI9341_STM *_tft;
 };

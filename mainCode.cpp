@@ -67,7 +67,7 @@ void initTft()
     tft = new Adafruit_ILI9341_STM(TFT_CS, TFT_DC,TFT_RST);
     tft->begin();  
     tft->fillScreen(ILI9341_BLACK);
-    tft->setTextColor(ILI9341_WHITE);  
+    tft->setTextColor(ILI9341_WHITE,ILI9341_BLACK);  
     tft->setRotation(3);
     tft->setTextSize(3);   
 }
@@ -126,7 +126,7 @@ void myLoop(void)
     int current=ina219->getCurrent_mA();
     
     
-    batScreen *s=currentScreen->process(voltage,current,currentTime,count,pressed); //s(int mV,int mA,int currentTime,int leftRight,bool pressed)=0;
+    batScreen *s=currentScreen->process(voltage*1000.,current,currentTime,count,pressed); //s(int mV,int mA,int currentTime,int leftRight,bool pressed)=0;
     // switch to new screen
     if(s)
     {
@@ -134,47 +134,7 @@ void myLoop(void)
         currentScreen=s;
         s->draw();
     }
-    
-#if AAAA    
-    if(count)
-    {
-        gateVoltage+=40*count;
-        if(gateVoltage>4090) gateVoltage=4090;
-        if(gateVoltage<0) gateVoltage=0;
-        mcp4725->setVoltage(gateVoltage,false); 
-        
-        
-    }
-    if(pushButton->pressed())
-    {
-        pressed++;
-    }
-            
-    tft->fillScreen(ILI9341_BLACK);    
-    tft->setCursor(10, 10);    
-    tft->println(gateVoltage);
-    
-    
-    float actual=(gateVoltage *3300)/4096.;
-    tft->setCursor(10, 120);    
-    tft->println((int)actual);
-    
-    
-    
-#ifndef DISABLE_INA219  
-    float voltage=ina219->getBusVoltage_V();
-    tft->setCursor(10, 50);   
-    tft->println(voltage);
-//
-    int current=ina219->getCurrent_mA();
-    tft->setCursor(10, 80);   
-    tft->println(current);
-#endif
-    
-    tft->setCursor(10, 160);    
-    tft->println((int)pressed);
-    
-#endif
+
     delay(10);
     Serial.println("*"); 
 }
