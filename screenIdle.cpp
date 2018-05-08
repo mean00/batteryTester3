@@ -51,7 +51,7 @@ void batScreen::prettyPrint(int val,int x,int y,const char *unit)
     _tft->setCursor(x, y);   
     _tft->println(printBuffer);
 }
-
+#if 0
 void batScreen::drawBitmap(int width, int height, int wx, int wy, int fgcolor, int bgcolor, const uint8_t *data)
 {
     uint8_t *p=(uint8_t *)data;
@@ -73,6 +73,36 @@ void batScreen::drawBitmap(int width, int height, int wx, int wy, int fgcolor, i
         }        
     }   
 }
+#else
+void batScreen::drawBitmap(int width, int height, int wx, int wy, int fgcolor, int bgcolor, const uint8_t *data)
+{
+    uint8_t *p=(uint8_t *)data;    
+    static uint16_t line[320];
+    
+    width>>=3;
+    for(int y=0;y<height;y++)
+    {
+        uint16_t *o=line;
+        _tft-> setAddrWindow(wx, wy+y, wx+width*8, wy+y);
+        for(int x=0;x<width;x++)
+        {
+            int stack=*p++;
+            for(int step=0;step<8;step++)
+            {
+                int color;
+                if(stack&0x80)                                        
+                    color=fgcolor;
+                else
+                    color=bgcolor;
+                *o++=color;
+                stack<<=1;
+            }            
+        }    
+        _tft->pushColors(line,width*8,0);
+    }   
+}
+
+#endif
 //--
 void batScreen::drawBackground()
 {
