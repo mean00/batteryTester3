@@ -6,12 +6,20 @@
 #pragma once
 #include "screenBase.h"
 
-class idleScreen : public batScreen
+enum 
+{
+  ERROR_VOLTAGE_TOO_HIGH=0,
+  ERROR_VOLTAGE_TOO_LOW=1,
+};
+
+class errorScreen : public batScreen
 {
 public:
-                           idleScreen(   batConfig *c,Adafruit_ILI9341_STM *tft);
+                           errorScreen(   batConfig *c,Adafruit_ILI9341_STM *tft, int errorKind);
                       void draw();
         virtual batScreen *process(int mV,int mA,int currentTime,int leftRight,bool pressed); // return NULL if the current screen stays the same
-        
-
+protected:
+        void draw(int color);
+        int _errorKind;
+        int _loop;
 };

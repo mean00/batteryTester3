@@ -10,6 +10,7 @@
 #include "Adafruit_ILI9341_STM.h"
 #include "screenBase.h"
 #include "backgrounds/background.h"
+#include "Adafruit_MCP4725.h"
 
 /**
  */
@@ -20,7 +21,7 @@ void batScreen::prettyPrint(int val,int x,int y,const char *unit)
      
      if(val<1000)
      {
-         sprintf(printBuffer,"%d m%c",val,unit[0]);
+         sprintf(printBuffer,"%3d m%c",val,unit[0]);
      }else
      {
          float v=val;
@@ -68,4 +69,19 @@ void batScreen::drawBackground()
 {
     drawBitmap(320,240,0,0,0,0xffff,background+11);
 }
+/**
+ */
+void batScreen::drawVoltageAndCurrent(int mV, int mA)
+{
+    prettyPrint(mV,40,208,"V");
+    prettyPrint(mA,160+43,208,"A");
+}
+
+
+void batScreen::disableCurrent()
+{
+    _config->mcp->setVoltage(0,false);
+}
+
+
 // EOF

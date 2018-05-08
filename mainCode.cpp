@@ -41,7 +41,8 @@ batConfig           config={
     0, // float    sumMa;
     0, //int     currentDischargeMa;
     500, // int     targetDischargeMa;
-    3000 //     minimumVoltage;
+    3000, //     minimumVoltage;
+    NULL  //MCP
 };
 #if 1
 #define BootSequence(x,y) {Serial.println(x);  tft->setCursor(10, y*2);       tft->println(x);delay(10);}
@@ -91,6 +92,8 @@ void mySetup()
   mcp4725=new Adafruit_MCP4725();
   mcp4725->begin(MCP7245_I2C_ADR);
   mcp4725->setVoltage(0,false); 
+  config.mcp=mcp4725;
+  
   
   pushButton=new PushButton(PA0);
   
@@ -113,6 +116,7 @@ void mySetup()
   tft->fillScreen(ILI9341_BLACK);
   
   currentScreen =new idleScreen(&config,tft);
+  currentScreen->draw();
 }
 
 /**
