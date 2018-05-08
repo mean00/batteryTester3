@@ -3,6 +3,7 @@
 #include "Adafruit_GFX_AS.h"
 #include "Adafruit_ILI9341_STM.h"
 #include "screenIdle.h"
+#include "backgrounds/background.h"
 /**
 
 */
@@ -49,4 +50,31 @@ void batScreen::prettyPrint(int val,int x,int y,const char *unit)
      
     _tft->setCursor(x, y);   
     _tft->println(printBuffer);
+}
+
+void batScreen::drawBitmap(int width, int height, int wx, int wy, int fgcolor, int bgcolor, const uint8_t *data)
+{
+    uint8_t *p=(uint8_t *)data;
+    
+    
+    for(int y=0;y<height;y++)
+    {
+        for(int x=0;x<width>>3;x++)
+        {
+            int stack=*p++;
+            for(int step=0;step<8;step++)
+            {
+                int color=bgcolor;
+                if(stack&0x80)
+                    color=fgcolor;
+                _tft->  drawPixel(wx+x*8+step,wy+y,color);                
+                stack<<=1;
+            }
+        }        
+    }   
+}
+//--
+void batScreen::drawBackground()
+{
+    drawBitmap(320,240,0,0,0,0xffff,background+11);
 }

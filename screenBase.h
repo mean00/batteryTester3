@@ -21,6 +21,7 @@ public:
         {
             _config=c;
             _tft=tft;
+            drawBackground();
         } 
         virtual ~batScreen()
         {
@@ -31,6 +32,8 @@ public:
         virtual batScreen *process(int mV,int mA,int currentTime,int leftRight,bool pressed)=0; // return NULL if the current screen stays the same
 protected:
                 void prettyPrint(int val,int x,int y,const char *unit);
+                void drawBackground();
+                void drawBitmap(int width, int height, int wx, int wy, int fgcolor, int bgcolor, const uint8_t *data);
 protected:
         batConfig *_config;
         Adafruit_ILI9341_STM *_tft;
