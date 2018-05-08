@@ -1,6 +1,9 @@
-/**
-
-*/
+/***************************************************
+ Battery Tester
+ * GPL v2
+ * (c) mean 2018 fixounet@free.fr
+ ****************************************************/
+#pragma once
 #include "screenBase.h"
 class idleScreen : public batScreen
 {
