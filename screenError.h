@@ -15,7 +15,7 @@ enum
 class errorScreen : public batScreen
 {
 public:
-                           errorScreen(   batConfig *c,Adafruit_ILI9341_STM *tft, int errorKind);
+                           errorScreen(   batConfig *c, int errorKind);
                       void draw();
         virtual batScreen *process(int mV,int mA,int currentTime,int leftRight,bool pressed); // return NULL if the current screen stays the same
 protected:

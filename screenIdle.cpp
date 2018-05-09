@@ -4,22 +4,17 @@
  * (c) mean 2018 fixounet@free.fr
  ****************************************************/
 
-#include <Wire.h>
-#include "SPI.h"
-#include "Adafruit_GFX_AS.h"
-#include "Adafruit_ILI9341_STM.h"
+#include "screenInclude.h"
 #include "screenIdle.h"
-#include "backgrounds/background.h"
 #include "backgrounds/li_ion.h"
-#include "Adafruit_MCP4725.h"
+
 #include "voltage.h"
 #include "screenError.h"
-extern Adafruit_MCP4725     *mcp4725;
 
 /**
 
 */
-idleScreen::idleScreen(   batConfig *c,Adafruit_ILI9341_STM *tft) : batScreen(c,tft)
+idleScreen::idleScreen(   batConfig *c) : batScreen(c)
 {
 
 }
@@ -32,9 +27,9 @@ batScreen *idleScreen::process(int mV,int mA,int currentTime,int leftRight,bool 
         return NULL;
     
     if(mV>BAT_DETECT_MAX_VOLTAGE)
-        return new errorScreen(_config, _tft,ERROR_VOLTAGE_TOO_HIGH);
+        return new errorScreen(_config, ERROR_VOLTAGE_TOO_HIGH);
     if(mV<BAT_DETECT_MIN_VOLTAGE)
-        return new errorScreen(_config,_tft,ERROR_VOLTAGE_TOO_LOW);
+        return new errorScreen(_config,ERROR_VOLTAGE_TOO_LOW);
     // GO
     return NULL;        
 }

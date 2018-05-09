@@ -4,10 +4,7 @@
  * (c) mean 2018 fixounet@free.fr
  ****************************************************/
 
-#include <Wire.h>
-#include "SPI.h"
-#include "Adafruit_GFX_AS.h"
-#include "Adafruit_ILI9341_STM.h"
+#include "screenInclude.h"
 #include "screenError.h"
 #include "screenIdle.h"
 #include "voltage.h"
@@ -15,7 +12,7 @@
 /**
 
 */
-errorScreen::errorScreen(   batConfig *c,Adafruit_ILI9341_STM *tft,int er) : batScreen(c,tft)
+errorScreen::errorScreen(   batConfig *c,int er) : batScreen(c)
 {
     _errorKind=er;
     _loop=0;
@@ -27,7 +24,7 @@ batScreen *errorScreen::process(int mV,int mA,int currentTime,int leftRight,bool
 {
     drawVoltageAndCurrent(mV,mA);
     if(mV<BAT_DETECT_NOISE_VOLTAGE)
-        return new idleScreen(_config,_tft);
+        return new idleScreen(_config);
     
     _loop++;
     if(_loop>20) {draw(ILI9341_YELLOW); _loop=0;}

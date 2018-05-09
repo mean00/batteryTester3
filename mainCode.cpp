@@ -93,6 +93,7 @@ void mySetup()
   mcp4725->begin(MCP7245_I2C_ADR);
   mcp4725->setVoltage(0,false); 
   config.mcp=mcp4725;
+  config.tft=tft;
   
   
   pushButton=new PushButton(PA0);
@@ -115,7 +116,7 @@ void mySetup()
   //initTft();
   tft->fillScreen(ILI9341_BLACK);
   
-  currentScreen =new idleScreen(&config,tft);
+  currentScreen =new idleScreen(&config);
   currentScreen->draw();
 }
 

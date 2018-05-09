@@ -18,6 +18,7 @@ typedef struct batConfig
     int     currentDischargeMa;
     int     targetDischargeMa;
     int     minimumVoltage;
+    Adafruit_ILI9341_STM *tft;
     Adafruit_MCP4725 *mcp;
 };
 /**
@@ -26,10 +27,10 @@ typedef struct batConfig
 class batScreen
 {
 public:
-        batScreen(   batConfig *c,Adafruit_ILI9341_STM *tft)
+        batScreen(   batConfig *c)
         {
             _config=c;
-            _tft=tft;
+            _tft=c->tft;
             drawBackground();
             disableCurrent();
         } 

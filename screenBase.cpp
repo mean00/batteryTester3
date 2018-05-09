@@ -4,11 +4,7 @@
  * (c) mean 2018 fixounet@free.fr
  ****************************************************/
 
-#include <Wire.h>
-#include "SPI.h"
-#include "Adafruit_GFX_AS.h"
-#include "Adafruit_ILI9341_STM.h"
-#include "screenBase.h"
+#include "screenInclude.h"
 #include "backgrounds/background.h"
 #include "Adafruit_MCP4725.h"
 
