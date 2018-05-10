@@ -43,7 +43,9 @@
       update();
       int color=ILI9341_BLACK;
       if(_state==StateSelected) color=ILI9341_WHITE;
-      _tft->drawRoundRect(16,_line,320-16*2,24,4,color);
+#define BORDER 4
+      _tft->drawRoundRect(16-BORDER,_line-BORDER,
+                          320-12*2,25+BORDER,4,color);
       
       
   }
@@ -81,7 +83,8 @@ setupScreen::setupScreen(   batConfig *c) : batScreen(c)
         currentItem=0;
         addItem(new TunableItem(_tft,20,&(_config->targetDischargeMa), 100, 1500,100, "Dischrg","A"));
         addItem(new TunableItem(_tft,60,&(_config->minimumVoltage), 2800, 5000,100, "Min Volt","V"));
-        items[0]->setState(StateSelected) ;       
+        items[0]->setState(StateSelected) ;   
+        _state=StateSelecting;
         
 }
 setupScreen::~setupScreen()
@@ -101,11 +104,60 @@ void setupScreen::addItem(Item *item)
  */
 batScreen *setupScreen::process(int mV,int mA,int currentTime,int leftRight,bool pressed)
 {    
-    if(leftRight)
+    drawVoltageAndCurrent(mV,mA);
+    switch(_state)
     {
-        items[currentItem]->run(leftRight);
+    case StateSelecting:
+        {
+            if(leftRight)
+            {
+                Item *old=items[currentItem];
+                if(leftRight>0)
+                {
+                    currentItem++;
+                    if(currentItem>=nbItems) currentItem=nbItems-1;
+                }else if(leftRight<0)
+                {
+                    currentItem--;
+                    if(currentItem<0) currentItem=0;
+                }
+
+                Item *nw=items[currentItem];
+                old->setState(StateNormal);
+                nw->setState(StateSelected);
+                old->draw();
+                nw->draw();
+                return NULL;
+            }
+            if(pressed)
+            {
+                _state=StateEditing;
+                items[currentItem]->setState(StateActivated);
+                items[currentItem]->draw();
+                return NULL;
+            }
+            return NULL;
+        }
+        break;
+    case StateEditing:
+      {
+        if(pressed)
+        {
+            _state=StateSelecting;
+            items[currentItem]->setState(StateSelected);
+            items[currentItem]->draw();
+            return NULL;
+        }
+        if(leftRight)
+        {
+            items[currentItem]->run(leftRight);
+        }
+        break;
+      }
+    default:
+        break;
     }
-    return NULL;        
+    return NULL;
 }
 /**
  */
@@ -113,10 +165,6 @@ void setupScreen::draw()
 {
     for(int i=0;i<nbItems;i++)
     {
-        if(i==currentItem)
-            items[i]->setState(StateSelected);
-        else
-            items[i]->setState(StateNormal);
         items[i]->draw();
     }
 }

@@ -7,9 +7,18 @@
 #include "screenBase.h"
 //----------------
 class Item;
+
+/**
+ */
 class setupScreen : public batScreen
 {
 public:
+        enum ScreenState
+        {
+          StateSelecting,
+          StateEditing
+        };
+  
                            setupScreen(   batConfig *c);
 virtual                   ~setupScreen();                        
                       void draw();
@@ -20,4 +29,5 @@ protected:
             int   nbItems;
             void  addItem(Item *item);
             int   currentItem;
+            ScreenState _state;
 };

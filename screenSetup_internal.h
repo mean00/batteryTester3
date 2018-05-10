@@ -12,6 +12,7 @@ enum ItemState
   StateActivated,
   StateSelected
 };
+
 //----------------
 class Item
 {
@@ -40,4 +41,5 @@ protected:
             int *_value;
             int _line;
             const char *_name,*_unit;
+            
 };
