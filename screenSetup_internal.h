@@ -17,7 +17,7 @@ enum ItemState
 class Item
 {
 public:
-                    Item(  Adafruit_ILI9341_STM *tft) {_tft=tft;}
+                    Item(  Adafruit_ILI9341_STM *tft,int line) {_tft=tft;_line=line;}
     virtual         ~Item() {}
     virtual void    setState(ItemState state) {_state=state;}
     virtual void    run(int leftright) {};
@@ -25,6 +25,18 @@ public:
 protected:
   ItemState         _state;  
   Adafruit_ILI9341_STM *_tft;
+  int               _line;
+};
+//
+class SimpleItem : public Item
+{
+public:
+                    SimpleItem(  Adafruit_ILI9341_STM *tft, int line,const char *name ) : Item(tft,line) {_name=name;}
+    virtual         ~SimpleItem() {}    
+    virtual void    run(int leftright) {};
+    virtual void    draw();    
+protected:
+    const char *_name;
 };
 
 //----------------
@@ -39,7 +51,6 @@ public:
 protected:
             int _min,_max,_inc;
             int *_value;
-            int _line;
             const char *_name,*_unit;
             
 };
