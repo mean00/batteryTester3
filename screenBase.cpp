@@ -10,7 +10,7 @@
 
 /**
  */
-void batScreen::prettyPrint(int val,int x,int y,const char *unit)
+void myPrettyPrint(Adafruit_ILI9341_STM *_tft,int val,int x,int y,const char *unit)
 {
      char printBuffer[256];
      char ext[10];
@@ -27,6 +27,12 @@ void batScreen::prettyPrint(int val,int x,int y,const char *unit)
      
     _tft->setCursor(x, y);   
     _tft->println(printBuffer);
+}
+/**
+ */
+void batScreen::prettyPrint(int val,int x,int y,const char *unit)
+{
+    ::myPrettyPrint(_tft,val,x,y,unit);
 }
 
 /**

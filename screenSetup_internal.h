@@ -16,13 +16,14 @@ enum ItemState
 class Item
 {
 public:
-                    Item() {}
+                    Item(  Adafruit_ILI9341_STM *tft) {_tft=tft;}
     virtual         ~Item() {}
     virtual void    setState(ItemState state) {_state=state;}
     virtual void    run(int leftright) {};
     virtual void    draw()=0;    
 protected:
-  ItemState         _state;
+  ItemState         _state;  
+  Adafruit_ILI9341_STM *_tft;
 };
 
 //----------------
@@ -30,7 +31,7 @@ protected:
 class TunableItem : public Item
 {
 public:
-                TunableItem(int line,int *value, int mn, int mx, int inc, const char *name, const char *unit);                      
+                TunableItem(Adafruit_ILI9341_STM *tft,int line,int *value, int mn, int mx, int inc, const char *name, const char *unit);                      
         void    draw();
         void    update();
         void    run(int leftright);

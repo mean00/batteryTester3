@@ -52,4 +52,8 @@ protected:
         Adafruit_ILI9341_STM *_tft;
 };
 
+void myPrettyPrint(Adafruit_ILI9341_STM *tft,int val,int x,int y,const char *unit);
+
+
+batScreen  *spawnSetupScreen(   batConfig *c);
 // EOF

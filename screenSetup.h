@@ -6,7 +6,7 @@
 #pragma once
 #include "screenBase.h"
 //----------------
-
+class Item;
 class setupScreen : public batScreen
 {
 public:
@@ -15,5 +15,9 @@ virtual                   ~setupScreen();
                       void draw();
         virtual batScreen *process(int mV,int mA,int currentTime,int leftRight,bool pressed); // return NULL if the current screen stays the same
         
-
+protected:        
+            Item *items[10];
+            int   nbItems;
+            void  addItem(Item *item);
+            int   currentItem;
 };

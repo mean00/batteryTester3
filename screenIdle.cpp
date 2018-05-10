@@ -30,8 +30,7 @@ batScreen *idleScreen::process(int mV,int mA,int currentTime,int leftRight,bool 
         return new errorScreen(_config, ERROR_VOLTAGE_TOO_HIGH);
     if(mV<BAT_DETECT_MIN_VOLTAGE)
         return new errorScreen(_config,ERROR_VOLTAGE_TOO_LOW);
-    // GO
-    return NULL;        
+    return spawnSetupScreen(_config);        
 }
 /**
  */
