@@ -5,12 +5,13 @@
  ****************************************************/
 #pragma once
 #include "screenBase.h"
+#include "screenSetup_internal.h"
 //----------------
-class Item;
+
 
 /**
  */
-class setupScreen : public batScreen
+class setupScreen : public batScreen,Item
 {
 public:
         enum ScreenState
@@ -22,6 +23,7 @@ public:
                            setupScreen(   batConfig *c);
 virtual                   ~setupScreen();                        
                       void draw();
+                      void drawItem();
         virtual batScreen *process(int mV,int mA,int currentTime,int leftRight,bool pressed); // return NULL if the current screen stays the same
         
 protected:        

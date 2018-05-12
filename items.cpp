@@ -8,6 +8,16 @@
 #include "voltage.h"
 #include "screenSetup.h"
 #include "screenSetup_internal.h"
+
+void Item::drawBoundingRectangle()
+{
+   int color=ILI9341_BLACK;
+      if(_state==StateSelected) color=ILI9341_WHITE;
+#define BORDER 4
+      item_tft->drawRoundRect(16-BORDER,_line-BORDER,
+                          320-12*2,25+BORDER,4,color);
+      
+}
 /**
  */
  TunableItem::TunableItem(  Adafruit_ILI9341_STM *tft,int line,int *value, int mn, int mx, int inc, const char *name, const char *unit) : Item(tft,line)
@@ -35,17 +45,12 @@
  }
  /**
   */
-  void    TunableItem::draw()
+  void    TunableItem::drawItem()
   {
-      _tft->setCursor(20, _line);   
-      _tft->println(_name);
+      item_tft->setCursor(20, _line);   
+      item_tft->println(_name);
       update();
-      int color=ILI9341_BLACK;
-      if(_state==StateSelected) color=ILI9341_WHITE;
-#define BORDER 4
-      _tft->drawRoundRect(16-BORDER,_line-BORDER,
-                          320-12*2,25+BORDER,4,color);
-      
+      drawBoundingRectangle();      
       
   }
   void    TunableItem::update()
@@ -56,27 +61,22 @@
         default:
         case StateNormal: 
         case StateSelected:
-                     _tft->setTextColor(ILI9341_WHITE,ILI9341_BLACK);  
+                     item_tft->setTextColor(ILI9341_WHITE,ILI9341_BLACK);  
                      break;
         case StateActivated:
-                     _tft->setTextColor(ILI9341_BLACK,ILI9341_WHITE);  
+                     item_tft->setTextColor(ILI9341_BLACK,ILI9341_WHITE);  
                      break;
       }
-      myPrettyPrint(_tft,*_value,160+24,_line,_unit);
-      _tft->setTextColor(ILI9341_WHITE,ILI9341_BLACK);  
+      myPrettyPrint(item_tft,*_value,160+24,_line,_unit);
+      item_tft->setTextColor(ILI9341_WHITE,ILI9341_BLACK);  
   }
  
  /**
   */
-  void    SimpleItem::draw()
+  void    SimpleItem::drawItem()
   {
-      _tft->setCursor(20, _line);   
-      _tft->println(_name);      
-      int color=ILI9341_BLACK;
-      if(_state==StateSelected) color=ILI9341_WHITE;
-#define BORDER 4
-      _tft->drawRoundRect(16-BORDER,_line-BORDER,
-                          320-12*2,25+BORDER,4,color);
-      
+      item_tft->setCursor(20, _line);   
+      item_tft->println(_name);      
+      drawBoundingRectangle();           
       
   }
