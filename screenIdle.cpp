@@ -36,6 +36,6 @@ batScreen *idleScreen::process(int mV,int mA,int currentTime,int leftRight,bool 
  */
 void idleScreen::draw()
 {
-    drawBitmap(296,80,16,64,0xffff,0,li_ion+11);
+    drawBitmap(296,80,10,64,ILI9341_YELLOW,0,li_ion+10);
     
 }

@@ -40,13 +40,13 @@ void batScreen::prettyPrint(int val,int x,int y,const char *unit)
 void batScreen::drawBitmap(int width, int height, int wx, int wy, int fgcolor, int bgcolor, const uint8_t *data)
 {
     uint8_t *p=(uint8_t *)data;    
-    static uint16_t line[320];
+    uint16_t line[320];
     
     width>>=3;
     for(int y=0;y<height;y++)
     {
         uint16_t *o=line;
-        _tft-> setAddrWindow(wx, wy+y, wx+width*8, wy+y);
+        _tft-> setAddrWindow(wx, wy+y, wx+width*8-1, wy+y-1);
         for(int x=0;x<width;x++)
         {
             int stack=*p++;
