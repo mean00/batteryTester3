@@ -9,7 +9,7 @@
 #include "screenSetup.h"
 #include "screenSetup_internal.h"
 
-extern batScreen *spawnNewDischarging(batConfig *c);
+extern batScreen *spawnNewDischarging(batConfig *c, int mV);
 
 /**
  */ 
@@ -84,7 +84,7 @@ batScreen *setupScreen::process(int mV,int mA,int currentTime,int leftRight,bool
             if(pressed)
             {
                 if(items[currentItem]==this)
-                    return spawnNewDischarging(_config);
+                    return spawnNewDischarging(_config,mV);
                 _state=StateEditing;
                 items[currentItem]->setState(StateActivated);
                 items[currentItem]->drawItem();

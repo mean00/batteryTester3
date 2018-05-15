@@ -3,3 +3,5 @@
 #define BAT_DETECT_NOISE_VOLTAGE    1000 // 1v
 #define BAT_DETECT_MIN_VOLTAGE      2500 // 2.5v
 
+#define BAT_MAX_WAT                 5.    // 5 Watt max 
+
