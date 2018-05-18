@@ -26,17 +26,26 @@ batScreen *finishedScreen::process(int mV,int mA,int currentTime,int leftRight,b
  */
 void finishedScreen::draw()
 {
+#define LINE(x) (60+x*28)
+    
      char buffer[200];
     _tft->fillScreen(ILI9341_WHITE);
     _tft->setTextColor(ILI9341_GREEN,ILI9341_WHITE);
-    _tft->setCursor(24, 8);       
-    _tft->println("DONE");
+    _tft->setCursor(24, LINE(0));       
+    switch(_cause)
+    {
+        case END_CURRENT_LOW:  _tft->println("LOW CURRENT");break;
+        case END_VOLTAGE_LOW:  _tft->println("LOW VOLTAGE");break;
+        case END_CURRENT_HIGH: _tft->println("HIGH CURRENT");break;
+        default:
+            break;
+    }
     
-    _tft->setCursor(24, 32);       
+    _tft->setCursor(24, LINE(1));       
     sprintf(buffer,"Duration : %d mn",_config->duration);
     _tft->println(buffer);
 
-    _tft->setCursor(24, 60);       
+    _tft->setCursor(24, LINE(2));       
     float f=_config->sumMa;
     f/=3600.;
     sprintf(buffer,"Capacity : %d mn",(int)f);
