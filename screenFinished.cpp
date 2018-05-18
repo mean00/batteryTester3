@@ -41,14 +41,18 @@ void finishedScreen::draw()
             break;
     }
     
-    _tft->setCursor(24, LINE(1));       
-    sprintf(buffer,"Duration : %d mn",_config->duration);
+    _tft->setCursor(24, LINE(1));    
+    int mn=_config->duration;
+    int h;
+    h=mn/60;
+    mn-=h*60;
+    sprintf(buffer,"Dur : %d:%d mn",h,mn);
     _tft->println(buffer);
 
     _tft->setCursor(24, LINE(2));       
     float f=_config->sumMa;
     f/=3600.;
-    sprintf(buffer,"Capacity : %d mn",(int)f);
+    sprintf(buffer,"Cap : %d mA",(int)f);
     _tft->println(buffer);
 }
 // EOF
