@@ -40,8 +40,7 @@ batScreen            *currentScreen=NULL;
 
 int                 gateVoltage=0;
 batConfig           config={
-    0, //uint32_t startAt;
-    0, //uint32_t endAt;
+    0, //uint32_t duration;
     0, // float    sumMa;
     0, //int     currentDischargeMa;
 #ifdef TEST_DIS    

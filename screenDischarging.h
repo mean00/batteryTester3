@@ -5,6 +5,7 @@
  ****************************************************/
 #pragma once
 #include "screenBase.h"
+#include "screenFinished.h"
 #include "ad_timer.h"
 
 class dischargingScreen : public batScreen
@@ -20,4 +21,5 @@ protected:
                 void    updateInfo();
                 Timer   timer;
                 int     gateCommand;
+                batScreen *goToEnd(EndOfChargeCause cause); 
 };

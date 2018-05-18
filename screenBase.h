@@ -12,8 +12,7 @@
 class Adafruit_MCP4725;
 typedef struct batConfig
 {
-    uint32_t startAt;
-    uint32_t endAt;
+    uint32_t duration;
     float    sumMa;
     int     currentDischargeMa;
     int     targetDischargeMa;

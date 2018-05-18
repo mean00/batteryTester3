@@ -12,6 +12,21 @@
 #define SAMPLING_PERIOD 5 // Refresh every 10 sec
 
 #define DEBUG
+
+/**
+ * 
+ * @param c
+ * @param currentMv
+ */
+batScreen *dischargingScreen::goToEnd(EndOfChargeCause c)
+{
+    int mn,s;
+    timer.wallClock(mn,s);
+    float duration=s+mn*60;
+    _config->duration=(int)((duration+29.)/60.);
+    return new finishedScreen(_config,c);
+}
+
 /**
 
 */
@@ -29,11 +44,15 @@ batScreen *dischargingScreen::process(int mV,int mA,int currentTime,int leftRigh
     drawVoltageAndCurrent(mV, mA);
     if(mA<_config->currentDischargeMa/2)
     {
-        
+        return goToEnd(END_CURRENT_LOW);
     }
     if(mV<_config->minimumVoltage)
     {
-        
+        return goToEnd(END_VOLTAGE_LOW);
+    }
+    if(mA > BAT_MAX_CURRENT)
+    {
+        return goToEnd(END_CURRENT_HIGH);
     }
     if(!timer.rdv()) return NULL;
     // update sumA
@@ -100,7 +119,7 @@ batScreen *spawnNewDischarging(batConfig *c, int currentV)
 bool     dischargingScreen::evaluateTargetAmp(int currentV)
 {
     // current V cannot be zero ! 800 mV at least
-    float maxAmp=(1000.*1000.*BAT_MAX_WAT)/(float)currentV; // in mA
+    float maxAmp=(1000.*1000.*BAT_MAX_WATT)/(float)currentV; // in mA
     if(maxAmp<_config->targetDischargeMa)
         _config->currentDischargeMa=50+100*floor(maxAmp/100);
     else
