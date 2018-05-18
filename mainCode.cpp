@@ -15,6 +15,10 @@
 #include "push_button.h"
 #include "screenBase.h"
 #include "screenIdle.h"
+#include "screenDischarging.h"
+
+
+#define TEST_DIS 
 
 // ILI9341 is using HW SPI + those pins
 #define TFT_DC          PB0
@@ -40,7 +44,11 @@ batConfig           config={
     0, //uint32_t endAt;
     0, // float    sumMa;
     0, //int     currentDischargeMa;
+#ifdef TEST_DIS    
+    200,
+#else
     500, // int     targetDischargeMa;
+#endif
     3000, //     minimumVoltage;
     NULL  //MCP
 };
@@ -116,7 +124,11 @@ void mySetup()
   //initTft();
   tft->fillScreen(ILI9341_BLACK);
   
+#ifdef TEST_DIS
+  currentScreen=new dischargingScreen(   &config,4000);
+#else  
   currentScreen =new idleScreen(&config);
+#endif    
   currentScreen->draw();
 }
 

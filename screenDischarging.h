@@ -5,6 +5,7 @@
  ****************************************************/
 #pragma once
 #include "screenBase.h"
+#include "ad_timer.h"
 
 class dischargingScreen : public batScreen
 {
@@ -16,4 +17,7 @@ public:
 protected:
                 bool    evaluateTargetAmp(int currentV);
                 int     computeGateCommand(int amp);
+                void    updateInfo();
+                Timer   timer;
+                int     gateCommand;
 };
