@@ -9,9 +9,12 @@
 #include "screenError.h"
 #include "voltage.h"
 #include "Adafruit_MCP4725.h"
-#define SAMPLING_PERIOD 5 // Refresh every 10 sec
+
+#define CURRENT_ERROR_MARGIN   2 // Error margin in mA
+#define REFRESH_PERIOD_IN_SEC 5 // Refresh mA count every x sec
 
 #define DEBUG
+
 
 /**
  * 
@@ -30,23 +33,100 @@ batScreen *dischargingScreen::goToEnd(EndOfChargeCause c)
 /**
 
 */
-dischargingScreen::dischargingScreen(   batConfig *c,int currentMv) : batScreen(c),timer(SAMPLING_PERIOD)
+dischargingScreen::dischargingScreen(   batConfig *c,int currentMv) : batScreen(c),timer(REFRESH_PERIOD_IN_SEC),smallTimer(AVERAGING_SAMPLE_PERIOD,1)
 {
     _config->sumMa=0;
     evaluateTargetAmp(currentMv);
     gateCommand=computeGateCommand(_config->currentDischargeMa);
+    originalGateCommand=gateCommand;
     _config->mcp->setVoltage(gateCommand,false);
+    sampleIndex=-1;
+}
+
+/**
+ * 
+ * @param mV
+ * @param mA
+ * @param avgV
+ * @param avgA
+ * @return 
+ */
+bool dischargingScreen::computeAverage(int mV,int mA,int &avgV, int &avgA)
+{
+    if(-1==sampleIndex) // first sample
+    {
+        for(int i=0;i<AVERAGING_SAMPLE_COUNT;i++)
+        {
+            samplema[i]=mA;
+            samplemv[i]=mV;
+        }
+        sampleIndex=0;
+    }
+    samplema[sampleIndex]=mA;
+    samplemv[sampleIndex]=mV;
+    sampleIndex=(sampleIndex+1)%AVERAGING_SAMPLE_COUNT;
+    
+    if(sampleIndex!=1) return false;
+    
+    avgA=0;
+    avgV=0;
+    for(int i=0;i<AVERAGING_SAMPLE_COUNT;i++)
+        {
+            avgA+=samplema[i];
+            avgV+=samplemv[i];
+        }
+    avgA/=AVERAGING_SAMPLE_COUNT;
+    avgV/=AVERAGING_SAMPLE_COUNT;
+    return true;
+}
+/**
+ * 
+ * @param avgA
+ * @param avgV
+ * @return 
+ */
+bool dischargingScreen::adjustGateVoltage(int avgV,int avgA)
+{
+    // correct gate if needed
+    int inc=0;
+    int tooLow=_config->currentDischargeMa-CURRENT_ERROR_MARGIN;
+    int tooHigh=_config->currentDischargeMa+CURRENT_ERROR_MARGIN;
+    if(avgA < tooLow)  inc=1;
+    if(avgA > tooHigh) inc=-1;
+    if(!inc) return false; // nothing to do
+    
+    float er=100.*fabs(gateCommand-originalGateCommand);
+    er=er/(float)originalGateCommand;
+    if( er>5. ) // Dont exceed 5%
+        return false;    
+    gateCommand+=inc;
+    _config->mcp->setVoltage(gateCommand,false);
+    return true;
 }
 /**
  */
 batScreen *dischargingScreen::process(int mV,int mA,int currentTime,int leftRight,bool pressed)
 {
-    drawVoltageAndCurrent(mV, mA);
-    if(mA<_config->currentDischargeMa/2)
+    if(!smallTimer.elapsed())
+        return NULL;
+    
+    int avgA,avgV;
+    if(!computeAverage(mV,mA,avgV,avgA))
+        return NULL;
+
+    drawVoltageAndCurrent(avgV, avgA);
+    
+    adjustGateVoltage(avgV,avgA);
+    
+    
+    if(avgA<_config->currentDischargeMa/2)
     {
         return goToEnd(END_CURRENT_LOW);
     }
-    if(mV<_config->minimumVoltage)
+    // Take the wiring drop into account
+    float voltage=avgV+((avgA*_config->resistor100)/100);
+    
+    if(voltage<_config->minimumVoltage)
     {
         return goToEnd(END_VOLTAGE_LOW);
     }
@@ -56,9 +136,8 @@ batScreen *dischargingScreen::process(int mV,int mA,int currentTime,int leftRigh
     }
     if(!timer.rdv()) return NULL;
     // update sumA
-    _config->sumMa+=SAMPLING_PERIOD*mA;
-    timer.nextPeriod();
-   
+    _config->sumMa+=REFRESH_PERIOD_IN_SEC*avgA;
+    timer.nextPeriod();   
     updateInfo();
     return NULL;
     
@@ -128,7 +207,7 @@ bool     dischargingScreen::evaluateTargetAmp(int currentV)
 }
 /**
  * \brief Compute the value to send to the DAC driving the IRLZ44N so that we have the wanted 
- * current
+ * current. This is just an approximation, we'll adjust on the fly later on.
  * @param amp
  * @return 
  */
@@ -136,8 +215,20 @@ int     dischargingScreen::computeGateCommand(int amp)
 {
     // Command=1.38*a+1443
     float v=amp;
-    v=v*1.38+1443.;
-    if(v>4095) v=4095;
+    if(amp<200)
+    {
+        v=2*v+1440.;
+         v=v*1.28+1525.;
+    }else
+    if(amp<1100)
+    {
+        v=v*1.28+1525.;
+    }else
+    {
+        v=v*1.38+1443.;
+    }
+    if(v>4095) 
+        v=4095;    
     return (int)v;
 }
 

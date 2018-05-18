@@ -12,6 +12,11 @@ public:
       _period=(double)p_in_seconds*1000.;
       reset();  
     }
+     Timer(int p_in_usseconds,int z)
+    {
+      _period=(double)p_in_usseconds;
+      reset();  
+    }
     void reset(void)
     {
       zero=millis();
