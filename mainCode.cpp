@@ -18,7 +18,7 @@
 #include "screenDischarging.h"
 
 
-#define TEST_DIS 
+//#define TEST_DIS 
 
 // ILI9341 is using HW SPI + those pins
 #define TFT_DC          PB0
