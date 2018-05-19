@@ -12,7 +12,7 @@
 class Adafruit_MCP4725;
 typedef struct batConfig
 {
-    int resistor100; // 100x the wiring resistor
+    int     resistor1000; // 1000x the wiring resistor
     uint32_t duration;
     float    sumMa;
     int     currentDischargeMa;

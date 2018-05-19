@@ -28,15 +28,17 @@ void setupScreen::drawItem()
 /**
 
 */
-setupScreen::setupScreen(   batConfig *c) : batScreen(c),Item(c->tft,100)
+setupScreen::setupScreen(   batConfig *c) : batScreen(c),Item(c->tft,140)
 {
         nbItems=0;
         currentItem=0;
         addItem(new TunableItem(_tft,20,&(_config->targetDischargeMa), 100, 1500,100, "Dischrg","A"));
         addItem(new TunableItem(_tft,60,&(_config->minimumVoltage), 2800, 5000,100, "Min Volt","V"));
+        addItem(new TunableItem(_tft,100,&(_config->resistor1000), 100, 1500,100, "Wiring ","O"));
         addItem( this);
-        items[0]->setState(StateSelected) ;   
-        _state=StateSelecting;
+        items[nbItems-1]->setState(StateSelected) ;   
+        _sstate=StateSelecting;
+        currentItem=nbItems-1;
         
 }
 setupScreen::~setupScreen()
@@ -57,7 +59,7 @@ void setupScreen::addItem(Item *item)
 batScreen *setupScreen::process(int mV,int mA,int currentTime,int leftRight,bool pressed)
 {    
     drawVoltageAndCurrent(mV,mA);
-    switch(_state)
+    switch(_sstate)
     {
     case StateSelecting:
         {
@@ -85,7 +87,7 @@ batScreen *setupScreen::process(int mV,int mA,int currentTime,int leftRight,bool
             {
                 if(items[currentItem]==this)
                     return spawnNewDischarging(_config,mV);
-                _state=StateEditing;
+                _sstate=StateEditing;
                 items[currentItem]->setState(StateActivated);
                 items[currentItem]->drawItem();
                 return NULL;
@@ -97,7 +99,7 @@ batScreen *setupScreen::process(int mV,int mA,int currentTime,int leftRight,bool
       {
         if(pressed)
         {
-            _state=StateSelecting;
+            _sstate=StateSelecting;
             items[currentItem]->setState(StateSelected);
             items[currentItem]->drawItem();
             return NULL;

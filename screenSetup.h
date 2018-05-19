@@ -31,5 +31,5 @@ protected:
             int   nbItems;
             void  addItem(Item *item);
             int   currentItem;
-            ScreenState _state;
+            ScreenState _sstate;
 };

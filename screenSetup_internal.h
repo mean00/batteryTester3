@@ -17,7 +17,7 @@ enum ItemState
 class Item
 {
 public:
-                    Item(  Adafruit_ILI9341_STM *tft,int line) {item_tft=tft;_line=line;}
+                    Item(  Adafruit_ILI9341_STM *tft,int line) {item_tft=tft;_line=line;_state=StateNormal;}
     virtual         ~Item() {}
     virtual void    setState(ItemState state) {_state=state;}
     virtual void    run(int leftright) {};

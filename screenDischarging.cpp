@@ -15,7 +15,6 @@
 
 #define DEBUG
 
-
 /**
  * 
  * @param c
@@ -124,7 +123,9 @@ batScreen *dischargingScreen::process(int mV,int mA,int currentTime,int leftRigh
         return goToEnd(END_CURRENT_LOW);
     }
     // Take the wiring drop into account
-    float voltage=avgV+((avgA*_config->resistor100)/100);
+    float vDrop=(float)avgA*(float)_config->resistor1000;
+    vDrop/=1000.;
+    float voltage=avgV+vDrop;
     
     if(voltage<_config->minimumVoltage)
     {
