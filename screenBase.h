@@ -5,7 +5,7 @@
  ****************************************************/
 
 #pragma once
-
+#include "ILI9341_extended.h"
 /**
 
 */
@@ -18,7 +18,7 @@ typedef struct batConfig
     int     currentDischargeMa;
     int     targetDischargeMa;
     int     minimumVoltage;
-    Adafruit_ILI9341_STM *tft;
+    ILI9314  *tft;
     Adafruit_MCP4725 *mcp;
 };
 /**
@@ -49,7 +49,7 @@ protected:
                 void disableCurrent();
 protected:
         batConfig *_config;
-        Adafruit_ILI9341_STM *_tft;
+        ILI9314   *_tft;
 };
 
 void myPrettyPrint(Adafruit_ILI9341_STM *tft,int val,int x,int y,const char *unit);

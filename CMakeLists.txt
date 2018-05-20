@@ -40,7 +40,7 @@ SET(libPrefix ${ARDUINO_DEFAULT_BOARD}_)
 #ADD_DEFINITIONS("-ffunction-sections -fdata-sections ")
 generate_arduino_firmware(BatteryTester2 
                 SKETCH batteryTester2.ino
-                SRCS wav_irotary.cpp mainCode.cpp push_button.cpp screenIdle.cpp screenBase.cpp screenError.cpp screenSetup.cpp items.cpp screenDischarging.cpp screenFinished.cpp
+                SRCS wav_irotary.cpp mainCode.cpp push_button.cpp screenIdle.cpp screenBase.cpp screenError.cpp screenSetup.cpp items.cpp screenDischarging.cpp screenFinished.cpp ILI9341_extended.cpp
                 PORT ${ARDUINO_DEFAULT_PORT}
                 BOARD_CPU ${ARDUINO_CPU}
                 )

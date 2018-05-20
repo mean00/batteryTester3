@@ -17,7 +17,7 @@ enum ItemState
 class Item
 {
 public:
-                    Item(  Adafruit_ILI9341_STM *tft,int line) {item_tft=tft;_line=line;_state=StateNormal;}
+                    Item(  ILI9314 *tft,int line) {item_tft=tft;_line=line;_state=StateNormal;}
     virtual         ~Item() {}
     virtual void    setState(ItemState state) {_state=state;}
     virtual void    run(int leftright) {};
@@ -25,14 +25,14 @@ public:
     virtual void    drawBoundingRectangle();
 protected:
   ItemState         _state;  
-  Adafruit_ILI9341_STM *item_tft;
+  ILI9314           *item_tft;
   int               _line;
 };
 //
 class SimpleItem : public Item
 {
 public:
-                    SimpleItem(  Adafruit_ILI9341_STM *tft, int line,const char *name ) : Item(tft,line) {_name=name;}
+                    SimpleItem(  ILI9314 *tft, int line,const char *name ) : Item(tft,line) {_name=name;}
     virtual         ~SimpleItem() {}    
     virtual void    run(int leftright) {};
     virtual void    drawItem();    
@@ -45,7 +45,7 @@ protected:
 class TunableItem : public Item
 {
 public:
-                TunableItem(Adafruit_ILI9341_STM *tft,int line,int *value, int mn, int mx, int inc, const char *name, const char *unit);                      
+                TunableItem(ILI9314 *tft,int line,int *value, int mn, int mx, int inc, const char *name, const char *unit);                      
         void    drawItem();
         void    update();
         void    run(int leftright);

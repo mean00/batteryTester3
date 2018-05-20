@@ -20,7 +20,7 @@ void Item::drawBoundingRectangle()
 }
 /**
  */
- TunableItem::TunableItem(  Adafruit_ILI9341_STM *tft,int line,int *value, int mn, int mx, int inc, const char *name, const char *unit) : Item(tft,line)
+ TunableItem::TunableItem(  ILI9314 *tft,int line,int *value, int mn, int mx, int inc, const char *name, const char *unit) : Item(tft,line)
  {
      _min=mn;
      _max=mx;

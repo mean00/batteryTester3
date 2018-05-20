@@ -6,8 +6,7 @@
 
 #include <Wire.h>
 #include "SPI.h"
-#include "Adafruit_GFX_AS.h"
-#include "Adafruit_ILI9341_STM.h"
+#include "ILI9341_extended.h"
 #include "Rotary.h"
 #include "wav_irotary.h"
 #include "simpler_INA219.h"
@@ -31,7 +30,7 @@
 
 //
 // Our globals
-Adafruit_ILI9341_STM *tft=NULL;
+ILI9314              *tft=NULL;
 WavRotary            *rotary=NULL;
 simpler_INA219       *ina219=NULL;
 Adafruit_MCP4725     *mcp4725=NULL;
@@ -73,12 +72,13 @@ void initTft()
     delay(100);  
     digitalWrite(TFT_RST,HIGH);
 
-    tft = new Adafruit_ILI9341_STM(TFT_CS, TFT_DC,TFT_RST);
+    tft = new ILI9314(TFT_CS, TFT_DC,TFT_RST);
     tft->begin();  
     tft->fillScreen(ILI9341_BLACK);
     tft->setTextColor(ILI9341_WHITE,ILI9341_BLACK);  
     tft->setRotation(3);
     tft->setTextSize(3);   
+    
 }
 
 void mySetup() 
