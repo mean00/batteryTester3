@@ -34,40 +34,46 @@ void ILI9341::setFont (const GFXfont *f)
  */
 int ILI9341::myDrawChar(int x, int y, unsigned char c,  int color, int bg)
 {
-    c -= (uint8_t)pgm_read_byte(&gfxFont->first);
-    GFXglyph *glyph  = &(((GFXglyph *)pgm_read_pointer(&gfxFont->glyph))[c]);
-    uint8_t  *bitmap = gfxFont->bitmap;
-    int  bo = glyph->bitmapOffset;
+    c -= gfxFont->first;
+    GFXglyph *glyph  = gfxFont->glyph+c;
+    x+= glyph->xOffset;
+    y+= glyph->yOffset;    
+    
+    uint8_t *p= gfxFont->bitmap+glyph->bitmapOffset;
+    int    finalColor;    
+    
     int  w  = glyph->width;
     int  h  = glyph->height;
-    int  xo = glyph->xOffset;
-    int  yo = glyph->yOffset;
+    uint16_t *column=(uint16_t *)alloca(w*2);
+    uint16_t *col;
     int  bits = 0, bit = 0;
-
-    uint8_t *p=bitmap+bo;
-    int    finalColor;
-    //  startWrite();
+    
     for(int yy=0; yy<h; yy++) 
     {
+        setAddrWindow(x,y+yy,x+w, y+yy+1);
+        col=column;
         for(int xx=0; xx<w; xx++) 
         {
             if(!bit)
             {
-                bits = *p;p++;
-                bit=0x80;
+                bits= *p++;
+                bit = 0x80;
             }            
             if(bits & bit) 
                 finalColor=color;  
             else
                 finalColor=bg;
-            writePixel(x+xo+xx, y+yo+yy, finalColor);                
+            *(col++)=finalColor;            
             bit=bit>>1;
         }
+        pushColors(column,w,0);
     }
-    //    endWrite();
-    
     return glyph->xAdvance;
 }
+/**
+ * 
+ * @param st
+ */
  void  ILI9341::myDrawString(const char *st)
  {
      if(!gfxFont)
