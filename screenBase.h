@@ -18,7 +18,7 @@ typedef struct batConfig
     int     currentDischargeMa;
     int     targetDischargeMa;
     int     minimumVoltage;
-    ILI9314  *tft;
+    ILI9341  *tft;
     Adafruit_MCP4725 *mcp;
 };
 /**
@@ -49,10 +49,10 @@ protected:
                 void disableCurrent();
 protected:
         batConfig *_config;
-        ILI9314   *_tft;
+        ILI9341   *_tft;
 };
 
-void myPrettyPrint(Adafruit_ILI9341_STM *tft,int val,int x,int y,const char *unit);
+void myPrettyPrint(ILI9341 *tft,int val,int x,int y,const char *unit);
 
 
 batScreen  *spawnSetupScreen(   batConfig *c);
