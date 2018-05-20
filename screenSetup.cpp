@@ -22,7 +22,7 @@ batScreen  *spawnSetupScreen(   batConfig *c)
 void setupScreen::drawItem()
 {
      item_tft->setCursor(20, _line);   
-     item_tft->println("Go!");   
+     item_tft->myDrawString("Go!");   
      drawBoundingRectangle();      
 }
 /**

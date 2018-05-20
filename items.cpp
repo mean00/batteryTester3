@@ -48,7 +48,7 @@ void Item::drawBoundingRectangle()
   void    TunableItem::drawItem()
   {
       item_tft->setCursor(20, _line);   
-      item_tft->println(_name);
+      item_tft->myDrawString(_name);
       update();
       drawBoundingRectangle();      
       
@@ -76,7 +76,7 @@ void Item::drawBoundingRectangle()
   void    SimpleItem::drawItem()
   {
       item_tft->setCursor(20, _line);   
-      item_tft->println(_name);      
+      item_tft->myDrawString(_name);      
       drawBoundingRectangle();           
       
   }

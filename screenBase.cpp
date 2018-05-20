@@ -75,8 +75,8 @@ void batScreen::drawBackground()
  */
 void batScreen::drawVoltageAndCurrent(int mV, int mA)
 {
-    prettyPrint(mV,40,208,"V");
-    prettyPrint(mA,160+43,208,"A");
+    prettyPrint(mV,40,240-9,"V");
+    prettyPrint(mA,160+43,240-9,"A");
 }
 
 

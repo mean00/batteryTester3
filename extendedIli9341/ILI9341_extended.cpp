@@ -66,7 +66,7 @@ int ILI9341::myDrawChar(int x, int y, unsigned char c,  int color, int bg)
     }
     //    endWrite();
     
-    return 32;
+    return glyph->xAdvance;
 }
  void  ILI9341::myDrawString(const char *st)
  {
