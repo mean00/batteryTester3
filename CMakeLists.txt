@@ -36,11 +36,15 @@ link_directories( ${CUSTOM_LIB_DIR})
 # same with extra tabs or space after the #include "blah.h"
 #
 SET(libPrefix ${ARDUINO_DEFAULT_BOARD}_)
+
+SET(ILI ${CMAKE_CURRENT_SOURCE_DIR}/extendedIli9341)
+
+include_directories(${ILI})
 # This reduces size by 10% or so
 #ADD_DEFINITIONS("-ffunction-sections -fdata-sections ")
 generate_arduino_firmware(BatteryTester2 
                 SKETCH batteryTester2.ino
-                SRCS wav_irotary.cpp mainCode.cpp push_button.cpp screenIdle.cpp screenBase.cpp screenError.cpp screenSetup.cpp items.cpp screenDischarging.cpp screenFinished.cpp ILI9341_extended.cpp
+                SRCS wav_irotary.cpp mainCode.cpp push_button.cpp screenIdle.cpp screenBase.cpp screenError.cpp screenSetup.cpp items.cpp screenDischarging.cpp screenFinished.cpp  ${ILI}/Adafruit_GFX.cpp  ${ILI}/ILI9341_extended.cpp
                 PORT ${ARDUINO_DEFAULT_PORT}
                 BOARD_CPU ${ARDUINO_CPU}
                 )
