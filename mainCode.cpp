@@ -15,7 +15,7 @@
 #include "screenBase.h"
 #include "screenIdle.h"
 #include "screenDischarging.h"
-
+#include "Fonts/FreeMonoBoldOblique24pt7b.h"
 
 //#define TEST_DIS 
 
@@ -30,7 +30,7 @@
 
 //
 // Our globals
-ILI9314              *tft=NULL;
+ILI9341              *tft=NULL;
 WavRotary            *rotary=NULL;
 simpler_INA219       *ina219=NULL;
 Adafruit_MCP4725     *mcp4725=NULL;
@@ -72,11 +72,12 @@ void initTft()
     delay(100);  
     digitalWrite(TFT_RST,HIGH);
 
-    tft = new ILI9314(TFT_CS, TFT_DC,TFT_RST);
+    tft = new ILI9341(TFT_CS, TFT_DC,TFT_RST);
     tft->begin();  
     tft->fillScreen(ILI9341_BLACK);
     tft->setTextColor(ILI9341_WHITE,ILI9341_BLACK);  
     tft->setRotation(3);
+    tft->setFont(&FreeMonoBoldOblique24pt7b);
     tft->setTextSize(3);   
     
 }
