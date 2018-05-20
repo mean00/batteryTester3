@@ -15,7 +15,8 @@ void Item::drawBoundingRectangle()
       if(_state==StateSelected) color=ILI9341_WHITE;
 #define BORDER 4
       item_tft->drawRoundRect(16-BORDER,_line-BORDER,
-                          320-12*2,25+BORDER,4,color);
+                          320-12*2,32+BORDER,
+                              4,color);
       
 }
 /**

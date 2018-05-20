@@ -36,55 +36,85 @@ int ILI9341::myDrawChar(int x, int y, unsigned char c,  int color, int bg)
 {
     c -= gfxFont->first;
     GFXglyph *glyph  = gfxFont->glyph+c;
-    x+= glyph->xOffset;
-    y+= glyph->yOffset;    
     
     uint8_t *p= gfxFont->bitmap+glyph->bitmapOffset;
     int    finalColor;    
     
     int  w  = glyph->width;
     int  h  = glyph->height;
-    uint16_t *column=(uint16_t *)alloca(w*2);
-    uint16_t *col;
+
+    uint16_t *column=(uint16_t *)alloca(w*2*2);
+    uint16_t *tail=column+w*2;
+    uint16_t *col=column;
     int  bits = 0, bit = 0;
     
-    for(int yy=0; yy<h; yy++) 
-    {
-        setAddrWindow(x,y+yy,x+w, y+yy+1);
-        col=column;
-        for(int xx=0; xx<w; xx++) 
+    x+= glyph->xOffset;
+    y+= glyph->yOffset;    
+    
+    setAddrWindow(x,y,                  x+w-1, y+h-1);
+    for(int i=w*h-1;i>0;i--)
+    {           
+        if(!bit)
         {
-            if(!bit)
-            {
-                bits= *p++;
-                bit = 0x80;
-            }            
-            if(bits & bit) 
-                finalColor=color;  
-            else
-                finalColor=bg;
-            *(col++)=finalColor;            
-            bit=bit>>1;
+            bits= *p++;
+            bit = 0x80;
+        }            
+        if(bits & bit) 
+            finalColor=color;  
+        else
+            finalColor=bg;
+        *(col++)=finalColor;            
+        bit=bit>>1;
+        
+        if(col>=tail)
+        {
+            pushColors(column,w*2,0);
+            col=column;
         }
-        pushColors(column,w,0);
     }
+    pushColors(column,(intptr_t(col-column))/2,0);
     return glyph->xAdvance;
 }
 /**
  * 
  * @param st
  */
- void  ILI9341::myDrawString(const char *st)
+ void  ILI9341::myDrawString(const char *st,bool clearBackground)
  {
      if(!gfxFont)
          return;
      int l=strlen(st);
+     int w,h;
+     getBounding(st,w,h);
+     if(clearBackground)
+     {        
+        fillRect(cursor_x,cursor_y, w, h, textbgcolor);
+     }
      for(int i=0;i<l;i++)
      {
-         int of=myDrawChar(cursor_x,cursor_y,st[i],textcolor,textbgcolor);
+         int of=myDrawChar(cursor_x,cursor_y+h,st[i],textcolor,textbgcolor);
          cursor_x+=of;
          if(cursor_x>=_width) return;
      }
  }
-
+/**
+ * 
+ * @param st
+ * @param w
+ * @param h
+ */
+void  ILI9341::getBounding(const char *st, int &w, int &h)
+{
+     w=0;h=0;
+     int l=strlen(st);
+     for(int i=0;i<l;i++)
+     {
+            int c=st[i];
+            c -= gfxFont->first;
+            GFXglyph *glyph  = gfxFont->glyph+c;
+            w+=glyph->xAdvance;       
+            if(glyph->height>h)
+                h=glyph->height;
+     }
+}
 // EOF

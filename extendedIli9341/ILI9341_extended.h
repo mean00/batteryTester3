@@ -13,8 +13,9 @@ class ILI9341 : public Adafruit_ILI9341_STM
         ~ILI9341();
         
         //--
-        void setFont(const GFXfont *f);        
-        void  myDrawString(const char *st);
+        void  setFont(const GFXfont *f);        
+        void  myDrawString(const char *st, bool clearBackground=true);
+        void  getBounding(const char *st, int &w, int &h);
 protected:
         int   myDrawChar(int x, int y, unsigned char c,  int color, int bg);
 
