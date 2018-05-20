@@ -10,7 +10,7 @@
 
 /**
  */
-void myPrettyPrint(Adafruit_ILI9341_STM *_tft,int val,int x,int y,const char *unit)
+void myPrettyPrint(ILI9341 *_tft,int val,int x,int y,const char *unit)
 {
      char printBuffer[256];
      char ext[10];
@@ -26,7 +26,7 @@ void myPrettyPrint(Adafruit_ILI9341_STM *_tft,int val,int x,int y,const char *un
      }
      
     _tft->setCursor(x, y);   
-    _tft->println(printBuffer);
+    _tft->myDrawString(printBuffer);
 }
 /**
  */
