@@ -51,7 +51,7 @@ int ILI9341::myDrawChar(int x, int y, unsigned char c,  int color, int bg)
     x+= glyph->xOffset;
     y+= glyph->yOffset;    
     
-    setAddrWindow(x,y,                  x+w-1, y+h-1);
+    setAddrWindow(x,y,                  x+w-1, y+h+1);
     for(int i=w*h-1;i>0;i--)
     {           
         if(!bit)
@@ -72,7 +72,8 @@ int ILI9341::myDrawChar(int x, int y, unsigned char c,  int color, int bg)
             col=column;
         }
     }
-    pushColors(column,(intptr_t(col-column))/2,0);
+    int leftOver=(uint32_t )col-(uint32_t)column;
+    pushColors(column,leftOver/2,0);
     return glyph->xAdvance;
 }
 /**
@@ -116,5 +117,31 @@ void  ILI9341::getBounding(const char *st, int &w, int &h)
             if(glyph->height>h)
                 h=glyph->height;
      }
+}
+/**
+ * 
+ * @param size
+ */
+void  ILI9341::setFontSize(FontSize size)
+{
+    switch(size)
+    {
+        case SmallFont :  gfxFont=gfxFonts[0];break;
+        default:
+        case MediumFont :  gfxFont=gfxFonts[1];break;
+        case BigFont :  gfxFont=gfxFonts[2];break;
+    }    
+}
+/**
+ * 
+ * @param small
+ * @param medium
+ * @param big
+ */
+void  ILI9341::setFontFamily(const GFXfont *small, const GFXfont *medium, const GFXfont *big)
+{
+    gfxFonts[0]=small;
+    gfxFonts[1]=medium;
+    gfxFonts[2]=big;
 }
 // EOF

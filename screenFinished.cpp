@@ -27,32 +27,47 @@ batScreen *finishedScreen::process(int mV,int mA,int currentTime,int leftRight,b
 void finishedScreen::draw()
 {
 #define LINE(x) (60+x*28)
-    
      char buffer[200];
-    _tft->fillScreen(ILI9341_WHITE);
-    _tft->setTextColor(ILI9341_GREEN,ILI9341_WHITE);
-    _tft->setCursor(24, LINE(0));       
+     
+    int color=ILI9341_GREEN;
+    const char *s="??";
     switch(_cause)
     {
-        case END_CURRENT_LOW:  _tft->println("LOW CURRENT");break;
-        case END_VOLTAGE_LOW:  _tft->println("LOW VOLTAGE");break;
-        case END_CURRENT_HIGH: _tft->println("HIGH CURRENT");break;
+        case END_CURRENT_LOW:  s="LOW CURRENT";break;
+        case END_VOLTAGE_LOW:  s="LOW VOLTAGE";break;
+        case END_CURRENT_HIGH: s="HIGH CURRENT";color=ILI9341_RED;break;
         default:
             break;
     }
     
-    _tft->setCursor(24, LINE(1));    
+    _tft->fillScreen(color);
+    _tft->setTextColor(color,ILI9341_BLACK);
+    _tft->setCursor(4, 4);
+    _tft->myDrawString("     COMPLETED         ");
+    _tft->setTextColor(ILI9341_BLACK,color);
+    
+    
+    // Stop reason
+    _tft->setCursor(24, LINE(2));   
+    _tft->myDrawString(s);
+    // Display cap
+    float f=_config->sumMa;
+    f/=3600.;
+    sprintf(buffer,"Cap : %04d mA",(int)f);
+    _tft->setFontSize(ILI9341::BigFont);
+    _tft->setCursor(4, LINE(0));   
+    _tft->myDrawString(buffer);
+    
+    // Duration
+    _tft->setFontSize(ILI9341::MediumFont);
+
     int mn=_config->duration;
     int h;
     h=mn/60;
     mn-=h*60;
     sprintf(buffer,"Dur : %d:%d mn",h,mn);
-    _tft->println(buffer);
+    _tft->setCursor(24, LINE(3));    
+    _tft->myDrawString(buffer);
 
-    _tft->setCursor(24, LINE(2));       
-    float f=_config->sumMa;
-    f/=3600.;
-    sprintf(buffer,"Cap : %d mA",(int)f);
-    _tft->println(buffer);
 }
 // EOF

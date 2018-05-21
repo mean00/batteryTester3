@@ -9,6 +9,12 @@
 #include "screenSetup.h"
 #include "screenSetup_internal.h"
 
+int itemPosition(int x)
+{
+    return 36+x*36;
+}
+
+
 void Item::drawBoundingRectangle()
 {
    int color=ILI9341_BLACK;

@@ -117,7 +117,12 @@ batScreen *dischargingScreen::process(int mV,int mA,int currentTime,int leftRigh
     
     adjustGateVoltage(avgV,avgA);
     
-    
+#ifdef DEBUG
+    if(pressed)
+    {
+         return goToEnd(END_CURRENT_LOW);
+    }
+#endif    
     if(avgA<_config->currentDischargeMa/2)
     {
         return goToEnd(END_CURRENT_LOW);
@@ -157,32 +162,38 @@ void dischargingScreen::updateInfo()
     c/=3600.;
     
     sprintf(buffer,"%04d mA/h ",(int)c); // 10 sec -> hour
+    _tft->setFontSize(ILI9341::BigFont);
     _tft->setCursor(18, 60);       
-    _tft->println(buffer);
+    _tft->myDrawString(buffer);
     
     h=mn/60;
     mn-=h*60;
+    _tft->setFontSize(ILI9341::MediumFont);
     sprintf(buffer,"%02d:%02d:%02d",h,mn,sec);
-    _tft->setCursor(18, 80);       
-    _tft->println(buffer);
+    _tft->setCursor(18, 120);       
+    _tft->myDrawString(buffer);
 }
 
 /**
  */
 void dischargingScreen::draw()
 {   
-    char buffer[200];
-    _tft->setTextColor(ILI9341_WHITE,ILI9341_BLACK);      
-    _tft->setCursor(24, 8);       
-    _tft->println("Discharging");
+    char buffer[50];
+    _tft->setTextColor(ILI9341_BLACK,ILI9341_WHITE);  
+    _tft->setCursor(4, 4);   
+    _tft->myDrawString("     DISCHARGING         ");    
+    _tft->setTextColor(ILI9341_WHITE,ILI9341_BLACK);  
     updateInfo();
-    _tft->setCursor(24, 160);       
+#ifdef DEBUG        
+    _tft->setCursor(18, 160+14);   
+    _tft->setFontSize(ILI9341::SmallFont);
     sprintf(buffer,"Target = %d mA",_config->currentDischargeMa);
-    _tft->println(buffer);
-    _tft->setCursor(24, 160-24);       
-#ifdef DEBUG    
-    sprintf(buffer,"Gate = %d ",gateCommand);
-   _tft->println(buffer);
+    _tft->myDrawString(buffer);
+    _tft->setCursor(18, 160);       
+
+    sprintf(buffer,"Gate  = %d ",gateCommand);
+   _tft->myDrawString(buffer);
+   _tft->setFontSize(ILI9341::MediumFont);
 #endif
 }
 /**

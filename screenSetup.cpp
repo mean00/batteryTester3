@@ -9,6 +9,9 @@
 #include "screenSetup.h"
 #include "screenSetup_internal.h"
 
+
+extern int itemPosition(int x);
+
 extern batScreen *spawnNewDischarging(batConfig *c, int mV);
 
 /**
@@ -28,13 +31,13 @@ void setupScreen::drawItem()
 /**
 
 */
-setupScreen::setupScreen(   batConfig *c) : batScreen(c),Item(c->tft,140)
+setupScreen::setupScreen(   batConfig *c) : batScreen(c),Item(c->tft,itemPosition(3))
 {
         nbItems=0;
         currentItem=0;
-        addItem(new TunableItem(_tft,20,&(_config->targetDischargeMa), 100, 1500,100, "Dischrg","A"));
-        addItem(new TunableItem(_tft,60,&(_config->minimumVoltage), 2800, 5000,100, "Min Volt","V"));
-        addItem(new TunableItem(_tft,100,&(_config->resistor1000), 100, 1500,100, "Wiring ","O"));
+        addItem(new TunableItem(_tft,itemPosition(0),&(_config->targetDischargeMa), 100, 1500,100, "Dischrg","A"));
+        addItem(new TunableItem(_tft,itemPosition(1),&(_config->minimumVoltage), 2800, 5000,100, "Min Volt","V"));
+        addItem(new TunableItem(_tft,itemPosition(2),&(_config->resistor1000), 100, 1500,100, "Wiring ","O"));
         addItem( this);
         items[nbItems-1]->setState(StateSelected) ;   
         _sstate=StateSelecting;
@@ -119,6 +122,11 @@ batScreen *setupScreen::process(int mV,int mA,int currentTime,int leftRight,bool
  */
 void setupScreen::draw()
 {
+    _tft->setTextColor(ILI9341_BLACK,ILI9341_WHITE);  
+    _tft->setCursor(4, 4);   
+    _tft->myDrawString("           SETUP           ");    
+    _tft->setTextColor(ILI9341_WHITE,ILI9341_BLACK);  
+    
     for(int i=0;i<nbItems;i++)
     {
         items[i]->drawItem();

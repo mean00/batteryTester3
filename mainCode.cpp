@@ -15,9 +15,10 @@
 #include "screenBase.h"
 #include "screenIdle.h"
 #include "screenDischarging.h"
-#include "Fonts/FreeMonoBoldOblique24pt7b.h"
-#include "Fonts/FreeMonoBold18pt7b.h"
-#include "Fonts/lcd_bold_18.h"
+
+#include "Fonts/FreeSans24pt7b.h"
+#include "Fonts/FreeSans18pt7b.h"
+#include "Fonts/FreeSans9pt7b.h"
 //#define TEST_DIS 
 
 // ILI9341 is using HW SPI + those pins
@@ -78,11 +79,8 @@ void initTft()
     tft->fillScreen(ILI9341_BLACK);
     tft->setTextColor(ILI9341_WHITE,ILI9341_BLACK);  
     tft->setRotation(3);
-    //tft->setFont(&FreeMonoBoldOblique24pt7b);
-    //tft->setFont(&FreeMonoBold18pt7b);
-    tft->setFont(&LCD_BOLD18pt7b);
-    tft->setTextSize(3);   
-    
+    tft->setFontFamily(&FreeSans9pt7b,&FreeSans18pt7b,&FreeSans24pt7b);
+    tft->setFontSize(ILI9341::MediumFont);
 }
 
 void mySetup() 
