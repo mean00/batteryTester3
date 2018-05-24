@@ -6,7 +6,7 @@
 
 #include "screenInclude.h"
 #include "screenIdle.h"
-#include "backgrounds/li_ion.h"
+#include "backgrounds/li_ion_compressed.h"
 
 #include "voltage.h"
 #include "screenError.h"
@@ -36,6 +36,6 @@ batScreen *idleScreen::process(int mV,int mA,int currentTime,int leftRight,bool 
  */
 void idleScreen::draw()
 {
-    drawBitmap(296,80,10,64,ILI9341_YELLOW,0,li_ion+10);
+    drawBitmap(296,80,10,64,0,ILI9341_YELLOW,li_ion);
     
 }

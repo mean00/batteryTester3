@@ -23,7 +23,7 @@ def printout(value):
         f.write("\n")
 
 if 4!=len(sys.argv):
-    print("convert intput.png output.bin")
+    print("convert intput.png output.bin var_name")
     exit(1)
 f= open(sys.argv[2], 'wt')
 image=Image.open(sys.argv[1])
@@ -59,13 +59,14 @@ for y in range(0,height):
         count=1
         while (x+count<xx) and (current == out[x+count]) and count<255 :
            count+=1
-        x+=count
         if(count >3 or current==0x76):
+            x+=count
             printout(0x76)
             printout(current)
             printout(count)
         else:
             printout(current)
+            x+=1
 #        print(str(x)+":  "+str(current)+"x"+str(count))
 print_footer(f)
 f.close()

@@ -23,6 +23,10 @@ public:
         void  myDrawString(const char *st, bool clearBackground=true);
         void  getBounding(const char *st, int &w, int &h);
         void  setFontSize(FontSize size);
+        //
+        void drawBitmap(int width, int height, int wx, int wy, int fgcolor, int bgcolor, const uint8_t *data);
+        void drawRLEBitmap(int width, int height, int wx, int wy, int fgcolor, int bgcolor, const uint8_t *data);
+        
 protected:
         int   myDrawChar(int x, int y, unsigned char c,  int color, int bg);
 
