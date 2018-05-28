@@ -28,18 +28,27 @@ batScreen *dischargingScreen::goToEnd(EndOfChargeCause c)
     _config->duration=(int)((duration+29.)/60.);
     return new finishedScreen(_config,c);
 }
-
 /**
-
-*/
-dischargingScreen::dischargingScreen(   batConfig *c,int currentMv) : batScreen(c),timer(REFRESH_PERIOD_IN_SEC),smallTimer(AVERAGING_SAMPLE_PERIOD,1)
+ * 
+ * @param currentMv
+ */
+void dischargingScreen::updateTargetCurrent(int currentMv)
 {
-    _config->sumMa=0;
     evaluateTargetAmp(currentMv);
     gateCommand=computeGateCommand(_config->currentDischargeMa);
     originalGateCommand=gateCommand;
     _config->mcp->setVoltage(gateCommand,false);
+}
+
+/**
+
+*/
+dischargingScreen::dischargingScreen(   batConfig *c,int currentMv) : batScreen(c),timer(REFRESH_PERIOD_IN_SEC),smallTimer(AVERAGING_SAMPLE_PERIOD,1),debounceTimer(100,1)
+{
+    _config->sumMa=0;
+    updateTargetCurrent(currentMv);
     sampleIndex=-1;
+    paused=false;
 }
 
 /**
@@ -106,9 +115,47 @@ bool dischargingScreen::adjustGateVoltage(int avgV,int avgA)
  */
 batScreen *dischargingScreen::process(int mV,int mA,int currentTime,int leftRight,bool pressed)
 {
+    // toggle on /off pause mode
+    if(pressed)
+    {
+        if(debounceTimer.elapsedMS()>=200) // xx ms debounce
+        {
+            paused=!paused;
+            if(paused)
+            {
+              // stop gate
+              _config->mcp->setVoltage(0,false);              
+            }else
+            { // Re-enable gate
+              updateTargetCurrent(mV);
+              delay(10);
+            }
+            debounceTimer.reset();
+            draw();
+        }
+    }
+    // Increase/Decrease current
+    if(leftRight)
+    {
+        int a=_config->targetDischargeMa;
+        if(a<1500 && leftRight>0) a+=100;
+        if(a>150 && leftRight<0) a-=100;
+        if(a!=_config->targetDischargeMa)
+        {
+            _config->targetDischargeMa=a;
+            updateTargetCurrent(mV);
+            updateInfo();
+            draw();
+        }
+    }
     if(!smallTimer.elapsed())
         return NULL;
     
+    if(paused)
+    {
+        drawVoltageAndCurrent(mV, mA);
+        return NULL;
+    }
     int avgA,avgV;
     if(!computeAverage(mV,mA,avgV,avgA))
         return NULL;
@@ -123,6 +170,11 @@ batScreen *dischargingScreen::process(int mV,int mA,int currentTime,int leftRigh
          return goToEnd(END_CURRENT_LOW);
     }
 #endif    
+   
+    if(paused)
+    {
+        return NULL;
+    }
     if(avgA<_config->currentDischargeMa/2)
     {
         return goToEnd(END_CURRENT_LOW);
@@ -140,6 +192,9 @@ batScreen *dischargingScreen::process(int mV,int mA,int currentTime,int leftRigh
     {
         return goToEnd(END_CURRENT_HIGH);
     }
+    
+    
+    
     if(!timer.rdv()) return NULL;
     // update sumA
     _config->sumMa+=REFRESH_PERIOD_IN_SEC*avgA;
@@ -179,9 +234,16 @@ void dischargingScreen::updateInfo()
 void dischargingScreen::draw()
 {   
     char buffer[50];
-    _tft->setTextColor(ILI9341_BLACK,ILI9341_WHITE);  
-    _tft->setCursor(4, 4);   
-    _tft->myDrawString("     DISCHARGING         ");    
+    _tft->setCursor(4, 4);  
+    if(!paused)
+    {
+        _tft->setTextColor(ILI9341_BLACK,ILI9341_WHITE);            
+        _tft->myDrawString("     DISCHARGING         ");    
+    }else
+    {
+        _tft->setTextColor(ILI9341_RED,ILI9341_WHITE);            
+        _tft->myDrawString("         PAUSED        ");            
+    }
     _tft->setTextColor(ILI9341_WHITE,ILI9341_BLACK);  
     updateInfo();
 #ifdef DEBUG        
@@ -230,7 +292,7 @@ int     dischargingScreen::computeGateCommand(int amp)
     if(amp<200)
     {
         v=2*v+1440.;
-         v=v*1.28+1525.;
+         //v=v*1.28+1525.;
     }else
     if(amp<1100)
     {

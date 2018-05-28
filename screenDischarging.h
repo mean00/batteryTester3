@@ -23,13 +23,15 @@ protected:
                 int     computeGateCommand(int amp);
                 void    updateInfo();
                 Timer   timer;
-                Timer   smallTimer;
+                Timer   smallTimer,debounceTimer;
                 int     gateCommand;
                 int     originalGateCommand;
                 batScreen *goToEnd(EndOfChargeCause cause); 
                 bool       computeAverage(int mV,int mA,int &avgV, int &avgA);
                 bool       adjustGateVoltage(int avgA,int avgV);
+                void       updateTargetCurrent(int currentMv);
                 int        sampleIndex;
                 int        samplema[AVERAGING_SAMPLE_COUNT];
                 int        samplemv[AVERAGING_SAMPLE_COUNT];
+                bool       paused;
 };
