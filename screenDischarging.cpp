@@ -1,5 +1,5 @@
 /***************************************************
- Battery Tester
+ * Battery Tester
  * GPL v2
  * (c) mean 2018 fixounet@free.fr
  ****************************************************/
@@ -29,7 +29,9 @@ batScreen *dischargingScreen::goToEnd(EndOfChargeCause c)
     return new finishedScreen(_config,c);
 }
 /**
- * 
+ * \fn updateTargetCurrent
+ * \brief Set the gate to have the target current but do not exceed the max power dissipation
+ * That's why we need the voltage
  * @param currentMv
  */
 void dischargingScreen::updateTargetCurrent(int currentMv)
@@ -46,13 +48,14 @@ void dischargingScreen::updateTargetCurrent(int currentMv)
 dischargingScreen::dischargingScreen(   batConfig *c,int currentMv) : batScreen(c),timer(REFRESH_PERIOD_IN_SEC),smallTimer(AVERAGING_SAMPLE_PERIOD,1),debounceTimer(100,1)
 {
     _config->sumMa=0;
-    updateTargetCurrent(currentMv);
     sampleIndex=-1;
-    paused=false;
+    paused=false;    
+    updateTargetCurrent(currentMv);
 }
 
 /**
- * 
+ * \fn computeAverage
+ * \brief average voltage and current to avoid glitches (bump into the desk for example)
  * @param mV
  * @param mA
  * @param avgV
@@ -88,7 +91,8 @@ bool dischargingScreen::computeAverage(int mV,int mA,int &avgV, int &avgA)
     return true;
 }
 /**
- * 
+ * \fn adjustGateVoltage
+ * \brief allow small tuning to gate command to compensate for the approximation given by formula
  * @param avgA
  * @param avgV
  * @return 
@@ -203,7 +207,10 @@ batScreen *dischargingScreen::process(int mV,int mA,int currentTime,int leftRigh
     return NULL;
     
 }
-
+/**
+ * \fn updateInfo
+ * \brief Redraw screen, lightweight version
+ */
 void dischargingScreen::updateInfo()
 {
     int mn,sec,h;
@@ -230,6 +237,8 @@ void dischargingScreen::updateInfo()
 }
 
 /**
+ * \fn draw
+ * \brief complete redraw of background
  */
 void dischargingScreen::draw()
 {   
