@@ -18,19 +18,27 @@ public:
         ~ILI9341();
         
         //--
-        void  setFont(const GFXfont *f);   
+        
         void  setFontFamily(const GFXfont *small, const GFXfont *medium, const GFXfont *big);
-        void  myDrawString(const char *st, bool clearBackground=true);
-        void  getBounding(const char *st, int &w, int &h);
+        void  myDrawString(const char *st, int padd_up_to_n_chars=0);
         void  setFontSize(FontSize size);
         //
         void drawBitmap(int width, int height, int wx, int wy, int fgcolor, int bgcolor, const uint8_t *data);
         void drawRLEBitmap(int width, int height, int wx, int wy, int fgcolor, int bgcolor, const uint8_t *data);
         
-protected:
-        int   myDrawChar(int x, int y, unsigned char c,  int color, int bg);
-
-        const GFXfont    *gfxFont;
-        const GFXfont    *gfxFonts[3];
-
+public:        
+        class FontInfo
+        {
+        public:
+          int               maxHeight;          
+          int               maxWidth;
+          uint16_t         *filler;
+          const GFXfont    *font;        
+        };
+protected:        
+        FontInfo          fontInfo[3];
+        int               myDrawChar(int x, int y, unsigned char c,  int color, int bg,FontInfo &info);
+        int               mySquare(int x, int y, int w, int top, uint16_t *filler);
+        FontInfo          *currentFont;
+        
 };

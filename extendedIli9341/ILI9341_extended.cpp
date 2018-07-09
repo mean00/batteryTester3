@@ -16,7 +16,7 @@
  */
 ILI9341::ILI9341(int8_t _CS, int8_t _DC, int8_t _RST) :Adafruit_ILI9341_STM( _CS,  _DC,  _RST) 
 {
-    gfxFont=NULL;
+    currentFont=NULL;
 }
 /**
  * 
@@ -25,108 +25,50 @@ ILI9341::~ILI9341()
 {
     
 }
-void ILI9341::setFont (const GFXfont *f)
-{
-    gfxFont=f;
-}
 #define pgm_read_dword(addr) (*(const unsigned long *)(addr))
 #define pgm_read_byte(addr) (*(const unsigned char *)(addr))
 #define pgm_read_pointer(addr) ((void *)pgm_read_dword(addr))
-/**
- * 
- * @param x
- * @param y
- * @param c
- * @param color
- * @param bg
- * @return 
- */
-int ILI9341::myDrawChar(int x, int y, unsigned char c,  int color, int bg)
-{
-    c -= gfxFont->first;
-    GFXglyph *glyph  = gfxFont->glyph+c;
-    
-    uint8_t *p= gfxFont->bitmap+glyph->bitmapOffset;
-    int    finalColor;    
-    
-    int  w  = glyph->width;
-    int  h  = glyph->height;
 
-    uint16_t *column=(uint16_t *)alloca(w*2*2);
-    uint16_t *tail=column+w*2;
-    uint16_t *col=column;
-    int  bits = 0, bit = 0;
-    
-    x+= glyph->xOffset;
-    y+= glyph->yOffset;    
-    
-    setAddrWindow(x,y,                  x+w-1, y+h+1);
-    for(int i=w*h-1;i>0;i--)
-    {           
-        if(!bit)
-        {
-            bits= *p++;
-            bit = 0x80;
-        }            
-        if(bits & bit) 
-            finalColor=color;  
-        else
-            finalColor=bg;
-        *(col++)=finalColor;            
-        bit=bit>>1;
-        
-        if(col>=tail)
-        {
-            pushColors(column,w*2,0);
-            col=column;
-        }
-    }
-    int leftOver=(uint32_t )col-(uint32_t)column;
-    pushColors(column,leftOver/2,0);
-    return glyph->xAdvance;
-}
 /**
  * 
  * @param st
  */
- void  ILI9341::myDrawString(const char *st,bool clearBackground)
+ void  ILI9341::myDrawString(const char *st,int padd_up_to_n_chars)
  {
-     if(!gfxFont)
+     if(!currentFont)
          return;
      int l=strlen(st);
-     int w,h;
-     getBounding(st,w,h);
-     if(clearBackground)
-     {        
-        fillRect(cursor_x,cursor_y, w, h, textbgcolor);
+   
+     int lastColumn=0;
+     if(padd_up_to_n_chars)
+     {
+         lastColumn=cursor_x+padd_up_to_n_chars*(currentFont->maxWidth);
      }
      for(int i=0;i<l;i++)
      {
-         int of=myDrawChar(cursor_x,cursor_y+h,st[i],textcolor,textbgcolor);
+         int of=myDrawChar(cursor_x,cursor_y+currentFont->maxHeight,
+                           st[i],
+                           textcolor,textbgcolor,*currentFont);
          cursor_x+=of;
          if(cursor_x>=_width) return;
      }
- }
-/**
- * 
- * @param st
- * @param w
- * @param h
- */
-void  ILI9341::getBounding(const char *st, int &w, int &h)
-{
-     w=0;h=0;
-     int l=strlen(st);
-     for(int i=0;i<l;i++)
+     if(lastColumn && cursor_x<lastColumn)
      {
-            int c=st[i];
-            c -= gfxFont->first;
-            GFXglyph *glyph  = gfxFont->glyph+c;
-            w+=glyph->xAdvance;       
-            if(glyph->height>h)
-                h=glyph->height;
+         for(int i=0;i<2*currentFont->maxWidth;i++)
+             currentFont->filler[i]=textbgcolor;
+         while(1)
+         {
+            int left=lastColumn-cursor_x;
+            if(!left) break;
+            if(left>currentFont->maxWidth) left=currentFont->maxWidth;
+            mySquare(cursor_x,cursor_y,
+                  left, currentFont->maxHeight+1,
+                  currentFont->filler);
+            cursor_x+=left;
+         }
      }
-}
+ }
+
 /**
  * 
  * @param size
@@ -135,12 +77,34 @@ void  ILI9341::setFontSize(FontSize size)
 {
     switch(size)
     {
-        case SmallFont :  gfxFont=gfxFonts[0];break;
+        case SmallFont :  currentFont=fontInfo+0;break;
         default:
-        case MediumFont :  gfxFont=gfxFonts[1];break;
-        case BigFont :  gfxFont=gfxFonts[2];break;
+        case MediumFont :   currentFont=fontInfo+1;break;
+        case BigFont :   currentFont=fontInfo+2;break;
     }    
 }
+/**
+ * \fn checkFont
+ * \brief extract max width/ max height from the font
+ */
+static void checkFont(const GFXfont *font, ILI9341::FontInfo *info)
+{
+    int mW=0,mH=0;
+    int x,y;
+   for(int i=font->first;i<font->last;i++)
+   {
+         GFXglyph *glyph  = font->glyph+i-font->first;
+         x=glyph->xAdvance;
+         y=-glyph->yOffset;
+         if(x>mW) mW=x;         
+         if(y>mH) mH=y;
+   }
+    info->maxHeight=mH + 1;
+    info->maxWidth=mW;
+    info->filler=new uint16_t[mW*2+1];
+    info->font=font;
+}
+
 /**
  * 
  * @param small
@@ -149,9 +113,9 @@ void  ILI9341::setFontSize(FontSize size)
  */
 void  ILI9341::setFontFamily(const GFXfont *small, const GFXfont *medium, const GFXfont *big)
 {
-    gfxFonts[0]=small;
-    gfxFonts[1]=medium;
-    gfxFonts[2]=big;
+    checkFont(small, fontInfo+0);
+    checkFont(medium,fontInfo+1);
+    checkFont(big,   fontInfo+2);
 }
 
 
