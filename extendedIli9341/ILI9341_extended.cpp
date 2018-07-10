@@ -33,17 +33,16 @@ ILI9341::~ILI9341()
  * 
  * @param st
  */
- void  ILI9341::myDrawString(const char *st,int padd_up_to_n_chars)
+ void  ILI9341::myDrawString(const char *st,int padd_up_to_n_pixels)
  {
      if(!currentFont)
          return;
      int l=strlen(st);
    
      int lastColumn=0;
-     if(padd_up_to_n_chars)
-     {
-         lastColumn=cursor_x+padd_up_to_n_chars*(currentFont->maxWidth);
-     }
+     
+     int endX=cursor_x+padd_up_to_n_pixels;
+     
      for(int i=0;i<l;i++)
      {
          int of=myDrawChar(cursor_x,cursor_y+currentFont->maxHeight,
@@ -52,19 +51,21 @@ ILI9341::~ILI9341()
          cursor_x+=of;
          if(cursor_x>=_width) return;
      }
-     if(lastColumn && cursor_x<lastColumn)
+     int leftOver=endX-cursor_x;
+     if(leftOver>0)
      {
          for(int i=0;i<2*currentFont->maxWidth;i++)
              currentFont->filler[i]=textbgcolor;
-         while(1)
+         while(leftOver>0)
          {
-            int left=lastColumn-cursor_x;
-            if(!left) break;
-            if(left>currentFont->maxWidth) left=currentFont->maxWidth;
+             int rnd=leftOver;
+            if(rnd>currentFont->maxWidth) rnd=currentFont->maxWidth;
             mySquare(cursor_x,cursor_y,
-                  left, currentFont->maxHeight+1,
+                  rnd, currentFont->maxHeight+1,
                   currentFont->filler);
-            cursor_x+=left;
+            cursor_x+=rnd;
+            leftOver=endX-cursor_x;
+            
          }
      }
  }

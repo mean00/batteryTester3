@@ -45,6 +45,13 @@ int ILI9341::mySquare(int x, int y, int w, int xheight, uint16_t *filler)
  * @param bg
  * @return 
  */
+
+#define SETCOLOR(x)  for(int i=0;i<infos.maxWidth*2;i++)        column[i]=x; //bg; /
+#if 0
+#define SETCOLORdebug SETCOLOR
+#else 
+#define SETCOLORdebug(...) {}
+#endif
 int ILI9341::myDrawChar(int x, int y, unsigned char c,  int color, int bg,FontInfo &infos)
 {
     c -= infos.font->first;
@@ -57,8 +64,8 @@ int ILI9341::myDrawChar(int x, int y, unsigned char c,  int color, int bg,FontIn
     uint16_t *col=column;
 
     // prepare filler
-    for(int i=0;i<infos.maxWidth*2;i++)
-        column[i]=bg; //ILI9341_RED; // bg
+    SETCOLOR(bg);
+    SETCOLORdebug(ILI9341_BLUE);
     
     // Special case, space, it has yOffsset > 0
     if(infos.font->first+c==' ')
@@ -73,11 +80,12 @@ int ILI9341::myDrawChar(int x, int y, unsigned char c,  int color, int bg,FontIn
     
     // top & bottom
     int top=infos.maxHeight+glyph->yOffset;
-    mySquare(x,y-infos.maxHeight,infos.maxWidth,top,column);
+    mySquare(x,y-infos.maxHeight,glyph->xAdvance,top-1,column);
 
     int bottom=-glyph->yOffset-h;
-    mySquare(x,y-bottom,infos.maxWidth,bottom+1,column);      
+    mySquare(x,y-bottom,glyph->xAdvance,bottom+2,column);      
     
+    SETCOLOR(ILI9341_GREEN);
 
     y+= glyph->yOffset;   
     

@@ -20,7 +20,7 @@ public:
         //--
         
         void  setFontFamily(const GFXfont *small, const GFXfont *medium, const GFXfont *big);
-        void  myDrawString(const char *st, int padd_up_to_n_chars=0);
+        void  myDrawString(const char *st, int padd_up_to_n_pixels=0);
         void  setFontSize(FontSize size);
         //
         void drawBitmap(int width, int height, int wx, int wy, int fgcolor, int bgcolor, const uint8_t *data);
