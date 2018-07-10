@@ -26,7 +26,7 @@ void myPrettyPrint(ILI9341 *_tft,int val,int x,int y,const char *unit)
      }
      
     _tft->setCursor(x, y);   
-    _tft->myDrawString(printBuffer,3);
+    _tft->myDrawString(printBuffer);
 }
 /**
  */
