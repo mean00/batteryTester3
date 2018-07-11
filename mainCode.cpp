@@ -41,7 +41,7 @@ batScreen            *currentScreen=NULL;
 
 int                 gateVoltage=0;
 batConfig           config={
-    800, // 0.8 Ohm resistor
+    1100, // 1.5 Ohm  wires resistance
     0, //uint32_t duration;
     0, // float    sumMa;
     0, //int     currentDischargeMa;

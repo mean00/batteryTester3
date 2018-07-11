@@ -40,6 +40,7 @@ void dischargingScreen::updateTargetCurrent(int currentMv)
     gateCommand=computeGateCommand(_config->currentDischargeMa);
     originalGateCommand=gateCommand;
     _config->mcp->setVoltage(gateCommand,false);
+    resyncing=3; // wait a bit for stuff to stabilize
 }
 
 /**
@@ -51,6 +52,7 @@ dischargingScreen::dischargingScreen(   batConfig *c,int currentMv) : batScreen(
     sampleIndex=-1;
     paused=false;    
     updateTargetCurrent(currentMv);
+    resyncing=0;
 }
 
 /**
@@ -66,12 +68,7 @@ bool dischargingScreen::computeAverage(int mV,int mA,int &avgV, int &avgA)
 {
     if(-1==sampleIndex) // first sample
     {
-        for(int i=0;i<AVERAGING_SAMPLE_COUNT;i++)
-        {
-            samplema[i]=mA;
-            samplemv[i]=mV;
-        }
-        sampleIndex=0;
+        resetAverage(mV,mA);
     }
     samplema[sampleIndex]=mA;
     samplemv[sampleIndex]=mV;
@@ -90,6 +87,25 @@ bool dischargingScreen::computeAverage(int mV,int mA,int &avgV, int &avgA)
     avgV/=AVERAGING_SAMPLE_COUNT;
     return true;
 }
+
+/**
+ * \fn resetAverage
+ * \brief purge history
+ * @param mv
+ * @param mA
+ * @return 
+ */
+bool dischargingScreen::resetAverage(int mV, int mA)
+{
+      for(int i=0;i<AVERAGING_SAMPLE_COUNT;i++)
+        {
+            samplema[i]=mA;
+            samplemv[i]=mV;
+        }
+        sampleIndex=0;
+        return true;
+}
+
 /**
  * \fn adjustGateVoltage
  * \brief allow small tuning to gate command to compensate for the approximation given by formula
@@ -116,6 +132,29 @@ bool dischargingScreen::adjustGateVoltage(int avgV,int avgA)
     return true;
 }
 /**
+ * 
+ * @param leftRight
+ * @return 
+ */
+bool dischargingScreen::LeftOrRigh(int leftRight, int mV)
+{
+     // Increase/Decrease current
+    if(leftRight)
+    {
+        int a=_config->targetDischargeMa;
+        if(a<1500 && leftRight>0) a+=100;
+        if(a>150 && leftRight<0) a-=100;
+        if(a!=_config->targetDischargeMa)
+        {
+            _config->targetDischargeMa=a;
+            updateTargetCurrent(mV);
+            updateInfo();
+            draw();
+        }
+    }
+    return true;
+}
+/**
  */
 batScreen *dischargingScreen::process(int mV,int mA,int currentTime,int leftRight,bool pressed)
 {
@@ -138,20 +177,34 @@ batScreen *dischargingScreen::process(int mV,int mA,int currentTime,int leftRigh
             draw();
         }
     }
-    // Increase/Decrease current
+    bool endHere=false;
     if(leftRight)
     {
-        int a=_config->targetDischargeMa;
-        if(a<1500 && leftRight>0) a+=100;
-        if(a>150 && leftRight<0) a-=100;
-        if(a!=_config->targetDischargeMa)
-        {
-            _config->targetDischargeMa=a;
-            updateTargetCurrent(mV);
-            updateInfo();
-            draw();
-        }
+       LeftOrRigh(leftRight,mV);
+       endHere=true;
     }
+    // Hold Off to let things stabilize
+    if(resyncing)
+    {
+        resyncing--;      
+        if(!resyncing)
+        {
+            resetAverage(mV,mA);
+        }
+        endHere=true;
+    }
+    if(endHere)
+        return NULL;
+  
+    // compute average A & V
+    int avgA,avgV;
+    if(!computeAverage(mV,mA,avgV,avgA))
+        return NULL;
+    // and take wiring into account
+    float vDrop=(float)avgA*(float)_config->resistor1000;
+      vDrop/=1000.;
+    avgV=avgV+vDrop;    
+   
     if(!smallTimer.elapsed())
         return NULL;
     
@@ -160,12 +213,10 @@ batScreen *dischargingScreen::process(int mV,int mA,int currentTime,int leftRigh
         drawVoltageAndCurrent(mV, mA);
         return NULL;
     }
-    int avgA,avgV;
-    if(!computeAverage(mV,mA,avgV,avgA))
-        return NULL;
+   
+    // Small adjustment to gate command
 
-    drawVoltageAndCurrent(avgV, avgA);
-    
+    drawVoltageAndCurrent(avgV, avgA);    
     adjustGateVoltage(avgV,avgA);
     
 #ifdef DEBUG
@@ -184,11 +235,9 @@ batScreen *dischargingScreen::process(int mV,int mA,int currentTime,int leftRigh
         return goToEnd(END_CURRENT_LOW);
     }
     // Take the wiring drop into account
-    float vDrop=(float)avgA*(float)_config->resistor1000;
-    vDrop/=1000.;
-    float voltage=avgV+vDrop;
+  
     
-    if(voltage<_config->minimumVoltage)
+    if(avgV<_config->minimumVoltage)
     {
         return goToEnd(END_VOLTAGE_LOW);
     }

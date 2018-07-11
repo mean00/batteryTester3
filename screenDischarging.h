@@ -22,6 +22,7 @@ protected:
                 bool    evaluateTargetAmp(int currentV);
                 int     computeGateCommand(int amp);
                 void    updateInfo();
+                bool    resetAverage(int mv, int mA);
                 Timer   timer;
                 Timer   smallTimer,debounceTimer;
                 int     gateCommand;
@@ -30,8 +31,10 @@ protected:
                 bool       computeAverage(int mV,int mA,int &avgV, int &avgA);
                 bool       adjustGateVoltage(int avgA,int avgV);
                 void       updateTargetCurrent(int currentMv);
+                bool       LeftOrRigh(int leftRight,int mv);
                 int        sampleIndex;
                 int        samplema[AVERAGING_SAMPLE_COUNT];
                 int        samplemv[AVERAGING_SAMPLE_COUNT];
                 bool       paused;
+                int        resyncing; // holdoff value
 };
