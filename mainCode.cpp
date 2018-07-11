@@ -40,8 +40,22 @@ PushButton           *pushButton=NULL;
 batScreen            *currentScreen=NULL;
 
 int                 gateVoltage=0;
-batConfig           config={
-    1100, // 1.5 Ohm  wires resistance
+
+
+/* int     resistor1000; // 1000x the wiring resistor
+    uint32_t duration;
+    float    sumMa;
+    int     currentDischargeMa;
+    int     targetDischargeMa;
+    int     minimumVoltage;
+    int     batteryDrop;
+    ILI9341  *tft;
+    Adafruit_MCP4725 *mcp;
+ */
+
+batConfig           config=
+{
+    0, // Wire resistor, computed automatically
     0, //uint32_t duration;
     0, // float    sumMa;
     0, //int     currentDischargeMa;
@@ -51,7 +65,9 @@ batConfig           config={
     500, // int     targetDischargeMa;
 #endif
     3000, //     minimumVoltage;
-    NULL  //MCP
+    50,   // Battery drop when going to 500mA
+    NULL,  // TFT
+    NULL    
 };
 #if 1
 #define BootSequence(x,y) {Serial.println(x);  tft->setCursor(10, y*2);       tft->println(x);delay(10);}

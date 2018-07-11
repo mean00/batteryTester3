@@ -18,6 +18,7 @@ typedef struct batConfig
     int     currentDischargeMa;
     int     targetDischargeMa;
     int     minimumVoltage;
+    int     batteryDrop;
     ILI9341  *tft;
     Adafruit_MCP4725 *mcp;
 };
