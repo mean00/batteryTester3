@@ -310,10 +310,15 @@ void dischargingScreen::draw()
     sprintf(buffer,"Target = %d mA",_config->currentDischargeMa);
     _tft->myDrawString(buffer);
     _tft->setCursor(18, 160);       
-
     sprintf(buffer,"Gate  = %d ",gateCommand);
+   _tft->myDrawString(buffer);   
+   _tft->setCursor(160, 160+14*1);   
+   _tft->setFontSize(ILI9341::SmallFont);
+   sprintf(buffer,"Wires = %d mO",_config->resistor1000);
    _tft->myDrawString(buffer);
+   
    _tft->setFontSize(ILI9341::MediumFont);
+
 #endif
 }
 /**

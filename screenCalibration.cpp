@@ -55,7 +55,7 @@ void calibrationScreen::calibrate()
     float r=(deltaVoltage)/deltaAmp;
     r=r*1000;
     _config->resistor1000=r;
-#if 1
+#if 0
     _config->tft->drawNumber(_config->resistor1000,50,120,4);
     _config->tft->drawNumber((int)deltaVoltage,50,50,4);
     _config->tft->drawNumber((int)deltaAmp,50,70,4);
