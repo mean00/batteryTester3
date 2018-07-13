@@ -27,11 +27,10 @@ int ILI9341::mySquare(int x, int y, int w, int xheight, uint16_t *filler)
         if(xheight<=0)
             return 0;
     }
+    setAddrWindow(x,y,                  x+w-1, y+xheight);
     for(int row=0;row<xheight;row++)
     {
-         setAddrWindow(x,y,                  x+w-1, y+1);
          pushColors(filler,w,0);
-         y++;
     }
     return 0;
 }
@@ -78,14 +77,14 @@ int ILI9341::myDrawChar(int x, int y, unsigned char c,  int color, int bg,FontIn
          return adv;
     }
     
-    
+
     // top & bottom
     int top=infos.maxHeight+glyph->yOffset;
     mySquare(x,y-infos.maxHeight,glyph->xAdvance,top,column);
 
     int bottom=-glyph->yOffset-h;
     mySquare(x,y-bottom,glyph->xAdvance,bottom+2,column);      
-    
+
     SETCOLOR(ILI9341_GREEN);
 
     y+= glyph->yOffset;   
