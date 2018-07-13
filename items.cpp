@@ -10,10 +10,11 @@
 #include "screenSetup_internal.h"
 
 #define ITEM_HEIGHT_PIXEL 40
+#define ITEM_HEIGHT_OFFSET 38
 
 int itemPosition(int x)
 {
-    return 36+x*ITEM_HEIGHT_PIXEL;
+    return ITEM_HEIGHT_OFFSET+x*ITEM_HEIGHT_PIXEL;
 }
 
 
@@ -77,7 +78,7 @@ void Item::drawBoundingRectangle()
                      break;
       }
 #define ITEM_COLUMN (160+24)
-      myBoundPrettyPrint(item_tft,*_value,160+24,_line,_unit,item_tft->width()-ITEM_COLUMN-6);
+      myBoundPrettyPrint(item_tft,*_value,160+24,_line,_unit,item_tft->width()-ITEM_COLUMN-11);
       item_tft->setTextColor(ILI9341_WHITE,ILI9341_BLACK);  
   }
  

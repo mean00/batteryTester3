@@ -61,7 +61,7 @@ ILI9341::~ILI9341()
              int rnd=leftOver;
             if(rnd>currentFont->maxWidth) rnd=currentFont->maxWidth;
             mySquare(cursor_x,cursor_y,
-                  rnd, currentFont->maxHeight+1,
+                  rnd, currentFont->maxHeight+2,
                   currentFont->filler);
             cursor_x+=rnd;
             leftOver=endX-cursor_x;

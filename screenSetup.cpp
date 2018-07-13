@@ -122,9 +122,7 @@ batScreen *setupScreen::process(int mV,int mA,int currentTime,int leftRight,bool
  */
 void setupScreen::draw()
 {
-    _tft->setTextColor(ILI9341_BLACK,ILI9341_WHITE);  
-    _tft->setCursor(4, 4);   
-    _tft->myDrawString("           SETUP           ");    
+     setTitle(ILI9341_BLACK,ILI9341_WHITE,4, "           SETUP           ");
     _tft->setTextColor(ILI9341_WHITE,ILI9341_BLACK);  
     
     for(int i=0;i<nbItems;i++)

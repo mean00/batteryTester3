@@ -73,14 +73,15 @@ int ILI9341::myDrawChar(int x, int y, unsigned char c,  int color, int bg,FontIn
         int adv=glyph->xAdvance;
         int top=infos.maxHeight;
          mySquare(x,y-top,
-                  infos.maxWidth,top+1,column);
+                  infos.maxWidth,
+                  top+2,column);
          return adv;
     }
     
     
     // top & bottom
     int top=infos.maxHeight+glyph->yOffset;
-    mySquare(x,y-infos.maxHeight,glyph->xAdvance,top-1,column);
+    mySquare(x,y-infos.maxHeight,glyph->xAdvance,top,column);
 
     int bottom=-glyph->yOffset-h;
     mySquare(x,y-bottom,glyph->xAdvance,bottom+2,column);      

@@ -48,6 +48,7 @@ protected:
                 void drawBackground();
                 void drawBitmap(int width, int height, int wx, int wy, int fgcolor, int bgcolor, const uint8_t *data);
                 void disableCurrent();
+                void setTitle(int color, int bgColor,int x, const char *title);
 protected:
         batConfig *_config;
         ILI9341   *_tft;

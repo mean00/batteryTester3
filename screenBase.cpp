@@ -95,6 +95,13 @@ void batScreen::disableCurrent()
 {
     _config->mcp->setVoltage(0,false);
 }
-
+/**
+ */
+void batScreen::setTitle(int color, int bgColor,int x, const char *title)
+{
+    _tft->setTextColor(color,bgColor);  
+    _tft->setCursor(x, 0);   
+    _tft->myDrawString(title);        
+}
 
 // EOF

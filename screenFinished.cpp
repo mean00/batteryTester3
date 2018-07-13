@@ -41,9 +41,7 @@ void finishedScreen::draw()
     }
     
     _tft->fillScreen(color);
-    _tft->setTextColor(color,ILI9341_BLACK);
-    _tft->setCursor(4, 4);
-    _tft->myDrawString("     COMPLETED         ");
+      setTitle(ILI9341_BLACK,color,4, "     COMPLETED         ");
     _tft->setTextColor(ILI9341_BLACK,color);
     
     

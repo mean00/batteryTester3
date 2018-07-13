@@ -291,16 +291,13 @@ void dischargingScreen::updateInfo()
  */
 void dischargingScreen::draw()
 {   
-    char buffer[50];
-    _tft->setCursor(4, 4);  
+    char buffer[50];    
     if(!paused)
     {
-        _tft->setTextColor(ILI9341_BLACK,ILI9341_WHITE);            
-        _tft->myDrawString("     DISCHARGING         ");    
+        setTitle(ILI9341_BLACK,ILI9341_WHITE,4, "     DISCHARGING         ");
     }else
     {
-        _tft->setTextColor(ILI9341_RED,ILI9341_WHITE);            
-        _tft->myDrawString("         PAUSED        ");            
+        setTitle(ILI9341_RED,ILI9341_WHITE,4, "         PAUSED        ");
     }
     _tft->setTextColor(ILI9341_WHITE,ILI9341_BLACK);  
     updateInfo();

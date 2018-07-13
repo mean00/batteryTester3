@@ -112,9 +112,7 @@ batScreen *calibrationScreen::process(int mV,int mA,int currentTime,int leftRigh
  */
 void calibrationScreen::draw()
 {
-    _tft->setTextColor(ILI9341_BLACK,ILI9341_WHITE);  
-    _tft->setCursor(4, 4);   
-    _tft->myDrawString("    CALIBRATION      ");    
+    setTitle(ILI9341_BLACK,ILI9341_WHITE,4, "    CALIBRATION      ");
     _tft->setTextColor(ILI9341_WHITE,ILI9341_BLACK);  
     
 }
