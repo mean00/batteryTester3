@@ -9,6 +9,12 @@
 #include "Adafruit_MCP4725.h"
 
 /**
+ * 
+ * @param _tft
+ * @param val
+ * @param x
+ * @param y
+ * @param unit
  */
 void myPrettyPrint(ILI9341 *_tft,int val,int x,int y,const char *unit)
 {
@@ -27,6 +33,33 @@ void myPrettyPrint(ILI9341 *_tft,int val,int x,int y,const char *unit)
      
     _tft->setCursor(x, y);   
     _tft->myDrawString(printBuffer);
+}
+/**
+ * \fn myBoundPrettyPrint
+ * @param _tft
+ * @param val
+ * @param x
+ * @param y
+ * @param unit
+ * @param maxWidth
+ */
+void myBoundPrettyPrint(ILI9341 *_tft,int val,int x,int y,const char *unit, int maxWidth)
+{
+     char printBuffer[256];
+     char ext[10];
+     
+     if(val<1000)
+     {
+         sprintf(printBuffer,"%3d m%c",val,unit[0]);
+     }else
+     {
+         float v=val;
+         v/=1000.;
+         sprintf(printBuffer,"%1.2f %c",v,unit[0]);
+     }
+     
+    _tft->setCursor(x, y);   
+    _tft->myDrawString(printBuffer,maxWidth);
 }
 /**
  */

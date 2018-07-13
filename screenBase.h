@@ -54,7 +54,7 @@ protected:
 };
 
 void myPrettyPrint(ILI9341 *tft,int val,int x,int y,const char *unit);
-
+void myBoundPrettyPrint(ILI9341 *_tft,int val,int x,int y,const char *unit, int maxWidth);
 
 batScreen  *spawnSetupScreen(   batConfig *c);
 // EOF

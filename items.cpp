@@ -9,9 +9,11 @@
 #include "screenSetup.h"
 #include "screenSetup_internal.h"
 
+#define ITEM_HEIGHT_PIXEL 40
+
 int itemPosition(int x)
 {
-    return 36+x*36;
+    return 36+x*ITEM_HEIGHT_PIXEL;
 }
 
 
@@ -21,7 +23,7 @@ void Item::drawBoundingRectangle()
       if(_state==StateSelected) color=ILI9341_WHITE;
 #define BORDER 4
       item_tft->drawRoundRect(16-BORDER,_line-BORDER,
-                          320-12*2,32+BORDER,
+                          320-12*2,ITEM_HEIGHT_PIXEL-2+BORDER,
                               4,color);
       
 }
@@ -74,7 +76,8 @@ void Item::drawBoundingRectangle()
                      item_tft->setTextColor(ILI9341_BLACK,ILI9341_WHITE);  
                      break;
       }
-      myPrettyPrint(item_tft,*_value,160+24,_line,_unit);
+#define ITEM_COLUMN (160+24)
+      myBoundPrettyPrint(item_tft,*_value,160+24,_line,_unit,item_tft->width()-ITEM_COLUMN-6);
       item_tft->setTextColor(ILI9341_WHITE,ILI9341_BLACK);  
   }
  
