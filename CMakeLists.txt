@@ -16,7 +16,7 @@ Project("BatteryTester" C CXX ASM)
     set(ARDUINO_CPU           STM32F103C8)
     SET(ARDUINO_UPLOAD_METHOD BMP) # Use blackmagic link, if you comment it out you'll use DFU => 8kB flash
 
-ADD_DEFINITIONS("-g3")
+ADD_DEFINITIONS("-g3 -Dtextsize=textsize_x") # Hack for Adafruit_gfx_as
 
 #print_board_list()
 set(ARDUINO_DEFAULT_PORT ttyACM0) # Default Port, when not specified
