@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "Adafruit_GFX_AS.h" //
+#include "Adafruit_GFX.h" //
 #include "Adafruit_ILI9341_STM.h" //
 #include "gfxfont.h"
 /**

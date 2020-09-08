@@ -8,7 +8,7 @@
 #include "voltage.h"
 #include "screenCalibration.h"
 #include "ad_timer.h"
-#include "Adafruit_MCP4725.h"
+#include "simplerMCP4725.h"
 
 extern batScreen *spawnNewDischarging(batConfig *c, int mV);
 
@@ -26,7 +26,7 @@ calibrationScreen::calibrationScreen(batConfig *c) : batScreen(c),waitTimer(1)
 {
     
     state=Calibration_init;
-    _config->mcp->setVoltage(0,false); 
+    _config->mcp->setVoltage(0); 
 
     voltage1=voltage2=0;
     amp1=amp2=0;
@@ -75,7 +75,7 @@ batScreen *calibrationScreen::process(int mV,int mA,int currentTime,int leftRigh
     if(state==Calibration_init)
     {        
         // set gate to 200 mA
-        _config->mcp->setVoltage(getCommand(CALIBRATION_AMP1),false); 
+        _config->mcp->setVoltage(getCommand(CALIBRATION_AMP1)); 
         waitTimer.reset();
         drawVoltageAndCurrent(mV,mA);
         state=Calibration_point1;
@@ -90,7 +90,7 @@ batScreen *calibrationScreen::process(int mV,int mA,int currentTime,int leftRigh
             voltage1=mV;
             amp1=mA;
             waitTimer.reset();
-            _config->mcp->setVoltage(getCommand(CALIBRATION_AMP2),false); 
+            _config->mcp->setVoltage(getCommand(CALIBRATION_AMP2)); 
              state=Calibration_point2;
              return NULL;
              break;
@@ -98,7 +98,7 @@ batScreen *calibrationScreen::process(int mV,int mA,int currentTime,int leftRigh
             voltage2=mV;
             amp2=mA;            
             // set gate to 0
-            _config->mcp->setVoltage(0,false); 
+            _config->mcp->setVoltage(0); 
             calibrate();
             delay(100);
             return  spawnNewDischarging(_config,voltage1);

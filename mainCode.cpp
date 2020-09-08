@@ -7,10 +7,9 @@
 #include <Wire.h>
 #include "SPI.h"
 #include "ILI9341_extended.h"
-#include "Rotary.h"
 #include "wav_irotary.h"
 #include "simpler_INA219.h"
-#include "Adafruit_MCP4725.h"
+#include "simplerMCP4725.h"
 #include "push_button.h"
 #include "screenBase.h"
 #include "screenIdle.h"
@@ -19,6 +18,7 @@
 #include "Fonts/FreeSans24pt7b.h"
 #include "Fonts/FreeSans18pt7b.h"
 #include "Fonts/FreeSans9pt7b.h"
+#include "RotaryEncoder/wav_irotary.h"
 //#define TEST_DIS 
 
 // ILI9341 is using HW SPI + those pins
@@ -35,8 +35,7 @@
 ILI9341              *tft=NULL;
 WavRotary            *rotary=NULL;
 simpler_INA219       *ina219=NULL;
-Adafruit_MCP4725     *mcp4725=NULL;
-PushButton           *pushButton=NULL;
+myMCP4725            *mcp4725=NULL;
 batScreen            *currentScreen=NULL;
 
 int                 gateVoltage=0;
@@ -50,7 +49,7 @@ int                 gateVoltage=0;
     int     minimumVoltage;
     int     batteryDrop;
     ILI9341  *tft;
-    Adafruit_MCP4725 *mcp;
+    myMCP4725 *mcp;
  */
 
 batConfig           config=
@@ -76,6 +75,7 @@ batConfig           config=
 #endif
 /*
  */
+uint8_t ucHeap[ configTOTAL_HEAP_SIZE ];
 
 void initTft()
 {
@@ -115,18 +115,15 @@ void mySetup()
   
    //Wire.begin();
   BootSequence("MCP4725",30);
-  mcp4725=new Adafruit_MCP4725();
-  mcp4725->begin(MCP7245_I2C_ADR);
-  mcp4725->setVoltage(0,false); 
+  mcp4725=new myMCP4725(Wire,MCP7245_I2C_ADR);
+  mcp4725->setVoltage(0); 
   config.mcp=mcp4725;
   config.tft=tft;
   
   
-  pushButton=new PushButton(PA0);
-  
   BootSequence("Rotary",10);
   Serial.println("Rotary"); 
-  rotary=new WavRotary(PA2,PA1);
+  rotary=new WavRotary(PA2,PA1,PA0);
 #ifndef DISABLE_INA219  
   BootSequence("Ina219",20);
   ina219=new simpler_INA219(); //INA219_I2C_ADR,100); // 100 mOhm
@@ -155,11 +152,22 @@ void mySetup()
 void myLoop(void) 
 {
     static int currentTime=0;
-    int count=rotary->getCount();
-    bool pressed=pushButton->pressed();
     float voltage=ina219->getBusVoltage_V();
-    int current=ina219->getCurrent_mA();
+    int current=ina219->getCurrent_mA();    
+    int evt=rotary->readEvent();
     
+    bool pressed=false;
+    int count=0;
+    
+    if(evt & WavRotary::ROTARY_CHANGE)
+    {
+        count=rotary->getCount();
+    }
+    if(evt & WavRotary::SHORT_PRESS)
+    {
+        pressed=true;
+    }
+
     
     batScreen *s=currentScreen->process(voltage*1000.,current,currentTime,count,pressed); //s(int mV,int mA,int currentTime,int leftRight,bool pressed)=0;
     // switch to new screen

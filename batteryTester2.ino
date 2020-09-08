@@ -7,11 +7,9 @@
 
 #include <Wire.h>
 #include "SPI.h"
-#include "Adafruit_ILI9341_STM.h"
-#include "Rotary.h"
 #include "wav_irotary.h"
 #include "simpler_INA219.h"
-#include "Adafruit_MCP4725.h"
+#include "simplerMCP4725.h"
 
 extern void mySetup();
 extern void myLoop();

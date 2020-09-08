@@ -9,7 +9,7 @@
 /**
 
 */
-class Adafruit_MCP4725;
+class myMCP4725;
 typedef struct batConfig
 {
     int     resistor1000; // 1000x the wiring resistor
@@ -20,7 +20,7 @@ typedef struct batConfig
     int     minimumVoltage;
     int     batteryDrop;
     ILI9341  *tft;
-    Adafruit_MCP4725 *mcp;
+    myMCP4725 *mcp;
 };
 /**
 

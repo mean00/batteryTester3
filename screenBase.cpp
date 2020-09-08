@@ -6,7 +6,7 @@
 
 #include "screenInclude.h"
 #include "backgrounds/background_compressed.h"
-#include "Adafruit_MCP4725.h"
+#include "simplerMCP4725.h"
 
 /**
  * 
@@ -93,7 +93,7 @@ void batScreen::drawVoltageAndCurrent(int mV, int mA)
 
 void batScreen::disableCurrent()
 {
-    _config->mcp->setVoltage(0,false);
+    _config->mcp->setVoltage(0);
 }
 /**
  */

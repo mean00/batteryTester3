@@ -7,3 +7,15 @@
 [submodule "Arduino_STM32"]
 	path = Arduino_STM32
 	url = https://github.com/rogerclarkmelbourne/Arduino_STM32
+[submodule "Adafruit_GFX"]
+	path = Adafruit_GFX
+	url = https://github.com/adafruit/Adafruit-GFX-Library.git
+[submodule "simpler_INA219"]
+	path = simpler_INA219
+	url = git@github.com:mean00/simpler_INA219.git
+[submodule "RotaryEncoder"]
+	path = RotaryEncoder
+	url = https://github.com/mean00/RotaryEncoder_FreeRTOS.git
+[submodule "simplerMCP4725"]
+	path = simplerMCP4725
+	url = git@github.com:mean00/simplerMCP4725.git

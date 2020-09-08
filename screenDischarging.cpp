@@ -8,7 +8,7 @@
 #include "screenDischarging.h"
 #include "screenError.h"
 #include "voltage.h"
-#include "Adafruit_MCP4725.h"
+#include "simplerMCP4725.h"
 
 #define CURRENT_ERROR_MARGIN   2 // Error margin in mA
 #define REFRESH_PERIOD_IN_SEC 5 // Refresh mA count every x sec
@@ -39,7 +39,7 @@ void dischargingScreen::updateTargetCurrent(int currentMv)
     evaluateTargetAmp(currentMv);
     gateCommand=computeGateCommand(_config->currentDischargeMa);
     originalGateCommand=gateCommand;
-    _config->mcp->setVoltage(gateCommand,false);
+    _config->mcp->setVoltage(gateCommand);
     resyncing=3; // wait a bit for stuff to stabilize
 }
 
@@ -128,7 +128,7 @@ bool dischargingScreen::adjustGateVoltage(int avgV,int avgA)
     if( er>5. ) // Dont exceed 5%
         return false;    
     gateCommand+=inc;
-    _config->mcp->setVoltage(gateCommand,false);
+    _config->mcp->setVoltage(gateCommand);
     return true;
 }
 /**
@@ -167,7 +167,7 @@ batScreen *dischargingScreen::process(int mV,int mA,int currentTime,int leftRigh
             if(paused)
             {
               // stop gate
-              _config->mcp->setVoltage(0,false);              
+              _config->mcp->setVoltage(0);              
             }else
             { // Re-enable gate
               updateTargetCurrent(mV);
