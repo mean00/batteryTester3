@@ -202,6 +202,6 @@ void myLoop(void)
         currentScreen=s;
         s->draw();
     }
-    xDelay(10);
+    xDelay(50);
 }
 //--
