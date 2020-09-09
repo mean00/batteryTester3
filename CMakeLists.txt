@@ -10,11 +10,11 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 SET(CMAKE_TOOLCHAIN_FILE cmake/ArduinoToolchain.cmake)
 Project("BatteryTester" C CXX ASM)
 
-    SET(EXTENSION             "_STM32F103")
-    set(ARDUINO_LD_FILE      jtag)      # Use that instead of default jtag-c8 to get the full 128 kB
-    set(ARDUINO_DEFAULT_BOARD genericSTM32F103C)        # Default Board ID, when not specified
-    set(ARDUINO_CPU           STM32F103C8)
-    SET(ARDUINO_UPLOAD_METHOD BMP) # Use blackmagic link, if you comment it out you'll use DFU => 8kB flash
+SET(EXTENSION             "_STM32F103")
+set(ARDUINO_LD_FILE      jtag)      # Use that instead of default jtag-c8 to get the full 128 kB
+set(ARDUINO_DEFAULT_BOARD genericSTM32F103C)        # Default Board ID, when not specified
+set(ARDUINO_CPU           STM32F103C8)
+SET(ARDUINO_UPLOAD_METHOD BMP) # Use blackmagic link, if you comment it out you'll use DFU => 8kB flash
 
 ADD_DEFINITIONS("-g3 -Dtextsize=textsize_x") # Hack for Adafruit_gfx_as
 

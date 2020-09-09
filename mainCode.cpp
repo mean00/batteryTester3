@@ -69,13 +69,25 @@ batConfig           config=
     NULL    
 };
 #if 1
-#define BootSequence(x,y) {Serial.println(x);  tft->setCursor(10, y*2);       tft->println(x);delay(10);}
+#define BootSequence(x,y) {Logger(x);  tft->setCursor(10, y*2);       tft->println(x);xDelay(10);}
 #else
-#define BootSequence(x,y) {Serial.println(x); ;delay(10);}
+#define BootSequence(x,y) {Logger(x); ;xDelay(10);}
 #endif
 /*
  */
 uint8_t ucHeap[ configTOTAL_HEAP_SIZE ];
+void myLoop(void) ;
+class MainTask : public xTask
+{
+public:
+            MainTask() : xTask("MainTask",10,400)
+            {
+
+            }
+            void    run(void);
+protected:
+};
+
 
 void initTft()
 {
@@ -98,10 +110,13 @@ void initTft()
     tft->setFontFamily(&FreeSans9pt7b,&FreeSans18pt7b,&FreeSans24pt7b);
     tft->setFontSize(ILI9341::MediumFont);
 }
-
+void Logger(const char *st)
+{
+     //Serial1.println(st); 
+}
 void mySetup() 
 {
-  Serial.println("Init"); 
+  Logger("Init"); 
   
   SPI.begin();
   SPI.setBitOrder(MSBFIRST); // Set the SPI bit order
@@ -110,10 +125,22 @@ void mySetup()
   
   delay(100);
   
-  Serial.println("TFT"); 
+  Logger("TFT"); 
   initTft();   
   
+  // Start freeRTOS
+  MainTask *mainTask=new MainTask();
+  vTaskStartScheduler();        
+}
+/**
+ * 
+ */
+void    MainTask::run(void)
+{
+  
    //Wire.begin();
+  Serial.end();
+  Serial1.begin(38400);
   BootSequence("MCP4725",30);
   mcp4725=new myMCP4725(Wire,MCP7245_I2C_ADR);
   mcp4725->setVoltage(0); 
@@ -122,7 +149,6 @@ void mySetup()
   
   
   BootSequence("Rotary",10);
-  Serial.println("Rotary"); 
   rotary=new WavRotary(PA2,PA1,PA0);
 #ifndef DISABLE_INA219  
   BootSequence("Ina219",20);
@@ -145,6 +171,11 @@ void mySetup()
   currentScreen =new idleScreen(&config);
 #endif    
   currentScreen->draw();
+  
+  while(1)
+    {
+        myLoop();
+    }  
 }
 
 /**
@@ -178,7 +209,6 @@ void myLoop(void)
         s->draw();
     }
 
-    delay(10);
-    Serial.println("*"); 
+    xDelay(10);
 }
 //--
