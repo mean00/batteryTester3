@@ -144,6 +144,7 @@ void    MainTask::run(void)
   
   BootSequence("Rotary",10);
   rotary=new WavRotary(PA2,PA1,PA0);
+  rotary->start();
 #ifndef DISABLE_INA219  
   BootSequence("Ina219",20);
   ina219=new simpler_INA219(); //INA219_I2C_ADR,100); // 100 mOhm
