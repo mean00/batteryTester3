@@ -32,27 +32,14 @@
 
 //
 // Our globals
+
 ILI9341              *tft=NULL;
 WavRotary            *rotary=NULL;
 simpler_INA219       *ina219=NULL;
 myMCP4725            *mcp4725=NULL;
 batScreen            *currentScreen=NULL;
-
-int                 gateVoltage=0;
-
-
-/* int     resistor1000; // 1000x the wiring resistor
-    uint32_t duration;
-    float    sumMa;
-    int     currentDischargeMa;
-    int     targetDischargeMa;
-    int     minimumVoltage;
-    int     batteryDrop;
-    ILI9341  *tft;
-    myMCP4725 *mcp;
- */
-
-batConfig           config=
+int                  gateVoltage=0;
+batConfig            config=
 {
     0, // Wire resistor, computed automatically
     0, //uint32_t duration;
@@ -77,6 +64,9 @@ batConfig           config=
  */
 uint8_t ucHeap[ configTOTAL_HEAP_SIZE ];
 void myLoop(void) ;
+/**
+ * 
+ */
 class MainTask : public xTask
 {
 public:
@@ -141,6 +131,10 @@ void    MainTask::run(void)
    //Wire.begin();
   Serial.end();
   Serial1.begin(38400);
+  
+  Wire.setClock(100*1000);
+  Wire.begin();
+  
   BootSequence("MCP4725",30);
   mcp4725=new myMCP4725(Wire,MCP7245_I2C_ADR);
   mcp4725->setVoltage(0); 
@@ -199,7 +193,6 @@ void myLoop(void)
         pressed=true;
     }
 
-    
     batScreen *s=currentScreen->process(voltage*1000.,current,currentTime,count,pressed); //s(int mV,int mA,int currentTime,int leftRight,bool pressed)=0;
     // switch to new screen
     if(s)
@@ -208,7 +201,6 @@ void myLoop(void)
         currentScreen=s;
         s->draw();
     }
-
     xDelay(10);
 }
 //--
