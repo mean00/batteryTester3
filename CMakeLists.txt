@@ -24,7 +24,7 @@ set(ARDUINO_CPUMENU .menu.cpu.${ARDUINO_CPU})
 SET(libPrefix ${ARDUINO_DEFAULT_BOARD}_)
 #
 MESSAGE(STATUS "**** Configuration is ** ${CONFIGURATION} **")
-SET(SUB_COMPONENTS FreeRTOS RotaryEncoder)
+SET(SUB_COMPONENTS FreeRTOS RotaryEncoder backgrounds)
 
 
 include_directories(${CMAKE_SOURCE_DIR}/stubs)

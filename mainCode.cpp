@@ -15,10 +15,13 @@
 #include "screenIdle.h"
 #include "screenDischarging.h"
 
-#include "Fonts/FreeSans24pt7b.h"
-#include "Fonts/FreeSans18pt7b.h"
-#include "Fonts/FreeSans9pt7b.h"
 #include "RotaryEncoder/wav_irotary.h"
+
+
+extern const GFXfont FreeSans24pt7b ;
+extern const GFXfont FreeSans18pt7b ;
+extern const GFXfont FreeSans9pt7b ;
+
 //#define TEST_DIS 
 
 // ILI9341 is using HW SPI + those pins

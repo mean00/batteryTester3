@@ -7,7 +7,13 @@ from struct import *
 import sys
 
 mpretty=0
+compressed=0
 stuct_name=""
+def print_external_header(f):
+    global struct_name
+    f.write("#define "+str(struct_name)+"_width "+str(width)+"\n")
+    f.write("#define "+str(struct_name)+"_height "+str(height)+"\n")
+    f.write("extern const unsigned char "+str(struct_name)+"[];\n");
 def print_header(f):
     global struct_name
     f.write("const unsigned char "+str(struct_name)+"[]={\n");
@@ -16,18 +22,20 @@ def print_footer(f):
 
 def printout(value):
     global mpretty 
+    global compressed 
     f.write("0x"+format(value,"02x")+",")
     mpretty+=1
+    compressed+=1
     if(mpretty>15):
         mpretty=0
         f.write("\n")
 
-if 4!=len(sys.argv):
-    print("convert intput.png output.bin var_name")
+if 5!=len(sys.argv):
+    print("convert intput.png output.bin decl.h var_name")
     exit(1)
 f= open(sys.argv[2], 'wt')
 image=Image.open(sys.argv[1])
-struct_name=sys.argv[3]
+struct_name=sys.argv[4]
 (width,height) = image.size
 pixels = image.load
 print("loaded image "+str(sys.argv[1])+" "+str(width)+"x"+str(height))
@@ -45,7 +53,7 @@ for y in range(0,height):
     xx=0
     value=0
     for x in range(0,width):
-        if arr[x] >0x40:
+        if arr[x] >0x0:
             value+=mask
         mask>>=1
         if mask==0:
@@ -70,4 +78,9 @@ for y in range(0,height):
 #        print(str(x)+":  "+str(current)+"x"+str(count))
 print_footer(f)
 f.close()
+f= open(sys.argv[3], 'wt')
+print_external_header(f);
+f.close()
+print("Incoming size = %d => %d" % (width*height, compressed))
 print("Done generating "+str(sys.argv[2])+"\n")
+

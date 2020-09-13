@@ -6,7 +6,7 @@
 
 #include "screenInclude.h"
 #include "screenIdle.h"
-#include "backgrounds/li_ion_compressed.h"
+#include "backgrounds/generated/li_ion_decl.h"
 
 #include "voltage.h"
 #include "screenError.h"
