@@ -31,7 +31,10 @@ extern const GFXfont FreeSans9pt7b ;
 
 #define INA219_I2C_ADR  0x40
 #define MCP7245_I2C_ADR 0x60
-//#define DISABLE_INA219
+
+// TOUCH SCREEN
+#define TOUCH_CS        B8
+#define TOUCH_IRQ       B11
 
 //
 // Our globals
@@ -103,6 +106,12 @@ void initTft()
     tft->setFontFamily(&FreeSans9pt7b,&FreeSans18pt7b,&FreeSans24pt7b);
     tft->setFontSize(ILI9341::MediumFont);
 }
+
+void touchIRQ()
+{
+    
+}
+
 void Logger(const char *st)
 {
      //Serial1.println(st); 
@@ -169,6 +178,9 @@ void    MainTask::run(void)
   currentScreen =new idleScreen(&config);
 #endif    
   currentScreen->draw();
+  
+  pinMode(TOUCH_IRQ,INPUT_PULLDOWN);
+  attachInterrupt(TOUCH_IRQ, touchIRQ,FALLING);
   
   while(1)
     {
