@@ -14,7 +14,7 @@
 #include "screenBase.h"
 #include "screenIdle.h"
 #include "screenDischarging.h"
-
+#include "dso_debug.h"
 #include "RotaryEncoder/wav_irotary.h"
 
 
@@ -106,18 +106,24 @@ void initTft()
     tft->setFontFamily(&FreeSans9pt7b,&FreeSans18pt7b,&FreeSans24pt7b);
     tft->setFontSize(ILI9341::MediumFont);
 }
-
+/**
+ * 
+ */
 void touchIRQ()
 {
     
 }
-
-void Logger(const char *st)
-{
-     //Serial1.println(st); 
-}
+/**
+ * 
+ */
 void mySetup() 
 {
+  // switch to uart ASAP    
+  Serial.end();
+  Serial1.begin(38400);  //Wire.begin();
+  Serial.end();
+  Serial1.begin(38400);  
+    
   Logger("Init"); 
   
   SPI.begin();
@@ -140,9 +146,7 @@ void mySetup()
 void    MainTask::run(void)
 {
   
-   //Wire.begin();
-  Serial.end();
-  Serial1.begin(38400);
+ 
   
   Wire.setClock(100*1000);
   Wire.begin();

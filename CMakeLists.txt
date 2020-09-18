@@ -58,7 +58,7 @@ generate_arduino_firmware(componentTester${EXTENSION}
                 SRCS screenCalibration.cpp 
                             #wav_irotary.cpp 
                             mainCode.cpp push_button.cpp screenIdle.cpp screenBase.cpp screenError.cpp screenSetup.cpp items.cpp screenDischarging.cpp screenFinished.cpp   
-                            ${ILI}/ILI9341_extended.cpp ${ILI}/ILI9341_extended_glyph.cpp Adafruit_ILI9341_STM/Adafruit_ILI9341_STM.cpp
+                            ${ILI}/ILI9341_extended.cpp ${ILI}/ILI9341_extended_glyph.cpp Adafruit_ILI9341_STM/Adafruit_ILI9341_STM.cpp dso_logger.cpp
                 PORT ${ARDUINO_DEFAULT_PORT}
                 BOARD_CPU ${ARDUINO_CPU}
                 )
