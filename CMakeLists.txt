@@ -35,7 +35,7 @@ include_directories(RotaryEncoder/)
 include_directories(Adafruit_ILI9341_STM)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Adafruit_GFX)
-include_directories(Arduino_STM32/STM32F1/libraries/Adafruit_ILI9341_STM)
+#include_directories(Arduino_STM32/STM32F1/libraries/Adafruit_ILI9341_STM)
 include_directories(extendedIli9341)
 include_directories(simplerMCP4725)
 include_directories(simpler_INA219)
