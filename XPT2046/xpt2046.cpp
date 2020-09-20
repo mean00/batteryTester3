@@ -37,21 +37,21 @@ XPT2046::~XPT2046()
 
 static const uint8_t READ_SEQUENCE[]=
 {
-  XPT_CMD(CHANNEL_Z1),0,0, // b1   0
-  XPT_CMD(CHANNEL_Z2),0,0, // c1   1
+  XPT_CMD(CHANNEL_Z1),0, // b1   0
+  XPT_CMD(CHANNEL_Z2),0, // c1   1
   
-  XPT_CMD(CHANNEL_X),0,0, // 91    2
-  XPT_CMD(CHANNEL_Y),0,0, // c1    3
+  XPT_CMD(CHANNEL_X),0, // 91    2
+  XPT_CMD(CHANNEL_Y),0, // c1    3
   
 
-  XPT_CMD(CHANNEL_X),0,0, // 91    4 
-  XPT_CMD(CHANNEL_Y),0,0, // d1    5
+  XPT_CMD(CHANNEL_X),0, // 91    4 
+  XPT_CMD(CHANNEL_Y),0, // d1    5
   
-  XPT_CMD(CHANNEL_X),0,0, // 91    6
-  XPT_CMD(CHANNEL_Y),0,0, // d1    7
+  XPT_CMD(CHANNEL_X),0, // 91    6
+  XPT_CMD(CHANNEL_Y),0, // d1    7
   
-  XPT_CMD(CHANNEL_X),0,0, // 91    8
-  XPT_CMD(CHANNEL_Y)&0xf7,0,0, // d0   9
+  XPT_CMD(CHANNEL_X),0, // 91    8
+  XPT_CMD(CHANNEL_Y)&0xf7,0, // d0   9
   
   0,0
 };
@@ -114,7 +114,7 @@ bool     XPT2046::run()
     for(int i=0;i<NB_BLOCKS;i++)
     {
         uint32_t c=(b[0]<<8)+(b[1]);
-        b+=3;
+        b+=2;
         c>>=3; // remove the 3 non significant bits
         mRawData[i]=c;
     }
