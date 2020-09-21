@@ -22,12 +22,13 @@ XPT2046::~XPT2046()
 {
     
 }
+
+
+
 #define CHANNEL_Z1 (3<<4) //b1 3
 #define CHANNEL_Z2  (4<<4) //c1 4
-
-#define CHANNEL_X (1<<4) //91 1
-
-#define CHANNEL_Y  (5<<4) //d1 5
+#define CHANNEL_Y (1<<4) //91 1
+#define CHANNEL_X  (5<<4) //d1 5
 
 #define CHANNEL(x)  (x<<4)
 // 12 bits ADC hardcoded, bit is at 0 for that
@@ -86,11 +87,25 @@ static uint8_t rx[32];
  */
 int XPT2046::median(int aa, int bb, int cc,int dd)
 {
-    int a=mRawData[aa];
-    int b=mRawData[bb];
-    int c=mRawData[cc];
-    int d=mRawData[dd];
-    return (a+b+c+d)/4;
+    int val[4]={
+        mRawData[aa],
+        mRawData[bb],
+        mRawData[cc],
+        mRawData[dd]
+    };
+    
+    int sum=0;
+    int mx=0;
+    int mn=0xf000;
+    
+    for(int i=0;i<4;i++)
+    {
+        int v=val[i];
+        sum+=v;
+        if(v<mn) mn=v;
+        if(v>mx) mx=v;
+    }
+    return (sum-mn-mx)/2;
 }
 /**
  * 
@@ -117,14 +132,23 @@ bool     XPT2046::run()
         b+=2;
         c>>=3; // remove the 3 non significant bits
         mRawData[i]=c;
-    }
+    }        
+   
+
+    int z1=mRawData[0];
+    int z2=mRawData[1];
+    //pt(89,z2-z1);
+    if((z2-z1)<0xe00)
+    {
+        int x=median(2,4,6,8);
+        int y=median(3,5,7,9);
         
-    int x=median(2,4,6,8);
-    int y=median(3,5,7,9);
+        pt(0,x);
+        pt(1,y);
 
-    pt(0,x);
-    pt(1,y);
-
+      //  pt(90,z1);
+      //  pt(91,z2);
+    }
     return true;
 }
 // EOF

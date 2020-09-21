@@ -16,7 +16,7 @@
 #include "screenDischarging.h"
 #include "dso_debug.h"
 #include "RotaryEncoder/wav_irotary.h"
-
+#include "xpt2046.h"
 
 extern const GFXfont FreeSans24pt7b ;
 extern const GFXfont FreeSans18pt7b ;
@@ -33,8 +33,8 @@ extern const GFXfont FreeSans9pt7b ;
 #define MCP7245_I2C_ADR 0x60
 
 // TOUCH SCREEN
-#define TOUCH_CS        B8
-#define TOUCH_IRQ       B11
+#define TOUCH_CS        PB8
+#define TOUCH_IRQ       PB11
 
 //
 // Our globals
@@ -44,6 +44,7 @@ WavRotary            *rotary=NULL;
 simpler_INA219       *ina219=NULL;
 myMCP4725            *mcp4725=NULL;
 batScreen            *currentScreen=NULL;
+XPT2046              *xpt2046=NULL;
 int                  gateVoltage=0;
 batConfig            config=
 {
@@ -61,7 +62,7 @@ batConfig            config=
     NULL,  // TFT
     NULL    
 };
-#if 1
+#if 0
 #define BootSequence(x,y) {Logger(x);  tft->setCursor(10, y*2);       tft->println(x);xDelay(10);}
 #else
 #define BootSequence(x,y) {Logger(x); ;xDelay(10);}
@@ -120,21 +121,27 @@ void mySetup()
 {
   // switch to uart ASAP    
   Serial.end();
-  Serial1.begin(38400);  //Wire.begin();
+  Serial1.begin(115200);  //Wire.begin();
   Serial.end();
-  Serial1.begin(38400);  
+  Serial1.begin(115200);  
     
   Logger("Init"); 
   
   SPI.begin();
   SPI.setBitOrder(MSBFIRST); // Set the SPI bit order
   SPI.setDataMode(SPI_MODE0); //Set the  SPI data mode 0
-  SPI.setClockDivider (SPI_CLOCK_DIV4); // Given for 10 Mhz...
+//  SPI.setClockDivider (SPI_CLOCK_DIV4); // Given for 10 Mhz...
+  SPI.setClockDivider (SPI_CLOCK_DIV8); // Given for 10 Mhz...
   
   delay(100);
   
   Logger("TFT"); 
   initTft();   
+  
+  xpt2046=new XPT2046(SPI,TOUCH_CS,2*1000*1000); // 2Mbits
+  xpt2046->setup();
+  
+  
   
   // Start freeRTOS
   MainTask *mainTask=new MainTask();
@@ -171,10 +178,11 @@ void    MainTask::run(void)
   delay(10); // no current, we can autocalibrate the ina
   //ina219->autoZero();
 #endif
-
+#if 1
   BootSequence("All ok",50);
-  //initTft();
+  initTft();  
   tft->fillScreen(ILI9341_BLACK);
+
   
 #ifdef TEST_DIS
   currentScreen=new dischargingScreen(   &config,4000);
@@ -185,6 +193,12 @@ void    MainTask::run(void)
   
   pinMode(TOUCH_IRQ,INPUT_PULLDOWN);
   attachInterrupt(TOUCH_IRQ, touchIRQ,FALLING);
+#endif  
+  while(1)
+  {
+    xpt2046->run();
+    xDelay(800);
+  }
   
   while(1)
     {

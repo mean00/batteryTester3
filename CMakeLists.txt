@@ -24,7 +24,7 @@ set(ARDUINO_CPUMENU .menu.cpu.${ARDUINO_CPU})
 SET(libPrefix ${ARDUINO_DEFAULT_BOARD}_)
 #
 MESSAGE(STATUS "**** Configuration is ** ${CONFIGURATION} **")
-SET(SUB_COMPONENTS FreeRTOS RotaryEncoder backgrounds)
+SET(SUB_COMPONENTS FreeRTOS RotaryEncoder backgrounds XPT2046)
 
 
 include_directories(${CMAKE_SOURCE_DIR}/stubs)
@@ -33,6 +33,7 @@ include_directories(FreeRTOS/Source/include)
 include_directories(FreeRTOS/)
 include_directories(RotaryEncoder/)
 include_directories(Adafruit_ILI9341_STM)
+include_directories(XPT2046)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Adafruit_GFX)
 #include_directories(Arduino_STM32/STM32F1/libraries/Adafruit_ILI9341_STM)
