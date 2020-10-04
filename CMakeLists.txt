@@ -24,20 +24,21 @@ set(ARDUINO_CPUMENU .menu.cpu.${ARDUINO_CPU})
 SET(libPrefix ${ARDUINO_DEFAULT_BOARD}_)
 #
 MESSAGE(STATUS "**** Configuration is ** ${CONFIGURATION} **")
-SET(SUB_COMPONENTS FreeRTOS RotaryEncoder backgrounds XPT2046)
+SET(SUB_COMPONENTS FreeRTOS RotaryEncoder backgrounds TFT_eSPI XPT2046)
 
 
 include_directories(${CMAKE_SOURCE_DIR}/stubs)
 include_directories(${CMAKE_SOURCE_DIR})
 include_directories(FreeRTOS/Source/include)
 include_directories(FreeRTOS/)
+include_directories(FreeRTOS/Source/portable/Stm32duino/)
 include_directories(RotaryEncoder/)
-include_directories(Adafruit_ILI9341_STM)
+include_directories(TFT_eSPI/tft)
+include_directories(TFT_eSPI/tft/Fonts/GFXFF)
+include_directories(TFT_eSPI)
 include_directories(XPT2046)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Adafruit_GFX)
-#include_directories(Arduino_STM32/STM32F1/libraries/Adafruit_ILI9341_STM)
-include_directories(extendedIli9341)
+
 include_directories(simplerMCP4725)
 include_directories(simpler_INA219)
 
@@ -58,8 +59,9 @@ generate_arduino_firmware(componentTester${EXTENSION}
                 SKETCH batteryTester2.ino
                 SRCS screenCalibration.cpp 
                             #wav_irotary.cpp 
-                            mainCode.cpp push_button.cpp screenIdle.cpp screenBase.cpp screenError.cpp screenSetup.cpp items.cpp screenDischarging.cpp screenFinished.cpp   
-                            ${ILI}/ILI9341_extended.cpp ${ILI}/ILI9341_extended_glyph.cpp Adafruit_ILI9341_STM/Adafruit_ILI9341_STM.cpp dso_logger.cpp
+                            mainCode.cpp push_button.cpp 
+                            screenIdle.cpp screenBase.cpp screenError.cpp screenSetup.cpp items.cpp screenDischarging.cpp screenFinished.cpp   
+                            dso_logger.cpp
                 PORT ${ARDUINO_DEFAULT_PORT}
                 BOARD_CPU ${ARDUINO_CPU}
                 )
