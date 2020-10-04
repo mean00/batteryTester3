@@ -43,13 +43,6 @@ extern void touchCalibration(XPT2046 *xpt, TFT_eSPI_extended *tft);
 //
 // Our globals
 
-TFT_eSPI_extended    *tft=NULL;
-WavRotary            *rotary=NULL;
-simpler_INA219       *ina219=NULL;
-myMCP4725            *mcp4725=NULL;
-batScreen            *currentScreen=NULL;
-XPT2046              *xpt2046=NULL;
-int                  gateVoltage=0;
 batConfig            config=
 {
     0, // Wire resistor, computed automatically
@@ -78,19 +71,37 @@ void myLoop(void) ;
 /**
  * 
  */
-class MainTask : public xTask
+class MainTask : public xTask,XPT2046Hook
 {
+
+
+
 public:
             MainTask() : xTask("MainTask",10,400)
             {
 
             }
+            virtual void pressEvent(int x,int y)
+            {
+                
+            }
             void    run(void);
+            void    initTft();
+            void    loop(void) ;
 protected:
+            TFT_eSPI_extended    *tft=NULL;
+            WavRotary            *rotary=NULL;
+            simpler_INA219       *ina219=NULL;
+            myMCP4725            *mcp4725=NULL;
+            batScreen            *currentScreen=NULL;
+            XPT2046              *xpt2046=NULL;
+            int                  gateVoltage=0;    
 };
 
-
-void initTft()
+/**
+ * 
+ */
+void MainTask::initTft()
 {
     if(tft)
     {
@@ -109,19 +120,9 @@ void initTft()
     tft->init();  
     tft->setRotation(3);
     tft->fillScreen(ILI9341_BLACK);
-    
-    
+        
     tft->setFontFamily(&FreeSans9pt7b,&FreeSans18pt7b,&FreeSans24pt7b);
     tft->setFontSize(TFT_eSPI_extended::MediumFont);
-    
-    
-}
-/**
- * 
- */
-void touchIRQ()
-{
-    
 }
 /**
  * 
@@ -141,16 +142,7 @@ void mySetup()
   SPI.setDataMode(SPI_MODE0); //Set the  SPI data mode 0
 //  SPI.setClockDivider (SPI_CLOCK_DIV4); // Given for 10 Mhz...
   SPI.setClockDivider (SPI_CLOCK_DIV8); // Given for 10 Mhz...
-  
-  delay(100);
-  
-  Logger("TFT"); 
-  initTft();   
-  
-
-  
-  
-  
+    
   // Start freeRTOS
   MainTask *mainTask=new MainTask();
   vTaskStartScheduler();        
@@ -159,21 +151,22 @@ void mySetup()
  * 
  */
 void    MainTask::run(void)
-{
-  
- 
-  
+{  
   Wire.setClock(100*1000);
   Wire.begin();
+    
+  initTft();   
+
   
   xpt2046=new XPT2046(SPI,TOUCH_CS,TOUCH_IRQ,2*1000*1000,spiMutex); // 2Mbits
-    if(! DSOEeprom::read())
-    {
+  if(! DSOEeprom::read())
+  {
         touchCalibration(xpt2046,tft);
-    }
-    xpt2046->setup((int *)DSOEeprom::calibration);
-    xpt2046->setHooks(NULL);
-    xpt2046->start();
+        DSOEeprom::read();
+  }
+  xpt2046->setup((int *)DSOEeprom::calibration);
+  xpt2046->setHooks(NULL);
+  xpt2046->start();
   
   
   BootSequence("MCP4725",30);
@@ -186,6 +179,7 @@ void    MainTask::run(void)
   BootSequence("Rotary",10);
   rotary=new WavRotary(PA2,PA1,PA0);
   rotary->start();
+  
 #ifndef DISABLE_INA219  
   BootSequence("Ina219",20);
   ina219=new simpler_INA219(); //INA219_I2C_ADR,100); // 100 mOhm
@@ -208,25 +202,17 @@ void    MainTask::run(void)
   currentScreen =new idleScreen(&config);
 #endif    
   currentScreen->draw();
+  #endif    
   
-  pinMode(TOUCH_IRQ,INPUT_PULLDOWN);
-  attachInterrupt(TOUCH_IRQ, touchIRQ,FALLING);
-#endif  
   while(1)
   {
-    xpt2046->run();
-    xDelay(800);
-  }
-  
-  while(1)
-    {
-        myLoop();
-    }  
+        loop();
+  }  
 }
-
 /**
+ * 
  */
-void myLoop(void) 
+void MainTask::loop(void) 
 {
     static int currentTime=0;
     float voltage=ina219->getBusVoltage_V();
@@ -255,4 +241,9 @@ void myLoop(void)
     }
     xDelay(50);
 }
-//--
+
+void myLoop()
+{
+    
+}
+//--EOF
