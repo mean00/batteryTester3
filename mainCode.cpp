@@ -6,7 +6,6 @@
 
 #include <Wire.h>
 #include "SPI.h"
-#include "ILI9341_extended.h"
 #include "wav_irotary.h"
 #include "simpler_INA219.h"
 #include "simplerMCP4725.h"
@@ -21,6 +20,9 @@
 extern const GFXfont FreeSans24pt7b ;
 extern const GFXfont FreeSans18pt7b ;
 extern const GFXfont FreeSans9pt7b ;
+
+xMutex  *spiMutex;
+
 
 //#define TEST_DIS 
 
@@ -39,7 +41,7 @@ extern const GFXfont FreeSans9pt7b ;
 //
 // Our globals
 
-ILI9341              *tft=NULL;
+TFT_eSPI_extended    *tft=NULL;
 WavRotary            *rotary=NULL;
 simpler_INA219       *ina219=NULL;
 myMCP4725            *mcp4725=NULL;
@@ -98,14 +100,19 @@ void initTft()
     digitalWrite(TFT_RST,LOW);
     delay(100);  
     digitalWrite(TFT_RST,HIGH);
+    spiMutex=new xMutex();
 
-    tft = new ILI9341(TFT_CS, TFT_DC,TFT_RST);
-    tft->begin();  
-    tft->fillScreen(ILI9341_BLACK);
-    tft->setTextColor(ILI9341_WHITE,ILI9341_BLACK);  
+    tft = new TFT_eSPI_extended(spiMutex);
+    
+    tft->init();  
     tft->setRotation(3);
+    tft->fillScreen(ILI9341_BLACK);
+    
+    
     tft->setFontFamily(&FreeSans9pt7b,&FreeSans18pt7b,&FreeSans24pt7b);
-    tft->setFontSize(ILI9341::MediumFont);
+    tft->setFontSize(TFT_eSPI_extended::MediumFont);
+    
+    
 }
 /**
  * 
@@ -138,8 +145,8 @@ void mySetup()
   Logger("TFT"); 
   initTft();   
   
-  xpt2046=new XPT2046(SPI,TOUCH_CS,2*1000*1000); // 2Mbits
-  xpt2046->setup();
+  xpt2046=new XPT2046(SPI,TOUCH_CS,TOUCH_IRQ,2*1000*1000,spiMutex); // 2Mbits
+  xpt2046->start();
   
   
   

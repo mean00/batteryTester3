@@ -7,24 +7,25 @@ include(./platformConfig.cmake)
 cmake_minimum_required(VERSION 3.0)
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+include(cmake_tools)
 SET(CMAKE_TOOLCHAIN_FILE cmake/ArduinoToolchain.cmake)
 Project("BatteryTester" C CXX ASM)
-
+include(cmake_tools)
 SET(EXTENSION             "_STM32F103")
 set(ARDUINO_LD_FILE      jtag)      # Use that instead of default jtag-c8 to get the full 128 kB
 set(ARDUINO_DEFAULT_BOARD genericSTM32F103C)        # Default Board ID, when not specified
 set(ARDUINO_CPU           STM32F103C8)
 SET(ARDUINO_UPLOAD_METHOD BMP) # Use blackmagic link, if you comment it out you'll use DFU => 8kB flash
 
-ADD_DEFINITIONS("-g3 -Dtextsize=textsize_x") # Hack for Adafruit_gfx_as
-
+#
 #print_board_list()
 set(ARDUINO_DEFAULT_PORT ttyACM0) # Default Port, when not specified
 set(ARDUINO_CPUMENU .menu.cpu.${ARDUINO_CPU})
 SET(libPrefix ${ARDUINO_DEFAULT_BOARD}_)
 #
 MESSAGE(STATUS "**** Configuration is ** ${CONFIGURATION} **")
-SET(SUB_COMPONENTS FreeRTOS RotaryEncoder backgrounds TFT_eSPI XPT2046)
+SET(SUB_COMPONENTS FreeRTOS RotaryEncoder backgrounds )
+SET(SUB_LIBRARIES xpt2046 TFT_eSPI )
 
 
 include_directories(${CMAKE_SOURCE_DIR}/stubs)
@@ -33,22 +34,22 @@ include_directories(FreeRTOS/Source/include)
 include_directories(FreeRTOS/)
 include_directories(FreeRTOS/Source/portable/Stm32duino/)
 include_directories(RotaryEncoder/)
-include_directories(TFT_eSPI/tft)
-include_directories(TFT_eSPI/tft/Fonts/GFXFF)
-include_directories(TFT_eSPI)
-include_directories(XPT2046)
 
 
 include_directories(simplerMCP4725)
 include_directories(simpler_INA219)
 
 # Build 
+add_subdirectory(XPT2046) # Physical folder name
+add_subdirectory(TFT_eSPI)
+FOREACH(comp ${SUB_LIBRARIES} ) # Logical name    
+    IMPORT_LIBRARY(${comp})
+ENDFOREACH(comp ${SUB_LIBRARIES} )
 FOREACH(comp ${SUB_COMPONENTS} )
     add_subdirectory(${comp})
 ENDFOREACH(comp ${SUB_COMPONENTS} )
 
 
-SET(ILI ${CMAKE_CURRENT_SOURCE_DIR}/extendedIli9341)
 
 #
 # Our code
@@ -68,6 +69,11 @@ generate_arduino_firmware(componentTester${EXTENSION}
 FOREACH(comp ${SUB_COMPONENTS})
     target_link_libraries(componentTester${EXTENSION} ${libPrefix}${comp})
 ENDFOREACH(comp ${SUB_COMPONENTS})
+
+FOREACH(comp ${SUB_LIBRARY} )
+    LINK_TO_LIBRARIES(componentTester${EXTENSION} ${comp})
+ENDFOREACH(comp ${SUB_LIBRARY} )
+
 
 
 

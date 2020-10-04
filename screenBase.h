@@ -8,6 +8,7 @@
 /**
 
 */
+#include "TFT_eSPI_extended.h"
 class myMCP4725;
 typedef struct batConfig
 {
@@ -18,7 +19,7 @@ typedef struct batConfig
     int     targetDischargeMa;
     int     minimumVoltage;
     int     batteryDrop;
-    ILI9341  *tft;
+    TFT_eSPI_extended  *tft;
     myMCP4725 *mcp;
 };
 /**
@@ -50,11 +51,11 @@ protected:
                 void setTitle(int color, int bgColor,int x, const char *title);
 protected:
         batConfig *_config;
-        ILI9341   *_tft;
+        TFT_eSPI_extended   *_tft;
 };
 
-void myPrettyPrint(ILI9341 *tft,int val,int x,int y,const char *unit);
-void myBoundPrettyPrint(ILI9341 *_tft,int val,int x,int y,const char *unit, int maxWidth);
+void myPrettyPrint(TFT_eSPI_extended *tft,int val,int x,int y,const char *unit);
+void myBoundPrettyPrint(TFT_eSPI_extended *_tft,int val,int x,int y,const char *unit, int maxWidth);
 
 batScreen  *spawnSetupScreen(   batConfig *c);
 // EOF

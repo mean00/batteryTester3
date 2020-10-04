@@ -32,14 +32,14 @@ public:
     void  setFontFamily(const GFXfont *small, const GFXfont *medium, const GFXfont *big);        
     void  setFontSize(FontSize size);
 
-
+    void  myDrawString(const char *st, int padd_up_to_n_pixels=0);
     
 protected:    
     xMutex *tex;
     void spiLock() {tex->lock();tftLocked++;}
     void spiUnlock() {tftLocked--;if(tftLocked<0) xAssert(0);tex->unlock();}
     int myDrawChar(int x, int y, unsigned char c,  int color, int bg,FontInfo &infos);
-    void  myDrawString(const char *st, int padd_up_to_n_pixels=0);
+    
     int mySquare(int x, int y, int w, int xheight, uint16_t *filler);
     
     FontInfo          fontInfo[3];
