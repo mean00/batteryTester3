@@ -19,3 +19,6 @@
 [submodule "TFT_eSPI/tft"]
 	path = TFT_eSPI/tft
 	url = git@github.com:mean00/TFT_eSPI.git
+[submodule "XPT2046"]
+	path = XPT2046
+	url = git@github.com:mean00/simplerXpt2046.git
