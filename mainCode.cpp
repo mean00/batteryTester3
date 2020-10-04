@@ -16,12 +16,14 @@
 #include "dso_debug.h"
 #include "RotaryEncoder/wav_irotary.h"
 #include "xpt2046.h"
+#include "dso_eeprom.h"
 
 extern const GFXfont FreeSans24pt7b ;
 extern const GFXfont FreeSans18pt7b ;
 extern const GFXfont FreeSans9pt7b ;
 
 xMutex  *spiMutex;
+extern void touchCalibration(XPT2046 *xpt, TFT_eSPI_extended *tft);
 
 
 //#define TEST_DIS 
@@ -35,8 +37,8 @@ xMutex  *spiMutex;
 #define MCP7245_I2C_ADR 0x60
 
 // TOUCH SCREEN
-#define TOUCH_CS        PB8
-#define TOUCH_IRQ       PB11
+#define TOUCH_CS        PB11
+#define TOUCH_IRQ       PB8
 
 //
 // Our globals
@@ -145,8 +147,7 @@ void mySetup()
   Logger("TFT"); 
   initTft();   
   
-  xpt2046=new XPT2046(SPI,TOUCH_CS,TOUCH_IRQ,2*1000*1000,spiMutex); // 2Mbits
-  xpt2046->start();
+
   
   
   
@@ -164,6 +165,16 @@ void    MainTask::run(void)
   
   Wire.setClock(100*1000);
   Wire.begin();
+  
+  xpt2046=new XPT2046(SPI,TOUCH_CS,TOUCH_IRQ,2*1000*1000,spiMutex); // 2Mbits
+    if(! DSOEeprom::read())
+    {
+        touchCalibration(xpt2046,tft);
+    }
+    xpt2046->setup((int *)DSOEeprom::calibration);
+    xpt2046->setHooks(NULL);
+    xpt2046->start();
+  
   
   BootSequence("MCP4725",30);
   mcp4725=new myMCP4725(Wire,MCP7245_I2C_ADR);

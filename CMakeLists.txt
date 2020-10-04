@@ -59,10 +59,11 @@ SET(UTILS utils/fancyLock.cpp    utils/cycleClock.cpp utils/myPwm.cpp utils/i2c_
 generate_arduino_firmware(componentTester${EXTENSION}
                 SKETCH batteryTester2.ino
                 SRCS screenCalibration.cpp 
-                            #wav_irotary.cpp 
                             mainCode.cpp push_button.cpp 
                             screenIdle.cpp screenBase.cpp screenError.cpp screenSetup.cpp items.cpp screenDischarging.cpp screenFinished.cpp   
+                            dso_eeprom.cpp
                             dso_logger.cpp
+                            calibration.cpp
                 PORT ${ARDUINO_DEFAULT_PORT}
                 BOARD_CPU ${ARDUINO_CPU}
                 )
@@ -70,9 +71,9 @@ FOREACH(comp ${SUB_COMPONENTS})
     target_link_libraries(componentTester${EXTENSION} ${libPrefix}${comp})
 ENDFOREACH(comp ${SUB_COMPONENTS})
 
-FOREACH(comp ${SUB_LIBRARY} )
+FOREACH(comp ${SUB_LIBRARIES} )
     LINK_TO_LIBRARIES(componentTester${EXTENSION} ${comp})
-ENDFOREACH(comp ${SUB_LIBRARY} )
+ENDFOREACH(comp ${SUB_LIBRARIES} )
 
 
 
