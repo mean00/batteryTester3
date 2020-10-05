@@ -22,7 +22,6 @@ extern const GFXfont FreeSans24pt7b ;
 extern const GFXfont FreeSans18pt7b ;
 extern const GFXfont FreeSans9pt7b ;
 
-xMutex  *spiMutex;
 extern void touchCalibration(XPT2046 *xpt, TFT_eSPI_extended *tft);
 
 
@@ -96,6 +95,7 @@ protected:
             batScreen            *currentScreen=NULL;
             XPT2046              *xpt2046=NULL;
             int                  gateVoltage=0;    
+            xMutex               *spiMutex;
 };
 
 /**
@@ -158,7 +158,7 @@ void    MainTask::run(void)
   initTft();   
 
   
-  xpt2046=new XPT2046(SPI,TOUCH_CS,TOUCH_IRQ,2*1000*1000,spiMutex); // 2Mbits
+  xpt2046=new XPT2046(SPI,TOUCH_CS,TOUCH_IRQ,2400*1000,spiMutex); // 2.4Mbits
   if(! DSOEeprom::read())
   {
         touchCalibration(xpt2046,tft);
