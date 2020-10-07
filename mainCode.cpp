@@ -156,7 +156,8 @@ void    MainTask::run(void)
   Wire.begin();
     
   initTft();   
-
+  tft->fillScreen(ILI9341_BLACK);
+    
   
   xpt2046=new XPT2046(SPI,TOUCH_CS,TOUCH_IRQ,2400*1000,spiMutex); // 2.4Mbits
   if(! DSOEeprom::read())
@@ -191,10 +192,8 @@ void    MainTask::run(void)
   //ina219->autoZero();
 #endif
 #if 1
-  BootSequence("All ok",50);
-  initTft();  
-  tft->fillScreen(ILI9341_BLACK);
-
+  BootSequence("All ok",50);  
+  
   
 #ifdef TEST_DIS
   currentScreen=new dischargingScreen(   &config,4000);

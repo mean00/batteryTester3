@@ -63,9 +63,10 @@ void  TFT_eSPI_extended::setFontSize(FontSize size)
     switch(size)
     {
         case SmallFont :  currentFont=fontInfo+0;break;
+        case BigFont :   currentFont=fontInfo+2;break;
         default:
         case MediumFont :   currentFont=fontInfo+1;break;
-        case BigFont :   currentFont=fontInfo+2;break;
+        
     }    
 }
 /**
