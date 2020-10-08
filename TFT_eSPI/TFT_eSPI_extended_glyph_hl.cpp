@@ -21,6 +21,13 @@
  {
      if(!currentFont)
          return;
+#if 0     
+     setFreeFont(currentFont->font);
+     drawString(st,cursor_x,cursor_y);
+     cursor_x+=10;
+     return;
+#endif     
+     
      int l=strlen(st);
    
      int lastColumn=0;

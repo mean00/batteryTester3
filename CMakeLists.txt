@@ -55,7 +55,7 @@ ENDFOREACH(comp ${SUB_COMPONENTS} )
 # Our code
 #
 SET(UTILS utils/fancyLock.cpp    utils/cycleClock.cpp utils/myPwm.cpp utils/i2c_stubs.c)
-
+add_compile_options("-O0")
 generate_arduino_firmware(componentTester${EXTENSION}
                 SKETCH batteryTester2.ino
                 SRCS screenCalibration.cpp 
