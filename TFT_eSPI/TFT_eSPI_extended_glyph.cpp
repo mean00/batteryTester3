@@ -27,7 +27,7 @@ int TFT_eSPI_extended::mySquare(int x, int y, int w, int xheight, uint16_t *fill
         if(xheight<=0)
             return 0;
     }
-    setAddrWindow(x,y,                  x+w-1, y+xheight);
+    setWindowLocked(x,y,                  x+w-1, y+xheight);
     for(int row=0;row<xheight;row++)
     {
          pushColors(filler,w,0);
@@ -95,11 +95,11 @@ int TFT_eSPI_extended::myDrawChar(int x, int y, unsigned char c,  int color, int
        
     int    finalColor;    
     int  bits = 0, bit = 0;
-    setAddrWindow(x,y,
+    setWindowLocked(x,y,
                   x+glyph->xAdvance-1, y+h);
     for( int line=0;line<h;line++)
     {
-      //setAddrWindow(x,y+line,  x+glyph->xAdvance, y+line+1);
+      //setWindowLocked(x,y+line,  x+glyph->xAdvance, y+line+1);
         col=column;
      
         // left

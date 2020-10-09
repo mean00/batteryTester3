@@ -14,7 +14,7 @@ void TFT_eSPI_extended::drawBitmap(int width, int height, int wx, int wy, int fg
     for(int y=0;y<height;y++)
     {
         uint16_t *o=line;
-        setAddrWindow(wx, wy+y, wx+width*8-1, wy+y-1);
+        setWindowLocked(wx, wy+y, wx+width*8-1, wy+y-1);
         for(int x=0;x<width;x++)
         {
             int stack=*p++;
@@ -45,7 +45,7 @@ void TFT_eSPI_extended::drawRLEBitmap(int width, int height, int wx, int wy, int
     for(int y=0;y<height;y++)
     {
         uint16_t *o=line;
-        setAddrWindow(wx, wy+y, wx+width*8-1, wy+y-1);
+        setWindowLocked(wx, wy+y, wx+width*8-1, wy+y-1);
         for(int x=0;x<width;) // in bytes
         {
             int val=*p++;

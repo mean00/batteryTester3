@@ -21,7 +21,7 @@
  {
      if(!currentFont)
          return;
-#if 1     
+#if 0     
      setFreeFont(currentFont->font);
      drawString(st,cursor_x,cursor_y);
      cursor_x+=10;
