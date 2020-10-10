@@ -17,7 +17,7 @@ class errorScreen : public batScreen
 public:
                            errorScreen(   batConfig *c, int errorKind);
                       void draw();
-        virtual batScreen *process(int mV,int mA,int currentTime,int leftRight,bool pressed); // return NULL if the current screen stays the same
+        virtual batScreen *process(const CurrentState &s); // return NULL if the current screen stays the same
 protected:
         void draw(int color);
         int _errorKind;

@@ -29,7 +29,7 @@ public:
                            calibrationScreen(   batConfig *c);
 virtual                   ~calibrationScreen();                        
                       void draw();
-        virtual batScreen *process(int mV,int mA,int currentTime,int leftRight,bool pressed); // return NULL if the current screen stays the same
+        virtual batScreen *process(const CurrentState &s); // return NULL if the current screen stays the same
         
 protected:   
                     Timer   waitTimer;

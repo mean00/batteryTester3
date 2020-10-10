@@ -44,18 +44,18 @@ extern void touchCalibration(XPT2046 *xpt, TFT_eSPI_extended *tft);
 
 batConfig            config=
 {
-    0, // Wire resistor, computed automatically
-    0, //uint32_t duration;
-    0, // float    sumMa;
-    0, //int     currentDischargeMa;
+    0,      // Wire resistor, computed automatically
+    0,      //uint32_t duration;
+    0,      // float    sumMa;
+    0,      //int     currentDischargeMa;
 #ifdef TEST_DIS    
     200,
 #else
-    500, // int     targetDischargeMa;
+    500,    // int     targetDischargeMa;
 #endif
-    3000, //     minimumVoltage;
-    50,   // Battery drop when going to 500mA
-    NULL,  // TFT
+    3000,   //     minimumVoltage;
+    50,     // Battery drop when going to 500mA
+    NULL,   // TFT
     NULL    
 };
 #if 0
@@ -72,9 +72,6 @@ void myLoop(void) ;
  */
 class MainTask : public xTask,XPT2046Hook
 {
-
-
-
 public:
             MainTask() : xTask("MainTask",10,400)
             {
@@ -96,6 +93,7 @@ protected:
             XPT2046              *xpt2046=NULL;
             int                  gateVoltage=0;    
             xMutex               *spiMutex;
+            CurrentState         currentState;
 };
 
 /**
@@ -181,6 +179,8 @@ void    MainTask::run(void)
   rotary=new WavRotary(PA2,PA1,PA0);
   rotary->start();
   
+  config.rotary=rotary;
+  
 #ifndef DISABLE_INA219  
   BootSequence("Ina219",20);
   ina219=new simpler_INA219(); //INA219_I2C_ADR,100); // 100 mOhm
@@ -213,25 +213,13 @@ void    MainTask::run(void)
  */
 void MainTask::loop(void) 
 {
-    static int currentTime=0;
-    float voltage=ina219->getBusVoltage_V();
-    int current=ina219->getCurrent_mA();    
-    int evt=rotary->readEvent();
-    
-    bool pressed=false;
-    int count=0;
-    
-    if(evt & WavRotary::ROTARY_CHANGE)
-    {
-        count=rotary->getCount();
-    }
-    if(evt & WavRotary::SHORT_PRESS)
-    {
-        pressed=true;
-    }
+    //
+    currentState.mCurrent=ina219->getCurrent_mA();
+    currentState.mCurrent=(int)(ina219->getBusVoltage_V()*1000.);
 
-    batScreen *s=currentScreen->process(voltage*1000.,current,currentTime,count,pressed); //s(int mV,int mA,int currentTime,int leftRight,bool pressed)=0;
-    // switch to new screen
+    // Returns NULL if we stay on the same screen
+    // the ne screen otherwise
+    batScreen *s=currentScreen->process(currentState);
     if(s)
     {
         delete currentScreen;

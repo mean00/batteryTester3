@@ -9,6 +9,7 @@
 #include "screenError.h"
 #include "voltage.h"
 #include "simplerMCP4725.h"
+#include "wav_irotary.h"
 
 #define CURRENT_ERROR_MARGIN   2 // Error margin in mA
 #define REFRESH_PERIOD_IN_SEC 5 // Refresh mA count every x sec
@@ -156,8 +157,19 @@ bool dischargingScreen::LeftOrRigh(int leftRight, int mV)
 }
 /**
  */
-batScreen *dischargingScreen::process(int mV,int mA,int currentTime,int leftRight,bool pressed)
+batScreen *dischargingScreen::process(const CurrentState &s)
 {
+    bool pressed=false;;
+    int leftRight=0;
+    int mV=s.mVoltage;
+    int mA=s.mCurrent;
+    WavRotary::EVENTS evt=_config->rotary->readEvent();
+    if(evt & WavRotary::SHORT_PRESS)
+        pressed=true;
+    if(evt & WavRotary::ROTARY_CHANGE)
+        leftRight=_config->rotary->getCount();
+
+
     // toggle on /off pause mode
     if(pressed)
     {
@@ -210,13 +222,15 @@ batScreen *dischargingScreen::process(int mV,int mA,int currentTime,int leftRigh
     
     if(paused)
     {
-        drawVoltageAndCurrent(mV, mA);
+        drawVoltageAndCurrent(s);
         return NULL;
     }
    
     // Small adjustment to gate command
-
-    drawVoltageAndCurrent(avgV, avgA);    
+    CurrentState tmp;
+    tmp.mCurrent=avgA;
+    tmp.mVoltage=avgV;
+    drawVoltageAndCurrent(tmp);    
     adjustGateVoltage(avgV,avgA);
     
 #ifdef DEBUG

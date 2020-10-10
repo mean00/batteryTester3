@@ -70,33 +70,33 @@ static int getCommand(int v)
 
 /**
  */
-batScreen *calibrationScreen::process(int mV,int mA,int currentTime,int leftRight,bool pressed)
+batScreen *calibrationScreen::process(const CurrentState &s) //int mV,int mA,int currentTime,int leftRight,bool pressed)
 {    
     if(state==Calibration_init)
     {        
         // set gate to 200 mA
         _config->mcp->setVoltage(getCommand(CALIBRATION_AMP1)); 
         waitTimer.reset();
-        drawVoltageAndCurrent(mV,mA);
+        drawVoltageAndCurrent(s);
         state=Calibration_point1;
         return NULL;        
     }
-    drawVoltageAndCurrent(mV,mA);
+    drawVoltageAndCurrent(s);
     if(!waitTimer.rdv())
         return NULL;
     switch(state)
     {
         case Calibration_point1:
-            voltage1=mV;
-            amp1=mA;
+            voltage1=s.mVoltage;
+            amp1=s.mCurrent;
             waitTimer.reset();
             _config->mcp->setVoltage(getCommand(CALIBRATION_AMP2)); 
              state=Calibration_point2;
              return NULL;
              break;
         case Calibration_point2:
-            voltage2=mV;
-            amp2=mA;            
+            voltage2=s.mVoltage;
+            amp2=s.mCurrent;            
             // set gate to 0
             _config->mcp->setVoltage(0); 
             calibrate();

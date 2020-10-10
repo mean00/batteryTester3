@@ -84,10 +84,10 @@ void batScreen::drawBackground()
 }
 /**
  */
-void batScreen::drawVoltageAndCurrent(int mV, int mA)
+void batScreen::drawVoltageAndCurrent(const CurrentState &s)
 {
-    prettyPrint(mV,40,240-9-28,"V");
-    prettyPrint(mA,160+43,240-9-28,"A");
+    prettyPrint(s.mVoltage,40,240-9-28,"V");
+    prettyPrint(s.mCurrent,160+43,240-9-28,"A");
 }
 
 

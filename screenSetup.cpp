@@ -8,7 +8,7 @@
 #include "voltage.h"
 #include "screenSetup.h"
 #include "screenSetup_internal.h"
-
+#include "wav_irotary.h"
 
 extern int itemPosition(int x);
 
@@ -59,9 +59,21 @@ void setupScreen::addItem(Item *item)
 
 /**
  */
-batScreen *setupScreen::process(int mV,int mA,int currentTime,int leftRight,bool pressed)
+batScreen *setupScreen::process(const CurrentState &s)
 {    
-    drawVoltageAndCurrent(mV,mA);
+    drawVoltageAndCurrent(s);
+    
+    int leftRight=0;
+    bool pressed=false;
+    
+    
+    WavRotary::EVENTS evt=_config->rotary->readEvent();
+    if(evt & WavRotary::SHORT_PRESS)
+        pressed=true;
+    if(evt & WavRotary::ROTARY_CHANGE)
+        leftRight=_config->rotary->getCount();
+
+    
     switch(_sstate)
     {
     case StateSelecting:

@@ -5,11 +5,13 @@
  ****************************************************/
 
 #pragma once
+
 /**
 
 */
 #include "TFT_eSPI_extended.h"
 class myMCP4725;
+class WavRotary;
 typedef struct batConfig
 {
     int     resistor1000; // 1000x the wiring resistor
@@ -21,7 +23,17 @@ typedef struct batConfig
     int     batteryDrop;
     TFT_eSPI_extended  *tft;
     myMCP4725 *mcp;
+    WavRotary *rotary;
 };
+
+
+class CurrentState
+{
+public:
+        int mVoltage;
+        int mCurrent;
+};
+
 /**
 
 */
@@ -41,10 +53,10 @@ public:
             _tft=NULL;
         }
         virtual void      draw()=0;
-        virtual batScreen *process(int mV,int mA,int currentTime,int leftRight,bool pressed)=0; // return NULL if the current screen stays the same
+        virtual batScreen *process(const CurrentState &state)=0; // return NULL if the current screen stays the same
 protected:
                 void prettyPrint(int val,int x,int y,const char *unit);
-                void drawVoltageAndCurrent(int mV, int mA);
+                void drawVoltageAndCurrent(const CurrentState &s);
                 void drawBackground();
                 void drawBitmap(int width, int height, int wx, int wy, int fgcolor, int bgcolor, const uint8_t *data);
                 void disableCurrent();

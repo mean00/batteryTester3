@@ -20,15 +20,15 @@ idleScreen::idleScreen(   batConfig *c) : batScreen(c)
 }
 /**
  */
-batScreen *idleScreen::process(int mV,int mA,int currentTime,int leftRight,bool pressed)
+batScreen *idleScreen::process(const CurrentState &s)
 {
-    drawVoltageAndCurrent(mV, mA);
-    if(mV<BAT_DETECT_NOISE_VOLTAGE)
+    drawVoltageAndCurrent(s);
+    if(s.mVoltage<BAT_DETECT_NOISE_VOLTAGE)
         return NULL;
     
-    if(mV>BAT_DETECT_MAX_VOLTAGE)
+    if(s.mVoltage>BAT_DETECT_MAX_VOLTAGE)
         return new errorScreen(_config, ERROR_VOLTAGE_TOO_HIGH);
-    if(mV<BAT_DETECT_MIN_VOLTAGE)
+    if(s.mVoltage<BAT_DETECT_MIN_VOLTAGE)
         return new errorScreen(_config,ERROR_VOLTAGE_TOO_LOW);
     return spawnSetupScreen(_config);        
 }

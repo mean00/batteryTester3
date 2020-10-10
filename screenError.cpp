@@ -20,10 +20,10 @@ errorScreen::errorScreen(   batConfig *c,int er) : batScreen(c)
 
 /**
  */
-batScreen *errorScreen::process(int mV,int mA,int currentTime,int leftRight,bool pressed)
+batScreen *errorScreen::process(const CurrentState &s)
 {
-    drawVoltageAndCurrent(mV,mA);
-    if(mV<BAT_DETECT_NOISE_VOLTAGE)
+    drawVoltageAndCurrent(s);
+    if(s.mVoltage<BAT_DETECT_NOISE_VOLTAGE)
         return new idleScreen(_config);
     
     _loop++;
