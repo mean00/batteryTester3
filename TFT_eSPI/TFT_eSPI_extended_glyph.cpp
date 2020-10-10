@@ -72,7 +72,7 @@ int TFT_eSPI_extended::myDrawChar(int x, int y, unsigned char c,  int color, int
         int adv=glyph->xAdvance;
         int top=infos.maxHeight;
          mySquare(x,y-top,
-                  infos.maxWidth,
+                  adv,
                   top+2,column);
          return adv;
     }
