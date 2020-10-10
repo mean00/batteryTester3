@@ -22,3 +22,6 @@
 [submodule "XPT2046"]
 	path = XPT2046
 	url = git@github.com:mean00/simplerXpt2046.git
+[submodule "embedded_printf"]
+	path = embedded_printf
+	url = https://github.com/mpaland/printf

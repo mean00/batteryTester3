@@ -80,7 +80,7 @@ void batScreen::drawBitmap(int width, int height, int wx, int wy, int fgcolor, i
  */
 void batScreen::drawBackground()
 {
-    drawBitmap(320,240,0,0,0xffff,0,background);
+    drawBitmap(background_width,background_height,0,0,0xffff,0,background);
 }
 /**
  */

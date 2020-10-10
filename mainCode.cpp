@@ -215,7 +215,7 @@ void MainTask::loop(void)
 {
     //
     currentState.mCurrent=ina219->getCurrent_mA();
-    currentState.mCurrent=(int)(ina219->getBusVoltage_V()*1000.);
+    currentState.mVoltage=(int)(ina219->getBusVoltage_V()*1000.);
 
     // Returns NULL if we stay on the same screen
     // the ne screen otherwise
@@ -225,6 +225,11 @@ void MainTask::loop(void)
         delete currentScreen;
         currentScreen=s;
         s->draw();
+        
+        // Purge pending events if any
+        rotary->readEvent();
+        rotary->getCount();
+        
     }
     xDelay(50);
 }
