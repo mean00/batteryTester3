@@ -59,7 +59,7 @@ batConfig            config=
     NULL    
 };
 #if 0
-#define BootSequence(x,y) {Logger(x);  tft->setCursor(10, y*2);       tft->println(x);xDelay(10);}
+#define BootSequence(x,y) {Logger(x);  tft->setCursor(10, y*2);       tft->myDrawString(x);xDelay(10);}
 #else
 #define BootSequence(x,y) {Logger(x); ;xDelay(10);}
 #endif

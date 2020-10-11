@@ -51,7 +51,7 @@ public:
             tft->fillScreen(ILI9341_BLACK);
 
             tft->setCursor(100,100);
-            tft->println("Calibration");
+            tft->myDrawString("Calibration");
 
             tft->fillCircle(posx,posy,8,ILI9341_GREEN);
             int count=0;
