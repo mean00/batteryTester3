@@ -24,9 +24,10 @@ set(ARDUINO_CPUMENU .menu.cpu.${ARDUINO_CPU})
 SET(libPrefix ${ARDUINO_DEFAULT_BOARD}_)
 #
 MESSAGE(STATUS "**** Configuration is ** ${CONFIGURATION} **")
-SET(SUB_COMPONENTS FreeRTOS RotaryEncoder backgrounds )
+SET(SUB_COMPONENTS FreeRTOS RotaryEncoder  )
 SET(SUB_LIBRARIES xpt2046 TFT_eSPI )
 
+add_subdirectory(assets)
 
 include_directories(${CMAKE_SOURCE_DIR}/stubs)
 include_directories(${CMAKE_SOURCE_DIR})
@@ -34,7 +35,7 @@ include_directories(FreeRTOS/Source/include)
 include_directories(FreeRTOS/)
 include_directories(FreeRTOS/Source/portable/Stm32duino/)
 include_directories(RotaryEncoder/)
-
+include_directories(assets/backgrounds/generated)
 
 include_directories(simplerMCP4725)
 include_directories(simpler_INA219)
@@ -49,13 +50,13 @@ FOREACH(comp ${SUB_COMPONENTS} )
     add_subdirectory(${comp})
 ENDFOREACH(comp ${SUB_COMPONENTS} )
 
+add_definitions("-DPRINTF_DISABLE_SUPPORT_EXPONENTIAL -DPRINTF_DISABLE_SUPPORT_LONG_LONG -DPRINTF_DISABLE_SUPPORT_PTRDIFF_T ")
 
 
 #
 # Our code
 #
 SET(UTILS utils/fancyLock.cpp    utils/cycleClock.cpp utils/myPwm.cpp utils/i2c_stubs.c)
-add_compile_options("-O0")
 generate_arduino_firmware(componentTester${EXTENSION}
                 SKETCH batteryTester2.ino
                 SRCS screenCalibration.cpp 
@@ -64,6 +65,7 @@ generate_arduino_firmware(componentTester${EXTENSION}
                             dso_eeprom.cpp
                             dso_logger.cpp
                             calibration.cpp
+                            heap.cpp
                 PORT ${ARDUINO_DEFAULT_PORT}
                 BOARD_CPU ${ARDUINO_CPU}
                 )
@@ -75,7 +77,7 @@ FOREACH(comp ${SUB_LIBRARIES} )
     LINK_TO_LIBRARIES(componentTester${EXTENSION} ${comp})
 ENDFOREACH(comp ${SUB_LIBRARIES} )
 
-
+target_link_libraries(componentTester${EXTENSION}  ${libPrefix}backgrounds)
 
 
 # EOF
