@@ -12,6 +12,7 @@
 #include "TFT_eSPI_extended.h"
 class myMCP4725;
 class WavRotary;
+class simpler_INA219;
 typedef struct batConfig
 {
     int     resistor1000; // 1000x the wiring resistor
@@ -24,6 +25,7 @@ typedef struct batConfig
     TFT_eSPI_extended  *tft;
     myMCP4725 *mcp;
     WavRotary *rotary;
+    simpler_INA219 *ina219;
 };
 
 

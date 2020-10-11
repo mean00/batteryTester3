@@ -47,13 +47,13 @@ void errorScreen::draw(int color)
     switch(_errorKind)
     {
         case ERROR_VOLTAGE_TOO_HIGH:            
-            _tft->println("VOLTAGE TOO HIGH");
+            _tft->myDrawString("VOLTAGE TOO HIGH");
             break;
         case ERROR_VOLTAGE_TOO_LOW:
-            _tft->println("VOLTAGE TOO LOW");
+            _tft->myDrawString("VOLTAGE TOO LOW");
             break;            
         default:
-            _tft->println("OTHER ERROR (?)");
+            _tft->myDrawString("OTHER ERROR (?)");
             break;
     }
     _tft->setTextColor(ILI9341_WHITE,ILI9341_BLACK);  

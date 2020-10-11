@@ -183,6 +183,7 @@ void    MainTask::run(void)
 #ifndef DISABLE_INA219  
   BootSequence("Ina219",20);
   ina219=new simpler_INA219(); //INA219_I2C_ADR,100); // 100 mOhm
+  config.ina219=ina219;
 #endif  
   
 #ifndef DISABLE_INA219  

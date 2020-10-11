@@ -8,20 +8,13 @@
 #include "ad_timer.h"
 //----------------
 
-#define CALIBRATION_AMP1 200 // do calibration at 200 mA
-#define CALIBRATION_AMP2 500 // do calibration at 200 mA
+#define CALIBRATION_AMP1 200 // do calibration at 100 mA
+#define CALIBRATION_AMP2 500 // do calibration at 250 mA
 
 /**
+ * 
+ * @param c
  */
-
-typedef enum CalibrationStep
-{
-    Calibration_init,
-    Calibration_point1,
-    Calibration_point2,
-    
-};
-
 class calibrationScreen : public batScreen
 {
 public:
@@ -32,8 +25,6 @@ virtual                   ~calibrationScreen();
         virtual batScreen *process(const CurrentState &s); // return NULL if the current screen stays the same
         
 protected:   
-                    Timer   waitTimer;
-                    CalibrationStep    state;
                     int     voltage1,voltage2,amp1,amp2;
                     void    calibrate();
 };
