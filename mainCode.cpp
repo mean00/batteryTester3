@@ -17,7 +17,7 @@
 #include "RotaryEncoder/wav_irotary.h"
 #include "xpt2046.h"
 #include "dso_eeprom.h"
-
+ 
 extern const GFXfont FreeSans24pt7b ;
 extern const GFXfont FreeSans18pt7b ;
 extern const GFXfont FreeSans9pt7b ;
@@ -65,7 +65,6 @@ batConfig            config=
 #endif
 /*
  */
-uint8_t ucHeap[ configTOTAL_HEAP_SIZE ];
 void myLoop(void) ;
 /**
  * 
@@ -218,7 +217,7 @@ void MainTask::loop(void)
     currentState.mVoltage=(int)(ina219->getBusVoltage_V()*1000.);
 
     // Returns NULL if we stay on the same screen
-    // the ne screen otherwise
+    // the new screen otherwise
     batScreen *s=currentScreen->process(currentState);
     if(s)
     {
@@ -228,12 +227,13 @@ void MainTask::loop(void)
         
         // Purge pending events if any
         rotary->readEvent();
-        rotary->getCount();
-        
+        rotary->getCount();        
     }
     xDelay(50);
 }
-
+/**
+ * 
+ */
 void myLoop()
 {
     

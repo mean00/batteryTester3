@@ -5,5 +5,5 @@ generate_arduino_library(${libPrefix}backgrounds
                             SRCS ${SRCS}
                             BOARD ${ARDUINO_DEFAULT_BOARD}
                         )
-
+include_directories(.)
 target_include_directories(${libPrefix}backgrounds  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})                        

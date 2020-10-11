@@ -5,7 +5,7 @@
  ****************************************************/
 
 #include "screenInclude.h"
-#include "backgrounds/generated/background_decl.h"
+#include "background_decl.h"
 #include "simplerMCP4725.h"
 
 /**
