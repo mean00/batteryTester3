@@ -47,11 +47,12 @@ void calibrationScreen::calibrate()
      // got it
     float deltaVoltage=voltage1-voltage2;
     float deltaAmp=amp2-amp1;
-
-    if(deltaVoltage>_config->batteryDrop) deltaVoltage-=_config->batteryDrop;  // assume a 50mv Drop by the battery itself
     
     float r=(deltaVoltage)/deltaAmp;
     r=r*1000.;
+    r-=_config->internalResistanceMOhm;
+    if(r<0) r=0;
+    
     _config->resistor1000=r;
 #if 0
     _config->tft->drawNumber(_config->resistor1000,50,120,4);
@@ -97,6 +98,19 @@ batScreen *calibrationScreen::process(const CurrentState &s)
     // Prepare
             drawVoltageAndCurrent(s);
             //sample(0,amp1,voltage1);
+            
+            
+#if 1
+            sample(0,amp1,voltage1);
+            sample(100,amp1,voltage1);
+            sample(200,amp1,voltage1);
+            sample(300,amp1,voltage1);
+            sample(400,amp1,voltage1);
+            sample(500,amp1,voltage1);
+            sample(600,amp1,voltage1);
+
+#endif            
+            
             sample(CALIBRATION_AMP1,amp1,voltage1);
             //sample((CALIBRATION_AMP1+CALIBRATION_AMP2)/2,amp2,voltage2);
             sample(CALIBRATION_AMP2,amp2,voltage2);

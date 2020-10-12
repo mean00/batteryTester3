@@ -37,7 +37,7 @@ setupScreen::setupScreen(   batConfig *c) : batScreen(c),Item(c->tft,itemPositio
         currentItem=0;
         addItem(new TunableItem(_tft,itemPosition(0),&(_config->targetDischargeMa), 100, 2500,100, "Dischrg","A"));
         addItem(new TunableItem(_tft,itemPosition(1),&(_config->minimumVoltage), 2800, 5000,100, "Min Volt","V"));
-        addItem(new TunableItem(_tft,itemPosition(2),&(_config->batteryDrop), 0, 200,10, "BatDrop ","V"));
+        addItem(new TunableItem(_tft,itemPosition(2),&(_config->internalResistanceMOhm), 0, 200,10, "Int Res ","O"));
         addItem( this);
         items[nbItems-1]->setState(StateSelected) ;   
         _sstate=StateSelecting;

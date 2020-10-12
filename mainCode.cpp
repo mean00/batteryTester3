@@ -54,7 +54,7 @@ batConfig            config=
     500,    // int     targetDischargeMa;
 #endif
     3000,   //     minimumVoltage;
-    200,     // Battery drop when going to 500mA
+    500,     // Internal battery resistance 
     NULL,   // TFT
     NULL    
 };

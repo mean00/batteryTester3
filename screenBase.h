@@ -21,7 +21,7 @@ typedef struct batConfig
     int     currentDischargeMa;
     int     targetDischargeMa;
     int     minimumVoltage;
-    int     batteryDrop;
+    int     internalResistanceMOhm;
     TFT_eSPI_extended  *tft;
     myMCP4725 *mcp;
     WavRotary *rotary;
