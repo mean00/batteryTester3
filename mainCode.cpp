@@ -54,7 +54,7 @@ batConfig            config=
     500,    // int     targetDischargeMa;
 #endif
     3000,   //     minimumVoltage;
-    50,     // Battery drop when going to 500mA
+    200,     // Battery drop when going to 500mA
     NULL,   // TFT
     NULL    
 };
@@ -202,6 +202,11 @@ void    MainTask::run(void)
 #endif    
   currentScreen->draw();
   #endif    
+  
+  
+  ina219->autoZero();
+  ina219->setMultiSampling(2);   
+
   
   while(1)
   {

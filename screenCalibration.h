@@ -27,4 +27,5 @@ virtual                   ~calibrationScreen();
 protected:   
                     int     voltage1,voltage2,amp1,amp2;
                     void    calibrate();
+                    void    sample(int cmd,int &a, int &v);
 };

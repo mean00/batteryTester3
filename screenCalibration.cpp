@@ -66,37 +66,40 @@ static int getCommand(int v)
     return v * 1.28 + 1525.;
 }
 #define OVERSAMP 8
-/**
- */
+
+
+void calibrationScreen::sample(int cmd,int &a, int &v)
+{
+    a=0;
+    v=0;
+     _config->mcp->setVoltage(getCommand(cmd));
+     xDelay(100);
+    for(int i=0;i<OVERSAMP;i++)
+    {
+        int ma,mv;
+        mv=_config->ina219->getBusVoltage_V()*1000.;
+        ma=_config->ina219->getCurrent_mA();
+        Serial1.print(i);
+        Serial1.print(" ");
+        Serial1.print(mv);
+        Serial1.print(" ");
+        Serial1.println(ma);
+        v+=mv;
+        a+=ma;
+        xDelay(10);
+    }
+    v/=OVERSAMP;
+    a/=OVERSAMP;
+}
+
 batScreen *calibrationScreen::process(const CurrentState &s)
 {     
     // Prepare
-            _config->mcp->setVoltage(getCommand(CALIBRATION_AMP1)); 
             drawVoltageAndCurrent(s);
-            xDelay(50);
-            voltage1=0;
-            amp1=0;
-            for(int i=0;i<OVERSAMP;i++)
-            {
-                voltage1+=_config->ina219->getBusVoltage_V()*1000.;
-                amp1+=_config->ina219->getCurrent_mA();
-                xDelay(5);
-            }
-            voltage1/=OVERSAMP;
-            amp1/=OVERSAMP;
-            
-            _config->mcp->setVoltage(getCommand(CALIBRATION_AMP2)); 
-            xDelay(50);
-            voltage2=0;
-            amp2=0;
-            for(int i=0;i<OVERSAMP;i++)
-            {
-                voltage2+=_config->ina219->getBusVoltage_V()*1000.;
-                amp2+=_config->ina219->getCurrent_mA();
-                xDelay(5);
-            }
-            voltage2/=OVERSAMP;
-            amp2/=OVERSAMP;                      
+            //sample(0,amp1,voltage1);
+            sample(CALIBRATION_AMP1,amp1,voltage1);
+            //sample((CALIBRATION_AMP1+CALIBRATION_AMP2)/2,amp2,voltage2);
+            sample(CALIBRATION_AMP2,amp2,voltage2);
             // set gate to 0
             _config->mcp->setVoltage(0); 
             calibrate();

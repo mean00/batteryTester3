@@ -209,6 +209,7 @@ batScreen *dischargingScreen::process(const CurrentState &s)
         return NULL;
   
     // compute average A & V
+    Serial1.println(mV);
     int avgA,avgV;
     if(!computeAverage(mV,mA,avgV,avgA))
         return NULL;
