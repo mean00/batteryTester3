@@ -22,7 +22,7 @@ public:
                            calibrationScreen(   batConfig *c);
 virtual                   ~calibrationScreen();                        
                       void draw();
-        virtual batScreen *process(const CurrentState &s); // return NULL if the current screen stays the same
+        virtual batScreen *process(); // return NULL if the current screen stays the same
         
 protected:   
                     int     voltage1,voltage2,amp1,amp2;

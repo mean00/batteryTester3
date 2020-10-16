@@ -9,23 +9,26 @@
 /**
 
 */
+#include "settings.h"
 #include "TFT_eSPI_extended.h"
 class myMCP4725;
 class WavRotary;
 class simpler_INA219;
-typedef struct batConfig
+/**
+ */
+class batConfig
 {
-    int     resistor1000; // 1000x the wiring resistor
-    uint32_t duration;
-    float    sumMa;
-    int     currentDischargeMa;
-    int     targetDischargeMa;
-    int     minimumVoltage;
-    int     internalResistanceMOhm;
+public:    
+    UserSettings    userSettings;
+    
+    uint32_t        duration;
+    float           sumMa;
+    int             targetDischargeMa;
+    int             currentDischargeMa;
     TFT_eSPI_extended  *tft;
-    myMCP4725 *mcp;
-    WavRotary *rotary;
-    simpler_INA219 *ina219;
+    myMCP4725       *mcp;
+    WavRotary       *rotary;
+    simpler_INA219  *ina219;
 };
 
 
@@ -55,7 +58,7 @@ public:
             _tft=NULL;
         }
         virtual void      draw()=0;
-        virtual batScreen *process(const CurrentState &state)=0; // return NULL if the current screen stays the same
+        virtual batScreen *process()=0; // return NULL if the current screen stays the same
 protected:
                 void prettyPrint(int val,int x,int y,const char *unit);
                 void drawVoltageAndCurrent(const CurrentState &s);
@@ -63,6 +66,7 @@ protected:
                 void drawBitmap(int width, int height, int wx, int wy, int fgcolor, int bgcolor, const uint8_t *data);
                 void disableCurrent();
                 void setTitle(int color, int bgColor,int x, const char *title);
+                bool readState(CurrentState &s);
 protected:
         batConfig *_config;
         TFT_eSPI_extended   *_tft;

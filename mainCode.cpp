@@ -39,22 +39,26 @@ extern void touchCalibration(XPT2046 *xpt, TFT_eSPI_extended *tft);
 #define TOUCH_CS        PB11
 #define TOUCH_IRQ       PB8
 
+
+
 //
 // Our globals
 
 batConfig            config=
 {
-    0,      // Wire resistor, computed automatically
+    200,      // Wire resistor, computed automatically
+    0,      //int     currentDischargeMa;
+    3000,   //     minimumVoltage;
+    
     0,      //uint32_t duration;
     0,      // float    sumMa;
-    0,      //int     currentDischargeMa;
+    
 #ifdef TEST_DIS    
     200,
 #else
     500,    // int     targetDischargeMa;
 #endif
-    3000,   //     minimumVoltage;
-    500,     // Internal battery resistance 
+    
     NULL,   // TFT
     NULL    
 };
@@ -94,6 +98,7 @@ protected:
             xMutex               *spiMutex;
             CurrentState         currentState;
 };
+
 
 /**
  * 
@@ -162,9 +167,12 @@ void    MainTask::run(void)
         touchCalibration(xpt2046,tft);
         DSOEeprom::read();
   }
+  
   xpt2046->setup((int *)DSOEeprom::calibration);
   xpt2046->setHooks(NULL);
   xpt2046->start();
+  
+  
   
   
   BootSequence("MCP4725",30);
@@ -206,7 +214,7 @@ void    MainTask::run(void)
   
   ina219->autoZero();
   ina219->setMultiSampling(2);   
-
+  config.userSettings.loadSettings();
   
   while(1)
   {
@@ -218,13 +226,9 @@ void    MainTask::run(void)
  */
 void MainTask::loop(void) 
 {
-    //
-    currentState.mCurrent=ina219->getCurrent_mA();
-    currentState.mVoltage=(int)(ina219->getBusVoltage_V()*1000.);
-
     // Returns NULL if we stay on the same screen
     // the new screen otherwise
-    batScreen *s=currentScreen->process(currentState);
+    batScreen *s=currentScreen->process();
     if(s)
     {
         delete currentScreen;

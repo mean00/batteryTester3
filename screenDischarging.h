@@ -16,7 +16,7 @@ class dischargingScreen : public batScreen
 public:
                            dischargingScreen(   batConfig *c, int currentV);
                       void draw();
-        virtual batScreen *process(const CurrentState &s); // return NULL if the current screen stays the same
+        virtual batScreen *process(); // return NULL if the current screen stays the same
         
 protected:
                 bool    evaluateTargetAmp(int currentV);

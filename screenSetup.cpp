@@ -35,9 +35,9 @@ setupScreen::setupScreen(   batConfig *c) : batScreen(c),Item(c->tft,itemPositio
 {
         nbItems=0;
         currentItem=0;
-        addItem(new TunableItem(_tft,itemPosition(0),&(_config->targetDischargeMa), 100, 2500,100, "Dischrg","A"));
-        addItem(new TunableItem(_tft,itemPosition(1),&(_config->minimumVoltage), 2800, 5000,100, "Min Volt","V"));
-        addItem(new TunableItem(_tft,itemPosition(2),&(_config->internalResistanceMOhm), 0, 200,10, "Int Res ","O"));
+        addItem(new TunableItem(_tft,itemPosition(0),&(_config->userSettings.initialDischargeMa), 100, 2500,100, "Dischrg","A"));
+        addItem(new TunableItem(_tft,itemPosition(1),&(_config->userSettings.minimumVoltage), 2800, 5000,100, "Min Volt","V"));
+        addItem(new TunableItem(_tft,itemPosition(2),&(_config->userSettings.resistor1000), 10, 500,50, "R Wire ","mO"));
         addItem( this);
         items[nbItems-1]->setState(StateSelected) ;   
         _sstate=StateSelecting;
@@ -59,20 +59,27 @@ void setupScreen::addItem(Item *item)
 
 /**
  */
-batScreen *setupScreen::process(const CurrentState &s)
-{    
+batScreen *setupScreen::process()
+{       
+    CurrentState s;
+    readState(s);
     drawVoltageAndCurrent(s);
     
     int leftRight=0;
     bool pressed=false;
     
     
-    WavRotary::EVENTS evt=_config->rotary->readEvent();
+    WavRotary::EVENTS evt=_config->rotary->waitForEvent();
     if(evt & WavRotary::SHORT_PRESS)
         pressed=true;
     if(evt & WavRotary::ROTARY_CHANGE)
         leftRight=_config->rotary->getCount();
 
+    if(!pressed && !leftRight) 
+    {
+        xDelay(5);
+        return NULL;
+    }
     
     switch(_sstate)
     {
@@ -101,7 +108,10 @@ batScreen *setupScreen::process(const CurrentState &s)
             if(pressed)
             {
                 if(items[currentItem]==this)
+                {
+                    _config->userSettings.saveSettings();
                     return spawnNewCalibration(_config);
+                }
                 _sstate=StateEditing;
                 items[currentItem]->setState(StateActivated);
                 items[currentItem]->drawItem();

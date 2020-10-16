@@ -24,7 +24,7 @@ public:
 virtual                   ~setupScreen();                        
                       void draw();
                       void drawItem();
-        virtual batScreen *process(const CurrentState &s); // return NULL if the current screen stays the same
+        virtual batScreen *process(); // return NULL if the current screen stays the same
         
 protected:        
             Item *items[10];

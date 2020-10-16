@@ -11,7 +11,7 @@ class idleScreen : public batScreen
 public:
                            idleScreen(   batConfig *c);
                       void draw();
-        virtual batScreen *process(const CurrentState &s); // return NULL if the current screen stays the same
+        virtual batScreen *process(); // return NULL if the current screen stays the same
         
 
 };

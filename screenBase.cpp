@@ -7,6 +7,7 @@
 #include "screenInclude.h"
 #include "background_decl.h"
 #include "simplerMCP4725.h"
+#include "simpler_INA219.h"
 
 /**
  * 
@@ -103,5 +104,15 @@ void batScreen::setTitle(int color, int bgColor,int x, const char *title)
     _tft->setCursor(x, 0);   
     _tft->myDrawString(title);        
 }
-
+/**
+ * 
+ * @param s
+ * @return 
+ */
+bool batScreen::readState(CurrentState &s)
+{
+   s.mCurrent=_config->ina219->getCurrent_mA();
+   s.mVoltage=_config->ina219->getBusVoltage_V()*1000.;
+   return true;
+}
 // EOF

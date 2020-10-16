@@ -50,10 +50,10 @@ void calibrationScreen::calibrate()
     
     float r=(deltaVoltage)/deltaAmp;
     r=r*1000.;
-    r-=_config->internalResistanceMOhm;
+    r-=_config->userSettings.resistor1000;
     if(r<0) r=0;
     
-    _config->resistor1000=r;
+    _config->userSettings.resistor1000=r;
 #if 0
     _config->tft->drawNumber(_config->resistor1000,50,120,4);
     _config->tft->drawNumber((int)deltaVoltage,50,50,4);
@@ -66,7 +66,7 @@ static int getCommand(int v)
 {
     return v * 1.28 + 1525.;
 }
-#define OVERSAMP 8
+#define OVERSAMP 4
 
 
 void calibrationScreen::sample(int cmd,int &a, int &v)
@@ -74,51 +74,49 @@ void calibrationScreen::sample(int cmd,int &a, int &v)
     a=0;
     v=0;
      _config->mcp->setVoltage(getCommand(cmd));
-     xDelay(100);
+     xDelay(500);
     for(int i=0;i<OVERSAMP;i++)
     {
         int ma,mv;
         mv=_config->ina219->getBusVoltage_V()*1000.;
         ma=_config->ina219->getCurrent_mA();
-        Serial1.print(i);
-        Serial1.print(" ");
-        Serial1.print(mv);
-        Serial1.print(" ");
-        Serial1.println(ma);
+       
         v+=mv;
         a+=ma;
-        xDelay(10);
+        xDelay(50);
     }
     v/=OVERSAMP;
     a/=OVERSAMP;
+    
+    Serial1.print("V: ");
+    Serial1.print(v);
+    Serial1.print("A: ");
+    Serial1.println(a);
 }
 
-batScreen *calibrationScreen::process(const CurrentState &s)
+batScreen *calibrationScreen::process()
 {     
-    // Prepare
-            drawVoltageAndCurrent(s);
-            //sample(0,amp1,voltage1);
-            
-            
-#if 1
-            sample(0,amp1,voltage1);
-            sample(100,amp1,voltage1);
-            sample(200,amp1,voltage1);
-            sample(300,amp1,voltage1);
-            sample(400,amp1,voltage1);
-            sample(500,amp1,voltage1);
-            sample(600,amp1,voltage1);
+#if 0
+    sample(200,amp1,voltage1);
+    sample(500,amp2,voltage2);            
+    // set gate to 0
+    _config->mcp->setVoltage(0); 
+    calibrate();
+    char st[80];
+    sprintf(st,"V=%d A=%d",voltage1,amp1);
+    _tft->setCursor(30,80);
+    _tft->myDrawString(st);
 
-#endif            
-            
-            sample(CALIBRATION_AMP1,amp1,voltage1);
-            //sample((CALIBRATION_AMP1+CALIBRATION_AMP2)/2,amp2,voltage2);
-            sample(CALIBRATION_AMP2,amp2,voltage2);
-            // set gate to 0
-            _config->mcp->setVoltage(0); 
-            calibrate();
-            xDelay(100);
-            return  spawnNewDischarging(_config,voltage1);
+    sprintf(st,"V=%d A=%d",voltage2,amp2);
+    _tft->setCursor(30,120);
+    _tft->myDrawString(st);
+
+    sprintf(st,"R=%d ",_config->resistor1000);
+    _tft->setCursor(30,170);
+    _tft->myDrawString(st);
+    xDelay(2000);
+#endif
+    return  spawnNewDischarging(_config,voltage1);
 }
 /**
  */

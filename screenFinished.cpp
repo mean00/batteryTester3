@@ -17,8 +17,10 @@ finishedScreen::finishedScreen(   batConfig *c,EndOfChargeCause cause) : batScre
 }
 /**
  */
-batScreen *finishedScreen::process(const CurrentState &s)
+batScreen *finishedScreen::process()
 {
+    CurrentState s;
+    readState(s);
     drawVoltageAndCurrent(s);   
     return NULL;
 }

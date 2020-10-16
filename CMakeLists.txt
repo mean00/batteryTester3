@@ -61,7 +61,7 @@ generate_arduino_firmware(componentTester${EXTENSION}
                 SKETCH batteryTester2.ino
                 SRCS screenCalibration.cpp 
                             mainCode.cpp push_button.cpp 
-                            screenIdle.cpp screenBase.cpp screenError.cpp screenSetup.cpp items.cpp screenDischarging.cpp screenFinished.cpp embedded_printf/printf.c    
+                            screenIdle.cpp screenBase.cpp screenError.cpp screenSetup.cpp items.cpp screenDischarging.cpp screenFinished.cpp embedded_printf/printf.c    settings.cpp
                             dso_eeprom.cpp
                             dso_logger.cpp
                             calibration.cpp

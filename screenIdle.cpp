@@ -20,8 +20,10 @@ idleScreen::idleScreen(   batConfig *c) : batScreen(c)
 }
 /**
  */
-batScreen *idleScreen::process(const CurrentState &s)
+batScreen *idleScreen::process()
 {
+    CurrentState s;
+    readState(s);
     drawVoltageAndCurrent(s);
     if(s.mVoltage<BAT_DETECT_NOISE_VOLTAGE)
         return NULL;

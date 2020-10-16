@@ -50,10 +50,12 @@ void dischargingScreen::updateTargetCurrent(int currentMv)
 dischargingScreen::dischargingScreen(   batConfig *c,int currentMv) : batScreen(c),timer(REFRESH_PERIOD_IN_SEC),smallTimer(AVERAGING_SAMPLE_PERIOD,1),debounceTimer(100,1)
 {
     _config->sumMa=0;
+    _config->targetDischargeMa=_config->userSettings.initialDischargeMa;
     sampleIndex=-1;
     paused=false;    
     updateTargetCurrent(currentMv);
     resyncing=0;
+    
 }
 
 /**
@@ -157,10 +159,12 @@ bool dischargingScreen::LeftOrRigh(int leftRight, int mV)
 }
 /**
  */
-batScreen *dischargingScreen::process(const CurrentState &s)
+batScreen *dischargingScreen::process()
 {
     bool pressed=false;;
     int leftRight=0;
+    CurrentState s;
+    readState(s);
     int mV=s.mVoltage;
     int mA=s.mCurrent;
     WavRotary::EVENTS evt=_config->rotary->readEvent();
@@ -214,8 +218,8 @@ batScreen *dischargingScreen::process(const CurrentState &s)
     if(!computeAverage(mV,mA,avgV,avgA))
         return NULL;
     // and take wiring into account
-    float vDrop=(float)avgA*(float)_config->resistor1000;
-      vDrop/=1000.;
+    float vDrop=(float)avgA*(float)_config->userSettings.resistor1000;
+    vDrop/=1000.; // Ohm->milliOhm
     avgV=avgV+vDrop;    
    
     if(!smallTimer.elapsed())
@@ -232,7 +236,7 @@ batScreen *dischargingScreen::process(const CurrentState &s)
     tmp.mCurrent=avgA;
     tmp.mVoltage=avgV;
     drawVoltageAndCurrent(tmp);    
-    adjustGateVoltage(avgV,avgA);
+   // adjustGateVoltage(avgV,avgA);
     
 #ifdef DEBUG
     if(pressed)
@@ -252,7 +256,7 @@ batScreen *dischargingScreen::process(const CurrentState &s)
     // Take the wiring drop into account
   
     
-    if(avgV<_config->minimumVoltage)
+    if(avgV<_config->userSettings.minimumVoltage)
     {
         return goToEnd(END_VOLTAGE_LOW);
     }
@@ -326,7 +330,7 @@ void dischargingScreen::draw()
    _tft->myDrawString(buffer);   
    _tft->setCursor(160, 160+14*1);   
    _tft->setFontSize(TFT_eSPI_extended::SmallFont);
-   sprintf(buffer,"Wires = %d mO",_config->resistor1000);
+   sprintf(buffer,"Wires = %d mO",_config->userSettings.resistor1000);
    _tft->myDrawString(buffer);
    
    _tft->setFontSize(TFT_eSPI_extended::MediumFont);

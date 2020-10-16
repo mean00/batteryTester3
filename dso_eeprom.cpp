@@ -5,10 +5,12 @@
  ****************************************************/
 #include "EEPROM.h"
 #include "dso_eeprom.h"
-#define CURRENT_HASH 0xBEF0
+
 uint16_t calibrationHash;
 
-#define FINE_TUNE_OFFSET 64
+#define CUSTOM_START 20
+#define CURRENT_HASH 0xBEF1
+
 #if 0
     #define CHECK_READ(x) xAssert(x)
 #else
@@ -23,6 +25,37 @@ bool readValue(EEPROMClass &e2, int offset,int *value)
     CHECK_READ(EEPROM_OK==e2.read(2+offset,&v));
     *value=v;
     return true;
+}
+/**
+ * 
+ * @param value
+ * @return 
+ */
+bool DSOEeprom::read(int dex,int &value)
+{
+    EEPROMClass e2;
+    e2.init();
+    calibrationHash=e2.read(0);
+    if(calibrationHash!=CURRENT_HASH)
+    {
+        return false;
+    }
+    if(!readValue(e2,dex*2+CUSTOM_START,&value))
+        return false;
+    return true; 
+}
+/**
+ * 
+ * @param value
+ * @return 
+ */
+bool DSOEeprom::write(int dex,int &value)
+{
+    EEPROMClass e2;
+    e2.init();
+    if(FLASH_COMPLETE==e2.update(2+dex*2+CUSTOM_START,value))
+        return true;
+    return false;
 }
 
 /**

@@ -19,7 +19,7 @@ class finishedScreen : public batScreen
 public:
                            finishedScreen(   batConfig *c, EndOfChargeCause cause);
                       void draw();
-        virtual batScreen *process(const CurrentState &s); // return NULL if the current screen stays the same
+        virtual batScreen *process(); // return NULL if the current screen stays the same
         
 protected:
           EndOfChargeCause  _cause;          
