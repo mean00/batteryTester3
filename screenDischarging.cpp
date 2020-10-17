@@ -35,9 +35,10 @@ batScreen *dischargingScreen::goToEnd(EndOfChargeCause c)
  * That's why we need the voltage
  * @param currentMv
  */
-void dischargingScreen::updateTargetCurrent(int currentMv)
+void dischargingScreen::updateTargetCurrent()
 {
-    evaluateTargetAmp(currentMv);
+    resetAverage();
+    evaluateTargetAmp();
     gateCommand=computeGateCommand(_config->currentDischargeMa);
     originalGateCommand=gateCommand;
     _config->mcp->setVoltage(gateCommand);
@@ -51,10 +52,11 @@ dischargingScreen::dischargingScreen(   batConfig *c,int currentMv) : batScreen(
 {
     _config->sumMa=0;
     _config->targetDischargeMa=_config->userSettings.initialDischargeMa;
-    sampleIndex=-1;
     paused=false;    
-    updateTargetCurrent(currentMv);
+    updateTargetCurrent();
     resyncing=0;
+    range=RANGE_HIGH;
+    resetAverage();
     
 }
 
@@ -71,13 +73,17 @@ bool dischargingScreen::computeAverage(int mV,int mA,int &avgV, int &avgA)
 {
     if(-1==sampleIndex) // first sample
     {
-        resetAverage(mV,mA);
+        for(int i=0;i<AVERAGING_SAMPLE_COUNT;i++)
+        {
+            samplema[i]=mA;
+            samplemv[i]=mV;
+        }
+        sampleIndex=0;
     }
     samplema[sampleIndex]=mA;
     samplemv[sampleIndex]=mV;
     sampleIndex=(sampleIndex+1)%AVERAGING_SAMPLE_COUNT;
-    
-    if(sampleIndex!=1) return false;
+        
     
     avgA=0;
     avgV=0;
@@ -98,14 +104,9 @@ bool dischargingScreen::computeAverage(int mV,int mA,int &avgV, int &avgA)
  * @param mA
  * @return 
  */
-bool dischargingScreen::resetAverage(int mV, int mA)
+bool dischargingScreen::resetAverage()
 {
-      for(int i=0;i<AVERAGING_SAMPLE_COUNT;i++)
-        {
-            samplema[i]=mA;
-            samplemv[i]=mV;
-        }
-        sampleIndex=0;
+        sampleIndex=-1;
         return true;
 }
 
@@ -139,7 +140,7 @@ bool dischargingScreen::adjustGateVoltage(int avgV,int avgA)
  * @param leftRight
  * @return 
  */
-bool dischargingScreen::LeftOrRigh(int leftRight, int mV)
+bool dischargingScreen::LeftOrRigh(int leftRight)
 {
      // Increase/Decrease current
     if(leftRight)
@@ -150,7 +151,7 @@ bool dischargingScreen::LeftOrRigh(int leftRight, int mV)
         if(a!=_config->targetDischargeMa)
         {
             _config->targetDischargeMa=a;
-            updateTargetCurrent(mV);
+            updateTargetCurrent();
             updateInfo();
             draw();
         }
@@ -158,21 +159,24 @@ bool dischargingScreen::LeftOrRigh(int leftRight, int mV)
     return true;
 }
 /**
+ * 
+ * @return 
  */
-batScreen *dischargingScreen::process()
+bool dischargingScreen::processEvents()
 {
     bool pressed=false;;
     int leftRight=0;
-    CurrentState s;
-    readState(s);
-    int mV=s.mVoltage;
-    int mA=s.mCurrent;
+
+    
+    
     WavRotary::EVENTS evt=_config->rotary->readEvent();
     if(evt & WavRotary::SHORT_PRESS)
         pressed=true;
     if(evt & WavRotary::ROTARY_CHANGE)
         leftRight=_config->rotary->getCount();
 
+     if(!pressed && !leftRight)
+         return false; // nothing to do
 
     // toggle on /off pause mode
     if(pressed)
@@ -186,50 +190,65 @@ batScreen *dischargingScreen::process()
               _config->mcp->setVoltage(0);              
             }else
             { // Re-enable gate
-              updateTargetCurrent(mV);
-              delay(10);
+              updateTargetCurrent();
+              xDelay(10);
             }
             debounceTimer.reset();
             draw();
         }
     }
-    bool endHere=false;
     if(leftRight)
     {
-       LeftOrRigh(leftRight,mV);
-       endHere=true;
-    }
-    // Hold Off to let things stabilize
+       LeftOrRigh(leftRight);
+    }   
+    return true;
+}
+
+/**
+ * 
+ * @return 
+ */
+batScreen *dischargingScreen::process()
+{
+    CurrentState s;
+    readState(s);
+    int mV=s.mVoltage;
+    int mA=s.mCurrent;
+
+    // Wait for things to be taken into account
     if(resyncing)
     {
-        resyncing--;      
-        if(!resyncing)
-        {
-            resetAverage(mV,mA);
-        }
-        endHere=true;
+        xDelay(50);
+        resyncing--;
+        return NULL;
     }
-    if(endHere)
-        return NULL;
-  
-    // compute average A & V
-    Serial1.println(mV);
-    int avgA,avgV;
-    if(!computeAverage(mV,mA,avgV,avgA))
-        return NULL;
-    // and take wiring into account
-    float vDrop=(float)avgA*(float)_config->userSettings.resistor1000;
-    vDrop/=1000.; // Ohm->milliOhm
-    avgV=avgV+vDrop;    
-   
-    if(!smallTimer.elapsed())
-        return NULL;
+
     
+    
+    processEvents();
+  
     if(paused)
     {
         drawVoltageAndCurrent(s);
         return NULL;
     }
+
+    
+    // dont hammer the loop
+    if(!smallTimer.elapsed())
+    {
+        xDelay(10); // dont busy loop
+        return NULL;
+    }
+    smallTimer.nextPeriod(); // evert 100 ms we go here
+    
+    int avgA,avgV;
+    computeAverage(mV,mA,avgV,avgA);
+    // and take wiring into account
+    float vDrop=(float)avgA*(float)_config->userSettings.resistor1000;
+    vDrop/=1000.; // Ohm->milliOhm
+    avgV=avgV+vDrop;    
+   
    
     // Small adjustment to gate command
     CurrentState tmp;
@@ -238,23 +257,48 @@ batScreen *dischargingScreen::process()
     drawVoltageAndCurrent(tmp);    
    // adjustGateVoltage(avgV,avgA);
     
-#ifdef DEBUG
-    if(pressed)
-    {
-         return goToEnd(END_CURRENT_LOW);
-    }
-#endif    
    
-    if(paused)
+    // At high current, the voltage is unreliable due to parasitic resistance
+    // so as soon as the voltage goes "close" to 3V, we cap the current
+    // so that the actual battery voltage becomes a more reliable reading
+    // We keep margin so that it is safe-ish
+    switch(range)
     {
-        return NULL;
+        case RANGE_HIGH:
+                        int limit;
+                        if(_config->currentDischargeMa>700)
+                            limit=3100;
+                        else
+                            limit=3300;
+                        if(avgV<limit)
+                            if(_config->currentDischargeMa > 500)
+                                {
+                                    _config->targetDischargeMa = 500; // drop to 400 mA
+                                    updateTargetCurrent();
+                                    range=RANGE_MED;
+                                    resyncing=3;
+                                    return NULL;
+                                }
+                        break;
+        case RANGE_MED:
+                        if(avgV<3200)
+                            if(_config->currentDischargeMa > 250)
+                                {
+                                    _config->targetDischargeMa = 250; // drop to 400 mA
+                                    updateTargetCurrent();
+                                    range=RANGE_LOW;
+                                    resyncing=3;
+                                    return NULL;
+                                }
+                        break;
+        case RANGE_LOW:                        
+        default:
+            break;
+        
     }
-    if(avgA<_config->currentDischargeMa/2)
-    {
-        return goToEnd(END_CURRENT_LOW);
-    }
-    // Take the wiring drop into account
-  
+   
+   
+    
     
     if(avgV<_config->userSettings.minimumVoltage)
     {
@@ -348,10 +392,10 @@ batScreen *spawnNewDischarging(batConfig *c, int currentV)
  * @param currentV
  * @return 
  */
-bool     dischargingScreen::evaluateTargetAmp(int currentV)
+bool     dischargingScreen::evaluateTargetAmp()
 {
     // current V cannot be zero ! 800 mV at least
-    float maxAmp=(1000.*1000.*BAT_MAX_WATT)/(float)currentV; // in mA
+    float maxAmp=(1000.*1000.*BAT_MAX_WATT)/2500.; // in mA
     if(maxAmp<_config->targetDischargeMa)
         _config->currentDischargeMa=50+100*floor(maxAmp/100);
     else

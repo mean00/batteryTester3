@@ -14,15 +14,23 @@
 class dischargingScreen : public batScreen
 {
 public:
+    enum VOLTAGE_RANGE
+    {
+        RANGE_HIGH=0,
+        RANGE_MED=1,
+        RANGE_LOW=2
+                
+    };
                            dischargingScreen(   batConfig *c, int currentV);
                       void draw();
         virtual batScreen *process(); // return NULL if the current screen stays the same
         
 protected:
-                bool    evaluateTargetAmp(int currentV);
+                bool    evaluateTargetAmp();
                 int     computeGateCommand(int amp);
                 void    updateInfo();
-                bool    resetAverage(int mv, int mA);
+                bool    resetAverage();
+                bool    processEvents();
                 Timer   timer;
                 Timer   smallTimer,debounceTimer;
                 int     gateCommand;
@@ -30,11 +38,13 @@ protected:
                 batScreen *goToEnd(EndOfChargeCause cause); 
                 bool       computeAverage(int mV,int mA,int &avgV, int &avgA);
                 bool       adjustGateVoltage(int avgA,int avgV);
-                void       updateTargetCurrent(int currentMv);
-                bool       LeftOrRigh(int leftRight,int mv);
+                void       updateTargetCurrent();
+                bool       LeftOrRigh(int leftRight);
                 int        sampleIndex;
                 int        samplema[AVERAGING_SAMPLE_COUNT];
                 int        samplemv[AVERAGING_SAMPLE_COUNT];
                 bool       paused;
-                int        resyncing; // holdoff value
+                VOLTAGE_RANGE range;
+                int         resyncing;
+                
 };
