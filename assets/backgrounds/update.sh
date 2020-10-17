@@ -19,4 +19,11 @@ python3 convert.py $1.png generated/$1_compressed.h generated/$1_decl.h $1
 
 conv background
 conv li_ion
+convGif bat0
+convGif bat1
+convGif bat2
+convGif bat3
+convGif bat4
+convGif bat5
+convGif bat6
 

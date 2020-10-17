@@ -10,11 +10,16 @@
 #include "voltage.h"
 #include "simplerMCP4725.h"
 #include "wav_irotary.h"
+#include "bat0_decl.h"
 
 #define CURRENT_ERROR_MARGIN   2 // Error margin in mA
 #define REFRESH_PERIOD_IN_SEC 5 // Refresh mA count every x sec
+#define ANIMATE_TIMER 1 // Animate every x sec
+#define TUNE_TIMER   1
 
 #define DEBUG
+
+extern const uint8_t *bat[];
 
 /**
  * 
@@ -48,7 +53,8 @@ void dischargingScreen::updateTargetCurrent()
 /**
 
 */
-dischargingScreen::dischargingScreen(   batConfig *c,int currentMv) : batScreen(c),timer(REFRESH_PERIOD_IN_SEC),smallTimer(AVERAGING_SAMPLE_PERIOD,1),debounceTimer(100,1)
+dischargingScreen::dischargingScreen(   batConfig *c,int currentMv) : batScreen(c),timer(REFRESH_PERIOD_IN_SEC),smallTimer(AVERAGING_SAMPLE_PERIOD,1),debounceTimer(100,1),
+                                                                                            animateTimer(ANIMATE_TIMER),tuneTimer(TUNE_TIMER)
 {
     _config->sumMa=0;
     _config->targetDischargeMa=_config->userSettings.initialDischargeMa;
@@ -57,6 +63,7 @@ dischargingScreen::dischargingScreen(   batConfig *c,int currentMv) : batScreen(
     resyncing=0;
     range=RANGE_HIGH;
     resetAverage();
+    animation=ANIMATION_MAX-1;
     
 }
 
@@ -121,8 +128,8 @@ bool dischargingScreen::adjustGateVoltage(int avgV,int avgA)
 {
     // correct gate if needed
     int inc=0;
-    int tooLow=_config->currentDischargeMa-CURRENT_ERROR_MARGIN;
-    int tooHigh=_config->currentDischargeMa+CURRENT_ERROR_MARGIN;
+    int tooLow=_config->targetDischargeMa-CURRENT_ERROR_MARGIN;
+    int tooHigh=_config->targetDischargeMa+CURRENT_ERROR_MARGIN;
     if(avgA < tooLow)  inc=1;
     if(avgA > tooHigh) inc=-1;
     if(!inc) return false; // nothing to do
@@ -309,16 +316,36 @@ batScreen *dischargingScreen::process()
         return goToEnd(END_CURRENT_HIGH);
     }
     
-    
+    if(animateTimer.rdv())
+    {
+        animate();
+        animateTimer.nextPeriod();
+    }
+    if(tuneTimer.rdv())
+    {
+        this->adjustGateVoltage(avgV,avgA);
+        tuneTimer.nextPeriod();
+    }
     
     if(!timer.rdv()) return NULL;
     // update sumA
     _config->sumMa+=REFRESH_PERIOD_IN_SEC*avgA;
+    
+   
     timer.nextPeriod();   
     updateInfo();
     return NULL;
     
 }
+/**
+ * 
+ */
+void dischargingScreen::animate()
+{
+    _tft->drawRLEBitmap(bat0_width,bat0_height,160+30,114,ILI9341_BLACK,ILI9341_WHITE,bat[animation]);   
+    animation=(animation+(ANIMATION_MAX-1))%ANIMATION_MAX;    
+}
+
 /**
  * \fn updateInfo
  * \brief Redraw screen, lightweight version
@@ -380,6 +407,7 @@ void dischargingScreen::draw()
    _tft->setFontSize(TFT_eSPI_extended::MediumFont);
 
 #endif
+
 }
 /**
  */

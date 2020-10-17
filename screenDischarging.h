@@ -11,6 +11,8 @@
 #define AVERAGING_SAMPLE_COUNT 10
 #define AVERAGING_SAMPLE_PERIOD 100 // 100 ms
 
+#define ANIMATION_MAX 4
+
 class dischargingScreen : public batScreen
 {
 public:
@@ -31,8 +33,6 @@ protected:
                 void    updateInfo();
                 bool    resetAverage();
                 bool    processEvents();
-                Timer   timer;
-                Timer   smallTimer,debounceTimer;
                 int     gateCommand;
                 int     originalGateCommand;
                 batScreen *goToEnd(EndOfChargeCause cause); 
@@ -40,11 +40,18 @@ protected:
                 bool       adjustGateVoltage(int avgA,int avgV);
                 void       updateTargetCurrent();
                 bool       LeftOrRigh(int leftRight);
+                void        animate();
                 int        sampleIndex;
                 int        samplema[AVERAGING_SAMPLE_COUNT];
                 int        samplemv[AVERAGING_SAMPLE_COUNT];
                 bool       paused;
                 VOLTAGE_RANGE range;
                 int         resyncing;
+                int         animation;
+                
+                Timer   timer;
+                Timer   smallTimer,debounceTimer;
+                Timer   animateTimer;
+                Timer   tuneTimer;
                 
 };
