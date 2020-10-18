@@ -12,3 +12,7 @@ Shopping list :
 * LM358 dual opamp
 
 The schematics are in the schematics folder
+There is a 3D printable case in the enclosure folder (it's big)
+
+![screenshot](assets/github/pic.jpg?raw=true "front")
+
