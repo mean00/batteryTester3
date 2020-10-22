@@ -53,5 +53,6 @@ protected:
                 Timer   smallTimer,debounceTimer;
                 Timer   animateTimer;
                 Timer   tuneTimer;
+                int     iconColor;
                 
 };

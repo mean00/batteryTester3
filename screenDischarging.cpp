@@ -64,6 +64,7 @@ dischargingScreen::dischargingScreen(   batConfig *c,int currentMv) : batScreen(
     range=RANGE_HIGH;
     resetAverage();
     animation=ANIMATION_MAX-1;
+    iconColor=ILI9341_GREEN;
     
 }
 
@@ -196,9 +197,16 @@ bool dischargingScreen::processEvents()
               // stop gate
               _config->mcp->setVoltage(0);              
             }else
-            { // Re-enable gate
-              updateTargetCurrent();
-              xDelay(10);
+            {  // Restart after a pause
+              // Reset Timers
+                timer.reset();
+                smallTimer.reset();
+                debounceTimer.reset();
+                animateTimer.reset();
+                tuneTimer.reset();
+                // Re-enable gate
+                updateTargetCurrent();
+                xDelay(10);
             }
             debounceTimer.reset();
             draw();
@@ -284,17 +292,19 @@ batScreen *dischargingScreen::process()
                                     updateTargetCurrent();
                                     range=RANGE_MED;
                                     resyncing=3;
+                                    iconColor=ILI9341_YELLOW;
                                     return NULL;
                                 }
                         break;
         case RANGE_MED:
-                        if(avgV<3200)
+                        if(avgV<3100)
                             if(_config->currentDischargeMa > 250)
                                 {
                                     _config->targetDischargeMa = 250; // drop to 400 mA
                                     updateTargetCurrent();
                                     range=RANGE_LOW;
                                     resyncing=3;
+                                    iconColor=ILI9341_ORANGE;
                                     return NULL;
                                 }
                         break;
@@ -342,7 +352,7 @@ batScreen *dischargingScreen::process()
  */
 void dischargingScreen::animate()
 {
-    _tft->drawRLEBitmap(bat0_width,bat0_height,160+30,114,ILI9341_BLACK,ILI9341_WHITE,bat[animation]);   
+    _tft->drawRLEBitmap(bat0_width,bat0_height,160+30,114,ILI9341_BLACK,iconColor,bat[animation]);   
     animation=(animation+(ANIMATION_MAX-1))%ANIMATION_MAX;    
 }
 
@@ -397,7 +407,7 @@ void dischargingScreen::draw()
     sprintf(buffer,"Target = %d mA",_config->currentDischargeMa);
     _tft->myDrawString(buffer);
     _tft->setCursor(18, 160);       
-    sprintf(buffer,"Gate  = %d ",gateCommand);
+    sprintf(buffer,"Gate  = %d Bat R=%d mO",gateCommand,_config->batteryResistance);
    _tft->myDrawString(buffer);   
    _tft->setCursor(160, 160+14*1);   
    _tft->setFontSize(TFT_eSPI_extended::SmallFont);
