@@ -53,13 +53,7 @@ void calibrationScreen::calibrate()
     r-=_config->userSettings.resistor1000;
     if(r<0) r=0;
     
-    _config->userSettings.resistor1000=r;
-#if 0
-    _config->tft->drawNumber(_config->resistor1000,50,120,4);
-    _config->tft->drawNumber((int)deltaVoltage,50,50,4);
-    _config->tft->drawNumber((int)deltaAmp,50,70,4);
-    delay(10000);
-#endif
+    _config->batteryResistance=r;
 }
 
 static int getCommand(int v)
@@ -96,26 +90,11 @@ void calibrationScreen::sample(int cmd,int &a, int &v)
 
 batScreen *calibrationScreen::process()
 {     
-#if 0
     sample(200,amp1,voltage1);
     sample(500,amp2,voltage2);            
     // set gate to 0
     _config->mcp->setVoltage(0); 
     calibrate();
-    char st[80];
-    sprintf(st,"V=%d A=%d",voltage1,amp1);
-    _tft->setCursor(30,80);
-    _tft->myDrawString(st);
-
-    sprintf(st,"V=%d A=%d",voltage2,amp2);
-    _tft->setCursor(30,120);
-    _tft->myDrawString(st);
-
-    sprintf(st,"R=%d ",_config->resistor1000);
-    _tft->setCursor(30,170);
-    _tft->myDrawString(st);
-    xDelay(2000);
-#endif
     return  spawnNewDischarging(_config,voltage1);
 }
 /**
