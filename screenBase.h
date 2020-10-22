@@ -29,6 +29,7 @@ public:
     myMCP4725       *mcp;
     WavRotary       *rotary;
     simpler_INA219  *ina219;
+    int             batteryResistance;
 };
 
 
