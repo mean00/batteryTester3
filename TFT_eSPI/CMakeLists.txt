@@ -5,7 +5,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 SET(SRCS
         ${SUB}/TFT_eSPI.cpp
         ${SUB}/TFT_eSPI_draw.cpp
-      //  ${SUB}/TFT_eSPI_font.cpp
+      #  ${SUB}/TFT_eSPI_font.cpp
         TFT_eSPI_extended.cpp
         TFT_eSPI_extended_glyph.cpp
         TFT_eSPI_extended_glyph_hl.cpp

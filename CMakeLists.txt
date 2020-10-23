@@ -3,7 +3,6 @@ SET(PLATFORM_ARCHITECTURE "STM32F1")
 # Do we have patch around ?
 #
 include(./platformConfig.cmake)
-
 cmake_minimum_required(VERSION 3.0)
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)

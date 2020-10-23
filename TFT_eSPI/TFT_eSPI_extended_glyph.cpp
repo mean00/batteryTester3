@@ -127,5 +127,19 @@ int TFT_eSPI_extended::myDrawChar(int x, int y, unsigned char c,  int color, int
     }   
     return glyph->xAdvance;
 }
+#define STUBB(x) x {xAssert(0);}
 
+STUBB( size_t  TFT_eSPI::write(uint8_t c))
+//STUBB( int16_t TFT_eSPI::drawChar(unsigned short, long, long))
+STUBB( void    TFT_eSPI::drawChar(int32_t x, int32_t y, uint16_t c, uint32_t color, uint32_t bg, uint8_t size) )
+STUBB( void    TFT_eSPI::drawChar1(int32_t x, int32_t y, uint16_t c, uint32_t color, uint32_t bg, uint8_t size) )
+
+STUBB(int16_t  TFT_eSPI::drawChar(uint16_t uniCode, int32_t x, int32_t y, uint8_t font))
+STUBB(int16_t  TFT_eSPI::drawChar(uint16_t uniCode, int32_t x, int32_t y))
+
+//STUBB( void TFT_eSPI::drawChar1(long, long, unsigned short, unsigned long, unsigned long, unsigned char) )
+//int16_t TFT_eSPI::drawChar(short unsigned , long, long)
+//{
+    //xAssert(0);
+//}
 // EOF
