@@ -25,3 +25,6 @@
 [submodule "embedded_printf"]
 	path = embedded_printf
 	url = https://github.com/mpaland/printf
+[submodule "TFT_eSPI"]
+	path = TFT_eSPI
+	url = https://github.com/mean00/TFT_eSPI.git

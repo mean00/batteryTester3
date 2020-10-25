@@ -117,7 +117,7 @@ void MainTask::initTft()
     digitalWrite(TFT_RST,HIGH);
     spiMutex=new xMutex();
 
-    tft = new TFT_eSPI_extended(spiMutex);
+    tft = new TFT_eSPI_extended(spiMutex,240,320,TFT_CS,TFT_DC,TFT_RST                        );
     
     tft->init();  
     tft->setRotation(3);
