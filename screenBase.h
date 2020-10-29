@@ -10,7 +10,7 @@
 
 */
 #include "settings.h"
-#include "TFT_eSPI_extended.h"
+#include "TFT_eSPI_stm32duino.h"
 class myMCP4725;
 class WavRotary;
 class simpler_INA219;
@@ -25,7 +25,7 @@ public:
     float           sumMa;
     int             targetDischargeMa;
     int             currentDischargeMa;
-    TFT_eSPI_extended  *tft;
+    TFT_eSPI        *tft;
     myMCP4725       *mcp;
     WavRotary       *rotary;
     simpler_INA219  *ina219;
@@ -70,11 +70,11 @@ protected:
                 bool readState(CurrentState &s);
 protected:
         batConfig *_config;
-        TFT_eSPI_extended   *_tft;
+        TFT_eSPI   *_tft;
 };
 
-void myPrettyPrint(TFT_eSPI_extended *tft,int val,int x,int y,const char *unit);
-void myBoundPrettyPrint(TFT_eSPI_extended *_tft,int val,int x,int y,const char *unit, int maxWidth);
+void myPrettyPrint(TFT_eSPI *tft,int val,int x,int y,const char *unit);
+void myBoundPrettyPrint(TFT_eSPI *_tft,int val,int x,int y,const char *unit, int maxWidth);
 
 batScreen  *spawnSetupScreen(   batConfig *c);
 // EOF

@@ -17,7 +17,7 @@
  * @param y
  * @param unit
  */
-void myPrettyPrint(TFT_eSPI_extended *_tft,int val,int x,int y,const char *unit)
+void myPrettyPrint(TFT_eSPI *_tft,int val,int x,int y,const char *unit)
 {
      char printBuffer[256];
      char ext[10];
@@ -44,7 +44,7 @@ void myPrettyPrint(TFT_eSPI_extended *_tft,int val,int x,int y,const char *unit)
  * @param unit
  * @param maxWidth
  */
-void myBoundPrettyPrint(TFT_eSPI_extended *_tft,int val,int x,int y,const char *unit, int maxWidth)
+void myBoundPrettyPrint(TFT_eSPI *_tft,int val,int x,int y,const char *unit, int maxWidth)
 {
      char printBuffer[256];
      char ext[10];

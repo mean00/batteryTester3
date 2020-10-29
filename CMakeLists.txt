@@ -10,15 +10,17 @@ include(cmake_tools)
 include(FindPatch)
 SET(CMAKE_TOOLCHAIN_FILE cmake/ArduinoToolchain.cmake)
 Project("BatteryTester" C CXX ASM)
-include(cmake_tools)
 
-#Patch arduino_stm32 if need be
+
+# -- Patch arduino_stm32 if need be-- 
 IF(NOT EXISTS "${PLATFORM_PATH}/patched")
     MESSAGE(STATUS "Patching file in ${PLATFORM_PATH} to add gd32f303 support")
     patch_file_p(2 "${PLATFORM_PATH}" "${CMAKE_SOURCE_DIR}/patches/spi_dma_async_patch2.diff")
     file(WRITE "${PLATFORM_PATH}/patched" "patched")
 ENDIF(NOT EXISTS "${PLATFORM_PATH}/patched")
+# -- Patch arduino_stm32 if need be-- 
 
+include(cmake_tools)
 
 
 SET(EXTENSION             "_STM32F103")
@@ -35,7 +37,7 @@ SET(libPrefix ${ARDUINO_DEFAULT_BOARD}_)
 #
 MESSAGE(STATUS "**** Configuration is ** ${CONFIGURATION} **")
 SET(SUB_COMPONENTS FreeRTOS RotaryEncoder  )
-SET(SUB_LIBRARIES xpt2046 TFT_eSPI )
+SET(SUB_LIBRARIES xpt2046  TFT_eSPI )
 
 add_subdirectory(assets)
 
@@ -52,7 +54,6 @@ include_directories(simpler_INA219)
 
 # Build 
 add_subdirectory(XPT2046) # Physical folder name
-add_subdirectory(TFT_eSPI)
 FOREACH(comp ${SUB_LIBRARIES} ) # Logical name    
     IMPORT_LIBRARY(${comp})
 ENDFOREACH(comp ${SUB_LIBRARIES} )

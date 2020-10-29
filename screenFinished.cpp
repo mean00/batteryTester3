@@ -54,12 +54,12 @@ void finishedScreen::draw()
     float f=_config->sumMa;
     f/=3600.;
     sprintf(buffer,"Cap : %04d mA",(int)f);
-    _tft->setFontSize(TFT_eSPI_extended::BigFont);
+    _tft->setFontSize(TFT_eSPI::BigFont);
     _tft->setCursor(4, LINE(0));   
     _tft->myDrawString(buffer);
     
     // Duration
-    _tft->setFontSize(TFT_eSPI_extended::MediumFont);
+    _tft->setFontSize(TFT_eSPI::MediumFont);
 
     int mn=_config->duration;
     int h;

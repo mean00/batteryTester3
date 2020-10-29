@@ -30,7 +30,7 @@ void Item::drawBoundingRectangle()
 }
 /**
  */
- TunableItem::TunableItem(  TFT_eSPI_extended *tft,int line,int *value, int mn, int mx, int inc, const char *name, const char *unit) : Item(tft,line)
+ TunableItem::TunableItem(  TFT_eSPI *tft,int line,int *value, int mn, int mx, int inc, const char *name, const char *unit) : Item(tft,line)
  {
      _min=mn;
      _max=mx;

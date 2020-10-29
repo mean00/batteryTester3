@@ -17,7 +17,7 @@ enum ItemState
 class Item
 {
 public:
-                    Item(  TFT_eSPI_extended *tft,int line) {item_tft=tft;_line=line;_state=StateNormal;}
+                    Item(  TFT_eSPI *tft,int line) {item_tft=tft;_line=line;_state=StateNormal;}
     virtual         ~Item() {}
     virtual void    setState(ItemState state) {_state=state;}
     virtual void    run(int leftright) {};
@@ -25,14 +25,14 @@ public:
     virtual void    drawBoundingRectangle();
 protected:
   ItemState         _state;  
-  TFT_eSPI_extended *item_tft;
+  TFT_eSPI          *item_tft;
   int               _line;
 };
 //
 class SimpleItem : public Item
 {
 public:
-                    SimpleItem(  TFT_eSPI_extended *tft, int line,const char *name ) : Item(tft,line) {_name=name;}
+                    SimpleItem(  TFT_eSPI *tft, int line,const char *name ) : Item(tft,line) {_name=name;}
     virtual         ~SimpleItem() {}    
     virtual void    run(int leftright) {};
     virtual void    drawItem();    
@@ -45,7 +45,7 @@ protected:
 class TunableItem : public Item
 {
 public:
-                TunableItem(TFT_eSPI_extended *tft,int line,int *value, int mn, int mx, int inc, const char *name, const char *unit);                      
+                TunableItem(TFT_eSPI *tft,int line,int *value, int mn, int mx, int inc, const char *name, const char *unit);                      
         void    drawItem();
         void    update();
         void    run(int leftright);

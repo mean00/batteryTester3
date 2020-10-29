@@ -22,7 +22,7 @@ extern const GFXfont FreeSans24pt7b ;
 extern const GFXfont FreeSans18pt7b ;
 extern const GFXfont FreeSans9pt7b ;
 
-extern void touchCalibration(XPT2046 *xpt, TFT_eSPI_extended *tft);
+extern void touchCalibration(XPT2046 *xpt, TFT_eSPI *tft);
 
 
 //#define TEST_DIS 
@@ -88,7 +88,7 @@ public:
             void    initTft();
             void    loop(void) ;
 protected:
-            TFT_eSPI_extended    *tft=NULL;
+            TFT_eSPI             *tft=NULL;
             WavRotary            *rotary=NULL;
             simpler_INA219       *ina219=NULL;
             myMCP4725            *mcp4725=NULL;
@@ -117,14 +117,14 @@ void MainTask::initTft()
     digitalWrite(TFT_RST,HIGH);
     spiMutex=new xMutex();
 
-    tft = new TFT_eSPI_extended(spiMutex,240,320,TFT_CS,TFT_DC,TFT_RST                        );
+    tft = new TFT_eSPI_stm32duino(SPI,spiMutex,240,320,TFT_CS,TFT_DC,TFT_RST);
     
     tft->init();  
     tft->setRotation(3);
     tft->fillScreen(ILI9341_BLACK);
         
     tft->setFontFamily(&FreeSans9pt7b,&FreeSans18pt7b,&FreeSans24pt7b);
-    tft->setFontSize(TFT_eSPI_extended::MediumFont);
+    tft->setFontSize(TFT_eSPI::MediumFont);
 }
 /**
  * 

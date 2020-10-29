@@ -373,13 +373,13 @@ void dischargingScreen::updateInfo()
     c/=3600.;
     
     sprintf(buffer,"%04d mA/h ",(int)c); // 10 sec -> hour
-    _tft->setFontSize(TFT_eSPI_extended::BigFont);
+    _tft->setFontSize(TFT_eSPI::BigFont);
     _tft->setCursor(18, 60);       
     _tft->myDrawString(buffer);
     
     h=mn/60;
     mn-=h*60;
-    _tft->setFontSize(TFT_eSPI_extended::MediumFont);
+    _tft->setFontSize(TFT_eSPI::MediumFont);
     sprintf(buffer,"%02d:%02d:%02d",h,mn,sec);
     _tft->setCursor(18, 120);       
     _tft->myDrawString(buffer);
@@ -403,18 +403,18 @@ void dischargingScreen::draw()
     updateInfo();
 #ifdef DEBUG        
     _tft->setCursor(18, 160+14);   
-    _tft->setFontSize(TFT_eSPI_extended::SmallFont);
+    _tft->setFontSize(TFT_eSPI::SmallFont);
     sprintf(buffer,"Target = %d mA",_config->currentDischargeMa);
     _tft->myDrawString(buffer);
     _tft->setCursor(18, 160);       
     sprintf(buffer,"Gate  = %d Bat R=%d mO",gateCommand,_config->batteryResistance);
    _tft->myDrawString(buffer);   
    _tft->setCursor(160, 160+14*1);   
-   _tft->setFontSize(TFT_eSPI_extended::SmallFont);
+   _tft->setFontSize(TFT_eSPI::SmallFont);
    sprintf(buffer,"Wires = %d mO",_config->userSettings.resistor1000);
    _tft->myDrawString(buffer);
    
-   _tft->setFontSize(TFT_eSPI_extended::MediumFont);
+   _tft->setFontSize(TFT_eSPI::MediumFont);
 
 #endif
 

@@ -4,7 +4,7 @@
  * (c) mean 2018 fixounet@free.fr
  *****************************************************/
 #include "xpt2046.h"
-#include "TFT_eSPI_extended.h"
+#include "TFT_eSPI.h"
 #include "dso_eeprom.h"
 #include "dso_debug.h"
 /**
@@ -15,7 +15,7 @@
 class calibration
 {
 public:
-        calibration(XPT2046 *x, TFT_eSPI_extended *t)
+        calibration(XPT2046 *x, TFT_eSPI *t)
         {
             xpt=x;
             tft=t;
@@ -83,15 +83,15 @@ public:
 
         }
 protected:
-           XPT2046 *xpt;
-           TFT_eSPI_extended *tft;
+           XPT2046  *xpt;
+           TFT_eSPI *tft;
            int      calibrationData[8];
 };
 
 /**
  * 
  */
-void touchCalibration(XPT2046 *xpt, TFT_eSPI_extended *tft)
+void touchCalibration(XPT2046 *xpt, TFT_eSPI *tft)
 {
   calibration c(xpt,tft);
   c.calibrate();  
