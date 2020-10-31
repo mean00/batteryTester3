@@ -6,8 +6,10 @@
 
 #include "screenInclude.h"
 #include "background_decl.h"
+#if 0
 #include "simplerMCP4725.h"
 #include "simpler_INA219.h"
+#endif
 
 /**
  * 
@@ -94,7 +96,9 @@ void batScreen::drawVoltageAndCurrent(const CurrentState &s)
 
 void batScreen::disableCurrent()
 {
+#if 0
     _config->mcp->setVoltage(0);
+#endif
 }
 /**
  */
@@ -111,8 +115,10 @@ void batScreen::setTitle(int color, int bgColor,int x, const char *title)
  */
 bool batScreen::readState(CurrentState &s)
 {
+#if 0
    s.mCurrent=_config->ina219->getCurrent_mA();
    s.mVoltage=_config->ina219->getBusVoltage_V()*1000.;
+#endif
    return true;
 }
 // EOF

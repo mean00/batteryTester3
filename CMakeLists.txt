@@ -49,8 +49,6 @@ include_directories(FreeRTOS/Source/portable/Stm32duino/)
 include_directories(RotaryEncoder/)
 include_directories(assets/backgrounds/generated)
 
-include_directories(simplerMCP4725)
-include_directories(simpler_INA219)
 
 # Build 
 add_subdirectory(XPT2046) # Physical folder name

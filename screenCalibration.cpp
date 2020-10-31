@@ -8,8 +8,6 @@
 #include "voltage.h"
 #include "screenCalibration.h"
 #include "ad_timer.h"
-#include "simplerMCP4725.h"
-#include "simpler_INA219.h"
 
 extern batScreen *spawnNewDischarging(batConfig *c, int mV);
 
@@ -25,7 +23,9 @@ batScreen *spawnNewCalibration(batConfig *c)
  */
 calibrationScreen::calibrationScreen(batConfig *c) : batScreen(c)
 {
+#if 0
     _config->mcp->setVoltage(0); 
+#endif
     voltage1=voltage2=0;
     amp1=amp2=0;
 }
@@ -67,13 +67,17 @@ void calibrationScreen::sample(int cmd,int &a, int &v)
 {
     a=0;
     v=0;
+#if 0
      _config->mcp->setVoltage(getCommand(cmd));
+#endif
      xDelay(500);
     for(int i=0;i<OVERSAMP;i++)
     {
         int ma,mv;
+#if 0
         mv=_config->ina219->getBusVoltage_V()*1000.;
         ma=_config->ina219->getCurrent_mA();
+#endif
        
         v+=mv;
         a+=ma;
@@ -93,7 +97,9 @@ batScreen *calibrationScreen::process()
     sample(200,amp1,voltage1);
     sample(500,amp2,voltage2);            
     // set gate to 0
+#if 0
     _config->mcp->setVoltage(0); 
+#endif
     calibrate();
     return  spawnNewDischarging(_config,voltage1);
 }

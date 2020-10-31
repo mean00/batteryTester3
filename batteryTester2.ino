@@ -8,8 +8,6 @@
 #include <Wire.h>
 #include "SPI.h"
 #include "wav_irotary.h"
-#include "simpler_INA219.h"
-#include "simplerMCP4725.h"
 
 extern void mySetup();
 extern void myLoop();

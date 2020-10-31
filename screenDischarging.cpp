@@ -8,7 +8,6 @@
 #include "screenDischarging.h"
 #include "screenError.h"
 #include "voltage.h"
-#include "simplerMCP4725.h"
 #include "wav_irotary.h"
 #include "bat0_decl.h"
 
@@ -46,7 +45,9 @@ void dischargingScreen::updateTargetCurrent()
     evaluateTargetAmp();
     gateCommand=computeGateCommand(_config->currentDischargeMa);
     originalGateCommand=gateCommand;
+#if 0
     _config->mcp->setVoltage(gateCommand);
+#endif
     resyncing=3; // wait a bit for stuff to stabilize
 }
 
@@ -140,7 +141,9 @@ bool dischargingScreen::adjustGateVoltage(int avgV,int avgA)
     if( er>5. ) // Dont exceed 5%
         return false;    
     gateCommand+=inc;
+#if 0
     _config->mcp->setVoltage(gateCommand);
+#endif
     return true;
 }
 /**
@@ -195,7 +198,9 @@ bool dischargingScreen::processEvents()
             if(paused)
             {
               // stop gate
+#if 0
               _config->mcp->setVoltage(0);              
+#endif
             }else
             {  // Restart after a pause
               // Reset Timers

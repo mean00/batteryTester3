@@ -7,8 +7,6 @@
 #include <Wire.h>
 #include "SPI.h"
 #include "wav_irotary.h"
-#include "simpler_INA219.h"
-#include "simplerMCP4725.h"
 #include "push_button.h"
 #include "screenBase.h"
 #include "screenIdle.h"
@@ -90,8 +88,8 @@ public:
 protected:
             TFT_eSPI             *tft=NULL;
             WavRotary            *rotary=NULL;
-            simpler_INA219       *ina219=NULL;
-            myMCP4725            *mcp4725=NULL;
+            //simpler_INA219       *ina219=NULL;
+            //myMCP4725            *mcp4725=NULL;
             batScreen            *currentScreen=NULL;
             XPT2046              *xpt2046=NULL;
             int                  gateVoltage=0;    
@@ -174,11 +172,13 @@ void    MainTask::run(void)
   
   
   
-  
+ #if 0 
   BootSequence("MCP4725",30);
   mcp4725=new myMCP4725(Wire,MCP7245_I2C_ADR);
   mcp4725->setVoltage(0); 
   config.mcp=mcp4725;
+#endif
+
   config.tft=tft;
   
   
@@ -187,12 +187,13 @@ void    MainTask::run(void)
   rotary->start();
   
   config.rotary=rotary;
-  
+ #if 0 
 #ifndef DISABLE_INA219  
   BootSequence("Ina219",20);
   ina219=new simpler_INA219(); //INA219_I2C_ADR,100); // 100 mOhm
   config.ina219=ina219;
 #endif  
+#endif
   
 #ifndef DISABLE_INA219  
   BootSequence("Zero",40);
@@ -211,9 +212,10 @@ void    MainTask::run(void)
   currentScreen->draw();
   #endif    
   
-  
+ #if 0 
   ina219->autoZero();
   ina219->setMultiSampling(2);   
+#endif
   config.userSettings.loadSettings();
   
   while(1)
