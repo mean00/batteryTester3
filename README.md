@@ -1,3 +1,5 @@
+*** THIS IS VERY MUCH WORK IN PROGRESS , DONT EVEN TRY TO COMPILE IT **
+
 This is a very simple Lithium/IOn battery tester, it discharges the battery to compute its capacity.
 It does constant current discharge and uses a large TFT screen (ILI9341).
 It is powered by a stm32F1, an atmel chip is not powerful enough to drive such a screen.
