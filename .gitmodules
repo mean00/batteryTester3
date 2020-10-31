@@ -7,15 +7,9 @@
 [submodule "Arduino_STM32"]
 	path = Arduino_STM32
 	url = https://github.com/rogerclarkmelbourne/Arduino_STM32
-[submodule "simpler_INA219"]
-	path = simpler_INA219
-	url =  https://github.com/mean00/simpler_INA219.git
 [submodule "RotaryEncoder"]
 	path = RotaryEncoder
 	url = https://github.com/mean00/RotaryEncoder_FreeRTOS.git
-[submodule "simplerMCP4725"]
-	path = simplerMCP4725
-	url =  https://github.com/mean00/simplerMCP4725.git
 [submodule "TFT_eSPI/tft"]
 	path = TFT_eSPI/tft
 	url = git@github.com:mean00/TFT_eSPI.git
