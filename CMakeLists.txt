@@ -36,7 +36,7 @@ set(ARDUINO_CPUMENU .menu.cpu.${ARDUINO_CPU})
 SET(libPrefix ${ARDUINO_DEFAULT_BOARD}_)
 #
 MESSAGE(STATUS "**** Configuration is ** ${CONFIGURATION} **")
-SET(SUB_COMPONENTS FreeRTOS RotaryEncoder  )
+SET(SUB_COMPONENTS FreeRTOS RotaryEncoder adc )
 SET(SUB_LIBRARIES xpt2046  TFT_eSPI )
 
 add_subdirectory(assets)
@@ -48,6 +48,7 @@ include_directories(FreeRTOS/)
 include_directories(FreeRTOS/Source/portable/Stm32duino/)
 include_directories(RotaryEncoder/)
 include_directories(assets/backgrounds/generated)
+include_directories(utils)
 
 
 # Build 
