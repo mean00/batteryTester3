@@ -22,21 +22,8 @@ extern const GFXfont FreeSans9pt7b ;
 
 extern void touchCalibration(XPT2046 *xpt, TFT_eSPI *tft);
 
-
+#include "myPinout.h"
 //#define TEST_DIS 
-
-// ILI9341 is using HW SPI + those pins
-#define TFT_DC          PB0
-#define TFT_RST         PB1
-#define TFT_CS          PB10
-
-#define INA219_I2C_ADR  0x40
-#define MCP7245_I2C_ADR 0x60
-
-// TOUCH SCREEN
-#define TOUCH_CS        PB11
-#define TOUCH_IRQ       PB8
-
 
 
 //
@@ -182,27 +169,10 @@ void    MainTask::run(void)
   config.tft=tft;
   
   
-  BootSequence("Rotary",10);
-  rotary=new WavRotary(PA2,PA1,PA0);
-  rotary->start();
-  
-  config.rotary=rotary;
- #if 0 
-#ifndef DISABLE_INA219  
-  BootSequence("Ina219",20);
-  ina219=new simpler_INA219(); //INA219_I2C_ADR,100); // 100 mOhm
-  config.ina219=ina219;
-#endif  
-#endif
-  
-#ifndef DISABLE_INA219  
-  BootSequence("Zero",40);
-  delay(10); // no current, we can autocalibrate the ina
-  //ina219->autoZero();
-#endif
-#if 1
-  BootSequence("All ok",50);  
-  
+  while(1)
+    {
+        xDelay(10);
+    }    
   
 #ifdef TEST_DIS
   currentScreen=new dischargingScreen(   &config,4000);
@@ -210,7 +180,6 @@ void    MainTask::run(void)
   currentScreen =new idleScreen(&config);
 #endif    
   currentScreen->draw();
-  #endif    
   
  #if 0 
   ina219->autoZero();

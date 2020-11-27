@@ -1,0 +1,62 @@
+diff --git a/STM32F1/cores/maple/libmaple/i2c.c b/STM32F1/cores/maple/libmaple/i2c.c
+index d796e47..02bc8af 100644
+--- a/STM32F1/cores/maple/libmaple/i2c.c
++++ b/STM32F1/cores/maple/libmaple/i2c.c
+@@ -237,7 +237,7 @@ static void i2c_clear_busy_flag_erratum(const i2c_dev *dev) {
+  *        default values.
+  * @param dev Device to initialize.
+  */
+-void i2c_init(i2c_dev *dev) {
++__weak void i2c_init(i2c_dev *dev) {
+     rcc_clk_enable(dev->clk_id);    // The device's clock should enabled before we reset it
+     rcc_reset_dev(dev->clk_id);
+     _i2c_irq_priority_fixup(dev);
+@@ -465,7 +465,7 @@ int32 wait_for_state_change(i2c_dev *dev,
+  * IRQ handler for I2C master and slave.
+  * Handles transmission/reception.
+  */
+-void _i2c_irq_handler(i2c_dev *dev) {
++__weak void _i2c_irq_handler(i2c_dev *dev) {
+     // See Note in ST Specs:
+     //  Reading I2C_SR2 after reading I2C_SR1 clears the ADDR flag, even if the ADDR flag was
+     //  set after reading I2C_SR1. Consequently, I2C_SR2 must be read only when ADDR is found
+@@ -751,7 +751,7 @@ void _i2c_irq_handler(i2c_dev *dev) {
+  * Interrupt handler for I2C error conditions. Aborts any pending I2C
+  * transactions.
+  */
+-void _i2c_irq_error_handler(i2c_dev *dev) {
++__weak void _i2c_irq_error_handler(i2c_dev *dev) {
+     __IO uint32_t sr1 = dev->regs->SR1;
+     __IO uint32_t sr2 = dev->regs->SR2;
+ 
+diff --git a/STM32F1/cores/maple/libmaple/i2c_f1.c b/STM32F1/cores/maple/libmaple/i2c_f1.c
+index a0c9db9..335b635 100644
+--- a/STM32F1/cores/maple/libmaple/i2c_f1.c
++++ b/STM32F1/cores/maple/libmaple/i2c_f1.c
+@@ -57,7 +57,7 @@ static int i2c1_wants_remap(const i2c_dev *dev) {
+         (dev->scl_pin == 8);
+ }
+ 
+-void i2c_config_gpios(const i2c_dev *dev) {
++__weak void i2c_config_gpios(const i2c_dev *dev) {
+     if (i2c1_wants_remap(dev)) {
+         afio_remap(AFIO_REMAP_I2C1);
+     }
+@@ -65,7 +65,7 @@ void i2c_config_gpios(const i2c_dev *dev) {
+     gpio_set_mode(scl_port(dev), dev->scl_pin, GPIO_AF_OUTPUT_OD);
+ }
+ 
+-void i2c_master_release_bus(const i2c_dev *dev) {
++__weak void i2c_master_release_bus(const i2c_dev *dev) {
+     gpio_write_bit(scl_port(dev), dev->scl_pin, 1);
+     gpio_write_bit(sda_port(dev), dev->sda_pin, 1);
+     gpio_set_mode(scl_port(dev), dev->scl_pin, GPIO_OUTPUT_OD);
+@@ -97,7 +97,7 @@ __weak void __irq_i2c2_er(void) {
+  */
+ 
+ #if defined(_I2C_HAVE_IRQ_FIXUP) && (_I2C_HAVE_IRQ_FIXUP)
+-void _i2c_irq_priority_fixup(i2c_dev *dev) {
++__weak void _i2c_irq_priority_fixup(i2c_dev *dev) {
+     /*
+      * Important STM32 Errata:
+      *
