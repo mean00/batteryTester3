@@ -1,17 +1,11 @@
-OPTION(USE_GD30F103   "Use GD32F103 MCU" FALSE) 
-OPTION(USE_GD30F303   "Use GD32F303 MCU" FALSE) 
 # Select platform and installation for extra arduino files AND toolchain (compiler...)
-SET(PLATFORM_ARCHITECTURE "STM32F1")
 # Do we have patch around ?
 #
 include(cmake_utils/FindPatch.cmake)
 include(./platformConfig.cmake)
 cmake_minimum_required(VERSION 3.0)
+LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
-IF(USE_GD32F103 OR USE_GD32F303)
-    SET(MCU_SPEED             96000000)                 # Max speed, above 96M USB will not work (?)
-ENDIF(USE_GD32F103 OR USE_GD32F303)
-include(./platformConfig.cmake)
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 include(cmake_tools)
@@ -34,29 +28,20 @@ IF(NOT EXISTS "${PLATFORM_PATH}/patched2")
     file(WRITE "${PLATFORM_PATH}/patched2" "patched2")
 ENDIF(NOT EXISTS "${PLATFORM_PATH}/patched2")
 
-include(cmake_tools)
 
-Project("BatteryTester" C CXX ASM)
+
 # Board setup
-IF(USE_GD32F103)
-    SET(EXTENSION             "_GD32F103")
-    set(ARDUINO_DEFAULT_BOARD genericGD32F103C)        # Default Board ID, when not specified
-    set(ARDUINO_CPU           GD32F103C8)
-ELSEIF(USE_GD32F303)
-    SET(EXTENSION             "_GD32F303")
-    set(ARDUINO_DEFAULT_BOARD genericGD32F303C)        # Default Board ID, when not specified
-    set(ARDUINO_CPU           GD32F303C8)
-ELSE()
-    SET(EXTENSION             "_STM32F103")
-    set(ARDUINO_LD_FILE      jtag)      # Use that instead of default jtag-c8 to get the full 128 kB
-    set(ARDUINO_DEFAULT_BOARD genericSTM32F103C)        # Default Board ID, when not specified
-    set(ARDUINO_CPU           STM32F103C8)
-ENDIF(USE_GD32F103)
+# Set config depending on the MCU selected
+include(select_mcu)
+
+set(ARDUINO_DEFAULT_BOARD ${X_ARDUINO_DEFAULT_BOARD})        # Default Board ID, when not specified
+set(ARDUINO_CPU           ${X_ARDUINO_CPU})
+SET(ARDUINO_UPLOAD_METHOD ${X_ARDUINO_UPLOAD_METHOD}) # Use blackmagic link, if you comment it out you'll use DFU => 8kB flash
+set(ARDUINO_DEFAULT_PORT ttyACM0) # Default Port, when not specified
 SET(ARDUINO_UPLOAD_METHOD BMP) # Use blackmagic link, if you comment it out you'll use DFU => 8kB flash
 
 #
 #print_board_list()
-set(ARDUINO_DEFAULT_PORT ttyACM0) # Default Port, when not specified
 set(ARDUINO_CPUMENU .menu.cpu.${ARDUINO_CPU})
 SET(libPrefix ${ARDUINO_DEFAULT_BOARD}_)
 #
@@ -113,6 +98,9 @@ FOREACH(comp ${SUB_LIBRARIES} )
 ENDFOREACH(comp ${SUB_LIBRARIES} )
 
 target_link_libraries(batTester${EXTENSION}  ${libPrefix}backgrounds)
+
+set(ARDUINO_DEFAULT_PORT ttyACM0) # Default Port, when not specified
+MESSAGE(STATUS "\tUsing ${EXTENSION} MCU ")
 
 
 # EOF
