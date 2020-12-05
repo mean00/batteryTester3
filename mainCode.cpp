@@ -144,7 +144,8 @@ void    MainTask::run(void)
     
   initTft();   
   tft->fillScreen(ILI9341_BLACK);
-    
+      tft->myDrawString("Hello there !");
+
   
   xpt2046=new XPT2046(SPI,TOUCH_CS,TOUCH_IRQ,2400*1000,spiMutex); // 2.4Mbits
   if(! DSOEeprom::read())
