@@ -1,6 +1,8 @@
 # Select platform and installation for extra arduino files AND toolchain (compiler...)
 # Do we have patch around ?
 #
+SET(PLATFORM_ARCHITECTURE "STM32F1")
+
 include(cmake_utils/FindPatch.cmake)
 include(./platformConfig.cmake)
 cmake_minimum_required(VERSION 3.0)
@@ -32,6 +34,7 @@ ENDIF(NOT EXISTS "${PLATFORM_PATH}/patched2")
 
 # Board setup
 # Set config depending on the MCU selected
+SET(PLATFORM_ARCHITECTURE "STM32F1")
 include(select_mcu)
 
 set(ARDUINO_DEFAULT_BOARD ${X_ARDUINO_DEFAULT_BOARD})        # Default Board ID, when not specified

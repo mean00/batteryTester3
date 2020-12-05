@@ -1,5 +1,5 @@
 diff --git a/STM32F1/libraries/SPI/src/SPI.cpp b/STM32F1/libraries/SPI/src/SPI.cpp
-index 9d7069b..b3236c3 100644
+index 9d7069b..ddfb77a 100644
 --- a/STM32F1/libraries/SPI/src/SPI.cpp
 +++ b/STM32F1/libraries/SPI/src/SPI.cpp
 @@ -565,8 +565,9 @@ uint8 SPIClass::dmaSendAsync(const void * transmitBuf, uint16 length, bool minc)
@@ -24,7 +24,7 @@ index 9d7069b..b3236c3 100644
      if (callback){
          switch (_currentSetting->spi_d->clk_id) {
              #if BOARD_NR_SPI >= 1
-@@ -639,16 +645,19 @@ void SPIClass::EventCallback() {
+@@ -639,7 +641,7 @@ void SPIClass::EventCallback() {
  
          if (_currentSetting->receiveCallback)
          {
@@ -33,11 +33,7 @@ index 9d7069b..b3236c3 100644
          }
          break;
      case SPI_STATE_TRANSMIT:
-         _currentSetting->state = SPI_STATE_READY;
-         spi_tx_dma_disable(_currentSetting->spi_d);
-+// MEANX : Detach will not disable the IRQ so if we alternate between sync and async transmit we'll get spurious interrupts
-+        nvic_irq_disable(_currentSetting->spiDmaDev->handlers[_currentSetting->spiTxDmaChannel - 1].irq_line);
-+///MEANX
+@@ -648,7 +650,7 @@ void SPIClass::EventCallback() {
          //dma_disable(_currentSetting->spiDmaDev, _currentSetting->spiTxDmaChannel);
          if (_currentSetting->transmitCallback)
          {
