@@ -1,4 +1,6 @@
-build
+build*
 nbproject
 platform*
 *.sw*
+*.net
+*.lib

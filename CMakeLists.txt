@@ -1,47 +1,28 @@
-# Select platform and installation for extra arduino files AND toolchain (compiler...)
-# Do we have patch around ?
-#
-SET(PLATFORM_ARCHITECTURE "STM32F1")
+ cmake_minimum_required(VERSION 3.0)
 
-include(cmake_utils/FindPatch.cmake)
-include(./platformConfig.cmake)
-cmake_minimum_required(VERSION 3.0)
 LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
-
-
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+include(select_mcu_stm32)
 include(cmake_tools)
-include(FindPatch)
+include(applyPatch)
+# Patch
+include(./platformConfig.cmake)
+
+
+APPLY_PATCH_IF_NEEDED(patched gd32_patch.diff              "add gd32f303 support") 
+APPLY_PATCH_IF_NEEDED(patched2 spi_dma_async_patch2.diff   "add cookie to spi callback ") 
+APPLY_PATCH_IF_NEEDED(patched3 weak_i2c.diff               "weaken i2c symbols") 
+
+
 SET(CMAKE_TOOLCHAIN_FILE cmake/ArduinoToolchain.cmake)
 Project("BatteryTester" C CXX ASM)
 
-#
-# Patch Arduino_stm32 if needed to add gd32f303 support
-#
-IF(NOT EXISTS "${PLATFORM_PATH}/patched")
-    MESSAGE(STATUS "Patching file in ${PLATFORM_PATH} to fix spi dma in async mode")
-    patch_file_p(2 "${PLATFORM_PATH}" "${CMAKE_SOURCE_DIR}/patches/spi_dma_async_patch2.diff")
-    file(WRITE "${PLATFORM_PATH}/patched" "patched")
-ENDIF(NOT EXISTS "${PLATFORM_PATH}/patched")
-
-IF(NOT EXISTS "${PLATFORM_PATH}/patched2")
-    MESSAGE(STATUS "Patching file in ${PLATFORM_PATH} to add gd32f303/103 support")
-    patch_file_p(2 "${PLATFORM_PATH}" "${CMAKE_SOURCE_DIR}/patches/gd32_patch.diff")
-    file(WRITE "${PLATFORM_PATH}/patched2" "patched2")
-ENDIF(NOT EXISTS "${PLATFORM_PATH}/patched2")
-
-
-
 # Board setup
 # Set config depending on the MCU selected
-SET(PLATFORM_ARCHITECTURE "STM32F1")
-include(select_mcu)
 
 set(ARDUINO_DEFAULT_BOARD ${X_ARDUINO_DEFAULT_BOARD})        # Default Board ID, when not specified
 set(ARDUINO_CPU           ${X_ARDUINO_CPU})
 SET(ARDUINO_UPLOAD_METHOD ${X_ARDUINO_UPLOAD_METHOD}) # Use blackmagic link, if you comment it out you'll use DFU => 8kB flash
 set(ARDUINO_DEFAULT_PORT ttyACM0) # Default Port, when not specified
-SET(ARDUINO_UPLOAD_METHOD BMP) # Use blackmagic link, if you comment it out you'll use DFU => 8kB flash
 
 #
 #print_board_list()
