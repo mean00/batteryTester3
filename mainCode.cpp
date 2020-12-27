@@ -15,7 +15,9 @@
 #include "RotaryEncoder/wav_irotary.h"
 #include "xpt2046.h"
 #include "dso_eeprom.h"
- 
+#include "batterySensor.h"
+#include "myPwm.h"
+
 extern const GFXfont FreeSans24pt7b ;
 extern const GFXfont FreeSans18pt7b ;
 extern const GFXfont FreeSans9pt7b ;
@@ -75,13 +77,12 @@ public:
 protected:
             TFT_eSPI             *tft=NULL;
             WavRotary            *rotary=NULL;
-            //simpler_INA219       *ina219=NULL;
-            //myMCP4725            *mcp4725=NULL;
             batScreen            *currentScreen=NULL;
             XPT2046              *xpt2046=NULL;
             int                  gateVoltage=0;    
             xMutex               *spiMutex;
             CurrentState         currentState;
+            BatterySensor        *batSensor;
 };
 
 
@@ -130,6 +131,11 @@ void mySetup()
 //  SPI.setClockDivider (SPI_CLOCK_DIV4); // Given for 10 Mhz...
   SPI.setClockDivider (SPI_CLOCK_DIV8); // Given for 10 Mhz...
     
+  // Shutdown ref
+  pinMode(PWM_PIN,OUTPUT);  
+  digitalWrite(PWM_PIN,0);
+
+  
   // Start freeRTOS
   MainTask *mainTask=new MainTask();
   vTaskStartScheduler();        
@@ -144,7 +150,7 @@ void    MainTask::run(void)
     
   initTft();   
   tft->fillScreen(ILI9341_BLACK);
-      tft->myDrawString("Hello there !");
+  tft->myDrawString("Hello there !");
 
   
   xpt2046=new XPT2046(SPI,TOUCH_CS,TOUCH_IRQ,2400*1000,spiMutex); // 2.4Mbits
@@ -154,22 +160,39 @@ void    MainTask::run(void)
         DSOEeprom::read();
   }
   
+ 
+  
+  // reconfigure gate as pwm
+ int scaler, ovf,cmp;
+
+  pinMode(PWM_PIN,PWM);  
+  pwmWrite(PWM_PIN,0);
+  myPwm(PWM_PIN,PWM_FQ);
+  pwmGetScaleOverFlowCompare(PWM_FQ,scaler,ovf,cmp);
+  pwmFromScalerAndOverflow(PWM_PIN,scaler,ovf);
+  pwmRestart(PWM_PIN);
+  pwmSetRatio(PWM_PIN, 0);
+ 
+  config.tft=tft;
+  
+  batSensor=new BatterySensor(ADC_VOLT_PIN,ADC_CURRENT_PIN);
+  
   xpt2046->setup((int *)DSOEeprom::calibration);
   xpt2046->setHooks(NULL);
   xpt2046->start();
   
   
-  
- #if 0 
-  BootSequence("MCP4725",30);
-  mcp4725=new myMCP4725(Wire,MCP7245_I2C_ADR);
-  mcp4725->setVoltage(0); 
-  config.mcp=mcp4725;
-#endif
+  float current,voltage;
+  char st[60];
+  while(1)
+  {
+        batSensor->getVoltageCurrent(voltage,current);        
+        tft->setCursor(10,160);
+        sprintf(st,"V:%2.2f, A:%2.2f\n",voltage,current);        
+        tft->myDrawString(st);        
+        xDelay(300);
+    }
 
-  config.tft=tft;
-  
-  
   while(1)
     {
         xDelay(10);

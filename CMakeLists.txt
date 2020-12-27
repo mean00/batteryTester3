@@ -43,6 +43,7 @@ include_directories(FreeRTOS/Source/portable/Stm32duino/)
 include_directories(RotaryEncoder/)
 include_directories(assets/backgrounds/generated)
 include_directories(utils)
+include_directories(adc)
 
 
 # Build 
@@ -65,7 +66,7 @@ generate_arduino_firmware(batTester${EXTENSION}
                 SKETCH batteryTester2.ino
                 SRCS screenCalibration.cpp 
                             mainCode.cpp push_button.cpp 
-                            screenIdle.cpp screenBase.cpp screenError.cpp screenSetup.cpp items.cpp screenDischarging.cpp screenFinished.cpp embedded_printf/printf.c    settings.cpp
+                            screenIdle.cpp screenBase.cpp screenError.cpp screenSetup.cpp items.cpp screenDischarging.cpp screenFinished.cpp embedded_printf/printf.c    settings.cpp batterySensor.cpp
                             dso_eeprom.cpp
                             dso_logger.cpp
                             calibration.cpp

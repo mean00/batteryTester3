@@ -24,3 +24,4 @@
 
 // Current regulation (PWM) pin
 #define PWM_PIN         PB0
+#define PWM_FQ  (20*1000)
