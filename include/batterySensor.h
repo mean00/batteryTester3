@@ -1,4 +1,6 @@
-#include "simpleADC.h"
+#include "lnArduino.h"
+#include "lnADC.h"
+
 
 /**
  * 
@@ -19,10 +21,10 @@ public:
 protected:
             bool           readVoltageCurrent(float &volt,float &current);
             void           run();
-            simpleAdc    *_adc;
-            int           _pinV, _pinA;
+            lnTimingAdc    *_adc;
             float         _vcc;
             float         _voltage,_current;
+            lnPin         _pins[2];
             
 protected:
             

@@ -6,7 +6,6 @@
 #include "xpt2046.h"
 #include "TFT_eSPI.h"
 #include "dso_eeprom.h"
-#include "dso_debug.h"
 /**
  * 
  * @param x

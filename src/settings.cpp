@@ -4,8 +4,7 @@
  * (c) mean 2018 fixounet@free.fr
  ****************************************************/
 
-#include <Wire.h>
-#include "SPI.h"
+#include "lnArduino.h"
 #include "settings.h"
 #include "dso_eeprom.h"
  

@@ -1,6 +1,5 @@
 
 #include "batterySensor.h"
-#include "dso_debug.h"
 #include "hwSettings.h"
 
 
@@ -26,13 +25,14 @@ static float averageMe(uint16_t *data, int nb)
  */
  BatterySensor::BatterySensor(int pinV, int pinA) :  xTask("BatSense",  3, 200)
  { 
-    pinMode(pinV,INPUT_ANALOG);
-    pinMode(pinA,INPUT_ANALOG);
+    lnPinMode(pinV,lnADC_MODE);
+    lnPinMode(pinA,lnADC_MODE);
      
-    _pinA=pinA;
-    _pinV=pinV;
-    _adc=new simpleAdc(_pinV);
+    _pins[0]=pinA;
+    _pins[1]=pinV;
+    _adc=new lnTimingAdc(0);
     _vcc=_adc->getVcc();
+     _adc-> setSource(3,3,1000,2,_pins);
     _voltage=0;
     _current=0;
  }
@@ -63,15 +63,10 @@ static float averageMe(uint16_t *data, int nb)
 bool  BatterySensor::rawRead( float &voltage,float &current)
 {
     
-    uint16_t *samples;
-    int nb=16;    
-    _adc->clearSamples();
-    _adc->changePin(_pinV);
-    if(!_adc->dualTimeSample(_pinA,nb,&samples,5000))
-    {
-         Logger("Failed\n");
-         return false;
-    }
+    uint16_t samples[16*2];
+    int nb=16;  
+
+    _adc->multiRead(16,samples);
     nb>>=1;       
     voltage=(averageMe(samples,nb)*_vcc)/4095.;    
     current=(averageMe(samples+1,nb)*_vcc)/4095.;

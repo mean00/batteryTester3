@@ -5,15 +5,17 @@
  ****************************************************/
 
 #pragma once
-#include "embedded_printf/printf.h"
+#include "lnArduino.h"
+
 /**
 
 */
 #include "settings.h"
-#include "TFT_eSPI_stm32duino.h"
+
 class myMCP4725;
 class WavRotary;
 class simpler_INA219;
+class TFT_eSPI;
 /**
  */
 class batConfig

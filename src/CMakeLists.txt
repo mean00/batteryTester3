@@ -3,7 +3,6 @@ ADD_LIBRARY(  sourceLib
             batterySensor.cpp
             calibration.cpp
             dso_eeprom.cpp
-            dso_logger.cpp
             heap.cpp
             items.cpp
             mainCode.cpp
