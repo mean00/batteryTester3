@@ -1,6 +1,3 @@
-[submodule "RotaryEncoder"]
-	path = RotaryEncoder
-	url = https://github.com/mean00/RotaryEncoder_FreeRTOS.git
 [submodule "TFT_eSPI/tft"]
 	path = TFT_eSPI/tft
 	url = git@github.com:mean00/TFT_eSPI.git
@@ -13,3 +10,6 @@
 [submodule "adc"]
 	path = adc
 	url = https://github.com/mean00/stm32duino_adc.git
+[submodule "lnArduino"]
+	path = lnArduino
+	url = https://github.com/mean00/lnArduino.git
