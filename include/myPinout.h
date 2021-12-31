@@ -25,3 +25,8 @@
 // Current regulation (PWM) pin
 #define PWM_PIN         PB0
 #define PWM_FQ  (20*1000)
+
+#define ROTARY_LEFT  PA14
+#define ROTARY_RIGHT PA15
+#define ROTARY_PUSH  PA13
+

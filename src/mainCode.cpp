@@ -4,22 +4,22 @@
  * (c) mean 2018 fixounet@free.fr
  ****************************************************/
 
-#include "wav_irotary.h"
+#include "RotaryEncoder.h"
 #include "push_button.h"
 #include "screenBase.h"
 #include "screenIdle.h"
 #include "screenDischarging.h"
-#include "RotaryEncoder/wav_irotary.h"
+#include "../assets/backgrounds/gfxfont.h"
 #include "xpt2046.h"
 #include "dso_eeprom.h"
 #include "batterySensor.h"
-#include "myPwm.h"
+#include "lnSPI.h"
 
 extern const GFXfont FreeSans24pt7b ;
 extern const GFXfont FreeSans18pt7b ;
 extern const GFXfont FreeSans9pt7b ;
 
-extern void touchCalibration(XPT2046 *xpt, TFT_eSPI *tft);
+//extern void touchCalibration(XPT2046 *xpt, TFT_eSPI *tft);
 
 #include "myPinout.h"
 //#define TEST_DIS 
@@ -57,7 +57,7 @@ void myLoop(void) ;
 /**
  * 
  */
-class MainTask : public xTask,XPT2046Hook
+class MainTask : public xTask//,XPT2046Hook
 {
 public:
             MainTask() : xTask("MainTask",10,400)
@@ -73,13 +73,15 @@ public:
             void    loop(void) ;
 protected:
             TFT_eSPI             *tft=NULL;
-            WavRotary            *rotary=NULL;
+            lnRotary             *rotary=NULL;
             batScreen            *currentScreen=NULL;
-            XPT2046              *xpt2046=NULL;
+         //   XPT2046              *xpt2046=NULL;
             int                  gateVoltage=0;    
             xMutex               *spiMutex;
             CurrentState         currentState;
             BatterySensor        *batSensor;
+            hwlnSPIClass         *spi;
+
 };
 
 
@@ -94,11 +96,18 @@ void MainTask::initTft()
         tft=NULL;
     }
     // Deep reset of screen
-    pinMode(TFT_RST,OUTPUT);
+    lnPinMode(TFT_RST,lnOUTPUT);
     digitalWrite(TFT_RST,LOW);
     delay(100);  
     digitalWrite(TFT_RST,HIGH);
     spiMutex=new xMutex();
+
+    spi=new hwlnSPIClass(0);
+    spi->begin();
+    spi->setBitOrder(SPI_MSBFIRST);
+    spi->setSpeed(20000);
+
+#if 0
 
     tft = new TFT_eSPI_stm32duino(SPI,spiMutex,240,320,TFT_CS,TFT_DC,TFT_RST);
     
@@ -108,43 +117,28 @@ void MainTask::initTft()
         
     tft->setFontFamily(&FreeSans9pt7b,&FreeSans18pt7b,&FreeSans24pt7b);
     tft->setFontSize(TFT_eSPI::MediumFont);
+#endif
 }
 /**
  * 
  */
-void mySetup() 
+void setup() 
 {
-  // switch to uart ASAP    
-  Serial.end();
-  Serial1.begin(115200);  //Wire.begin();
-  Serial.end();
-  Serial1.begin(115200);  
-    
-  Logger("Init"); 
-  
-  SPI.begin();
-  SPI.setBitOrder(MSBFIRST); // Set the SPI bit order
-  SPI.setDataMode(SPI_MODE0); //Set the  SPI data mode 0
-//  SPI.setClockDivider (SPI_CLOCK_DIV4); // Given for 10 Mhz...
-  SPI.setClockDivider (SPI_CLOCK_DIV8); // Given for 10 Mhz...
-    
   // Shutdown ref
-  pinMode(PWM_PIN,OUTPUT);  
+  lnPinMode(PWM_PIN,lnPWM);  
   digitalWrite(PWM_PIN,0);
-
-  
-  // Start freeRTOS
   MainTask *mainTask=new MainTask();
-  vTaskStartScheduler();        
+
 }
 /**
  * 
  */
 void    MainTask::run(void)
 {  
-  Wire.setClock(100*1000);
-  Wire.begin();
-    
+
+  rotary=new lnRotary(ROTARY_PUSH,ROTARY_LEFT,ROTARY_RIGHT);
+  rotary->start();
+  #if 0
   initTft();   
   tft->fillScreen(ILI9341_BLACK);
   tft->myDrawString("Hello there !");
@@ -212,6 +206,7 @@ void    MainTask::run(void)
   {
         loop();
   }  
+  #endif
 }
 /**
  * 
@@ -236,8 +231,8 @@ void MainTask::loop(void)
 /**
  * 
  */
-void myLoop()
+void loop()
 {
-    
+    xDelay(1000);
 }
 //--EOF

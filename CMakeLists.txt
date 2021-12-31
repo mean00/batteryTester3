@@ -39,19 +39,6 @@ include(${AF_FOLDER}/setup.cmake)
 
 SET(EXTENSION "_${LN_MCU}")
 
-IF(USE_VANILLA_HW)    
-    SET(EXTENSION "${EXTENSION}_vanilla")
-ELSE(USE_VANILLA_HW)    
-    ADD_DEFINITIONS("-DUSE_RXTX_PIN_FOR_ROTARY")
-    SET(EXTENSION "${EXTENSION}_mod")
-ENDIF(USE_VANILLA_HW)
-
-IF(USE_ROTARY_FULL_STEP)    
-    SET(EXTENSION "${EXTENSION}_fstep")
-ELSE(USE_ROTARY_FULL_STEP)    
-    ADD_DEFINITIONS("-DDSO_ROTARY_FULL_STEP")
-    SET(EXTENSION "${EXTENSION}_hstep")
-ENDIF(USE_ROTARY_FULL_STEP)
 
 
 math(EXPR MCU_SPEED_M "${LN_MCU_SPEED}/1000000")
@@ -61,24 +48,15 @@ SET(EXTENSION "${EXTENSION}_${MCU_SPEED_M}M")
 include_directories(src)
 
 #_______________________
-# FPU
-#_______________________
-IF("${LN_ARCH}" STREQUAL "RISCV")
-    SET(FP_LIB rvfp)
-ELSEIF("${LN_ARCH}" STREQUAL "ARM")
-    IF("${LN_MCU}" STREQUAL "M3")
-        SET(FP_LIB qfpm3)
-    ENDIF("${LN_MCU}" STREQUAL "M3")
-ENDIF("${LN_ARCH}" STREQUAL "RISCV")
-#_______________________
 #  Display
 #_______________________
-#include_directories(externals/simplerILI9341/platformExample/longanNano)
-#SET(ILI9341_DRIVER  platformExample/longanNano/gd32_8bits.cpp)
-#ADD_SUBDIRECTORY(externals/simplerILI9341) 
-#include_directories(externals/simplerILI9341)
+include_directories(externals/simplerILI9341/platformExample/longanNano)
+SET(ILI9341_DRIVER  platformExample/longanNano/gd32_spi.cpp)
+ADD_SUBDIRECTORY(externals/simplerILI9341) 
+include_directories(externals/simplerILI9341)
 #
 USE_LIBRARY(NeVerMind)
+USE_LIBRARY(RotaryEncoder)
 
 ADD_SUBDIRECTORY(assets) 
 ADD_SUBDIRECTORY(src)
@@ -87,9 +65,8 @@ ADD_SUBDIRECTORY(src)
 # Build
 #____________________
 GENERATE_GD32_FIRMWARE(lnDSO${EXTENSION})
-TARGET_LINK_LIBRARIES( lnDSO${EXTENSION}  captureLib )
-TARGET_LINK_LIBRARIES( lnDSO${EXTENSION}  sourceLib testLib)
-#TARGET_LINK_LIBRARIES( lnDSO${EXTENSION}  simplerILI9341 assets ${FP_LIB})
+TARGET_LINK_LIBRARIES( lnDSO${EXTENSION}  sourceLib )
+#TARGET_LINK_LIBRARIES( lnDSO${EXTENSION}  simplerILI9341 assets)
 
 # Summary
 MESSAGE(STATUS "Configuration:")
