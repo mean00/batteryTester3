@@ -1,9 +1,9 @@
 
 SET(SRCS assets.cpp fonts.cpp )
 
-generate_arduino_library(${libPrefix}backgrounds 
-                            SRCS ${SRCS}
-                            BOARD ${ARDUINO_DEFAULT_BOARD}
+ADD_LIBRARY(backgrounds 
+                             ${SRCS}
+                            
                         )
 include_directories(.)
-target_include_directories(${libPrefix}backgrounds  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})                        
+target_include_directories(backgrounds  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})                        

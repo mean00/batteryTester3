@@ -1,91 +1,99 @@
- cmake_minimum_required(VERSION 3.0)
+#-----------------------------------------------------------------------------
+#
+# CMakeLists for lnDSO
+# An opensource firmware for the DSO SHELL 150
+# With optional hardware mods :
+#   - Alternative rotary encoder wiring : MUCH Better, almost mandatory
+#
+#-----------------------------------------------------------------------------
 
-LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
-include(select_mcu_stm32)
-include(cmake_tools)
-include(applyPatch)
-# Patch
-include(./platformConfig.cmake)
+cmake_minimum_required(VERSION 3.0)
+MESSAGE(STATUS "===============")
+MESSAGE(STATUS "Starting lnDSO")
+MESSAGE(STATUS "===============")
 
+SET(AF_FOLDER  ${CMAKE_SOURCE_DIR}/lnArduino/)
+include(./mcuSelect.cmake)
+SET(CMAKE_TOOLCHAIN_FILE ${AF_FOLDER}/lnArduino.cmake)
 
-APPLY_PATCH_IF_NEEDED(patched gd32_patch.diff              "add gd32f303 support") 
-APPLY_PATCH_IF_NEEDED(patched2 spi_dma_async_patch2.diff   "add cookie to spi callback ") 
-APPLY_PATCH_IF_NEEDED(patched3 weak_i2c.diff               "weaken i2c symbols") 
+PROJECT(lnDSO NONE) # the NONE is very important !
 
+enable_language(C CXX ASM) # this is important too!
 
-SET(CMAKE_TOOLCHAIN_FILE cmake/ArduinoToolchain.cmake)
-Project("BatteryTester" C CXX ASM)
-
-# Board setup
-# Set config depending on the MCU selected
-
-set(ARDUINO_DEFAULT_BOARD ${X_ARDUINO_DEFAULT_BOARD})        # Default Board ID, when not specified
-set(ARDUINO_CPU           ${X_ARDUINO_CPU})
-SET(ARDUINO_UPLOAD_METHOD ${X_ARDUINO_UPLOAD_METHOD}) # Use blackmagic link, if you comment it out you'll use DFU => 8kB flash
-set(ARDUINO_DEFAULT_PORT ttyACM0) # Default Port, when not specified
+#____________________
+# Options
+#____________________
+OPTION(USE_VANILLA_HW "user unmodified pins for rotary encoder"             FALSE)
+OPTION(USE_ROTARY_FULL_STEP "Use full step for rotary encoder, else half step"  FALSE)
+OPTION(USE_VANILLA_HW   "Use unmodified rotary encoder"                     FALSE)
+OPTION(USE_USB          "Enable USB support"                                FALSE)
 
 #
-#print_board_list()
-set(ARDUINO_CPUMENU .menu.cpu.${ARDUINO_CPU})
-SET(libPrefix ${ARDUINO_DEFAULT_BOARD}_)
-#
-MESSAGE(STATUS "**** Configuration is ** ${CONFIGURATION} **")
-SET(SUB_COMPONENTS FreeRTOS RotaryEncoder adc )
-SET(SUB_LIBRARIES xpt2046  TFT_eSPI )
 
-add_subdirectory(assets)
-
-include_directories(${CMAKE_SOURCE_DIR}/stubs)
 include_directories(${CMAKE_SOURCE_DIR})
-include_directories(FreeRTOS/Source/include)
-include_directories(FreeRTOS/)
-include_directories(FreeRTOS/Source/portable/Stm32duino/)
-include_directories(RotaryEncoder/)
-include_directories(assets/backgrounds/generated)
-include_directories(utils)
-include_directories(adc)
+include_directories(${CMAKE_SOURCE_DIR}/include)
+add_subdirectory(${AF_FOLDER})
+
+include(${AF_FOLDER}/setup.cmake)
 
 
-# Build 
-add_subdirectory(XPT2046) # Physical folder name
-FOREACH(comp ${SUB_LIBRARIES} ) # Logical name    
-    IMPORT_LIBRARY(${comp})
-ENDFOREACH(comp ${SUB_LIBRARIES} )
-FOREACH(comp ${SUB_COMPONENTS} )
-    add_subdirectory(${comp})
-ENDFOREACH(comp ${SUB_COMPONENTS} )
+SET(EXTENSION "_${LN_MCU}")
 
-add_definitions("-DPRINTF_DISABLE_SUPPORT_EXPONENTIAL -DPRINTF_DISABLE_SUPPORT_LONG_LONG -DPRINTF_DISABLE_SUPPORT_PTRDIFF_T ")
+IF(USE_VANILLA_HW)    
+    SET(EXTENSION "${EXTENSION}_vanilla")
+ELSE(USE_VANILLA_HW)    
+    ADD_DEFINITIONS("-DUSE_RXTX_PIN_FOR_ROTARY")
+    SET(EXTENSION "${EXTENSION}_mod")
+ENDIF(USE_VANILLA_HW)
+
+IF(USE_ROTARY_FULL_STEP)    
+    SET(EXTENSION "${EXTENSION}_fstep")
+ELSE(USE_ROTARY_FULL_STEP)    
+    ADD_DEFINITIONS("-DDSO_ROTARY_FULL_STEP")
+    SET(EXTENSION "${EXTENSION}_hstep")
+ENDIF(USE_ROTARY_FULL_STEP)
 
 
+math(EXPR MCU_SPEED_M "${LN_MCU_SPEED}/1000000")
+SET(EXTENSION "${EXTENSION}_${MCU_SPEED_M}M")
+
+ 
+include_directories(src)
+
+#_______________________
+# FPU
+#_______________________
+IF("${LN_ARCH}" STREQUAL "RISCV")
+    SET(FP_LIB rvfp)
+ELSEIF("${LN_ARCH}" STREQUAL "ARM")
+    IF("${LN_MCU}" STREQUAL "M3")
+        SET(FP_LIB qfpm3)
+    ENDIF("${LN_MCU}" STREQUAL "M3")
+ENDIF("${LN_ARCH}" STREQUAL "RISCV")
+#_______________________
+#  Display
+#_______________________
+#include_directories(externals/simplerILI9341/platformExample/longanNano)
+#SET(ILI9341_DRIVER  platformExample/longanNano/gd32_8bits.cpp)
+#ADD_SUBDIRECTORY(externals/simplerILI9341) 
+#include_directories(externals/simplerILI9341)
 #
-# Our code
+USE_LIBRARY(NeVerMind)
+
+ADD_SUBDIRECTORY(assets) 
+ADD_SUBDIRECTORY(src)
 #
-SET(UTILS utils/fancyLock.cpp    utils/cycleClock.cpp  utils/i2c_stubs.c)
-generate_arduino_firmware(batTester${EXTENSION}
-                SKETCH batteryTester2.ino
-                SRCS screenCalibration.cpp 
-                            mainCode.cpp push_button.cpp 
-                            screenIdle.cpp screenBase.cpp screenError.cpp screenSetup.cpp items.cpp screenDischarging.cpp screenFinished.cpp embedded_printf/printf.c    settings.cpp batterySensor.cpp
-                            dso_eeprom.cpp
-                            dso_logger.cpp
-                            calibration.cpp
-                            heap.cpp
-                PORT ${ARDUINO_DEFAULT_PORT}
-                BOARD_CPU ${ARDUINO_CPU}
-                )
-FOREACH(comp ${SUB_COMPONENTS})
-    target_link_libraries(batTester${EXTENSION} ${libPrefix}${comp})
-ENDFOREACH(comp ${SUB_COMPONENTS})
+#____________________
+# Build
+#____________________
+GENERATE_GD32_FIRMWARE(lnDSO${EXTENSION})
+TARGET_LINK_LIBRARIES( lnDSO${EXTENSION}  captureLib )
+TARGET_LINK_LIBRARIES( lnDSO${EXTENSION}  sourceLib testLib)
+#TARGET_LINK_LIBRARIES( lnDSO${EXTENSION}  simplerILI9341 assets ${FP_LIB})
 
-FOREACH(comp ${SUB_LIBRARIES} )
-    LINK_TO_LIBRARIES(batTester${EXTENSION} ${comp})
-ENDFOREACH(comp ${SUB_LIBRARIES} )
-
-target_link_libraries(batTester${EXTENSION}  ${libPrefix}backgrounds)
-
-set(ARDUINO_DEFAULT_PORT ttyACM0) # Default Port, when not specified
-MESSAGE(STATUS "\tUsing ${EXTENSION} MCU ")
-
-
-# EOF
+# Summary
+MESSAGE(STATUS "Configuration:")
+MESSAGE(STATUS "\tBuild folder ${CMAKE_BINARY_DIR}")
+MESSAGE(STATUS "\tUsing ${LN_MCU} based MCU")
+MESSAGE(STATUS "\tUsing ${LN_MCU} MCU at ${LN_MCU_SPEED} Hz")
+MESSAGE(STATUS "\tFinal name is ${EXTENSION}")
