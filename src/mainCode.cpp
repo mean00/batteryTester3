@@ -21,7 +21,7 @@ extern const GFXfont FreeSans18pt7b ;
 extern const GFXfont FreeSans9pt7b ;
 
 //extern void touchCalibration(XPT2046 *xpt, TFT_eSPI *tft);
-
+lnSpi9341 *screen=NULL;
 #include "myPinout.h"
 //#define TEST_DIS 
 
@@ -61,7 +61,7 @@ void myLoop(void) ;
 class MainTask : public xTask//,XPT2046Hook
 {
 public:
-            MainTask() : xTask("MainTask",10,400)
+            MainTask() : xTask("MainTask",10,800)
             {
 
             }
@@ -91,41 +91,21 @@ protected:
  */
 void MainTask::initTft()
 {
-
   
-    if(tft)
-    {
-        delete tft;    
-        tft=NULL;
-    }
-    // Deep reset of screen
-    lnPinMode(TFT_RST,lnOUTPUT);
-    digitalWrite(TFT_RST,LOW);
-    delay(100);  
-    digitalWrite(TFT_RST,HIGH);
     spiMutex=new xMutex();
-
-    spi=new hwlnSPIClass(0);
-    spi->begin();
-    spi->setBitOrder(SPI_MSBFIRST);
-    spi->setSpeed(20000);
-    spi->setSSEL(-1);
-
-    lnSpi9341 *screen=new lnSpi9341(320,240,spi,   TFT_DC, TFT_CS, TFT_RST);
-    screen->init();
-    screen->fillScreen(0);
-
-#if 0
-
-    tft = new TFT_eSPI_stm32duino(SPI,spiMutex,240,320,TFT_CS,TFT_DC,TFT_RST);
+    spi=new hwlnSPIClass(0,-1);
     
-    tft->init();  
-    tft->setRotation(3);
-    tft->fillScreen(ILI9341_BLACK);
-        
-    tft->setFontFamily(&FreeSans9pt7b,&FreeSans18pt7b,&FreeSans24pt7b);
-    tft->setFontSize(TFT_eSPI::MediumFont);
-#endif
+    spi->setBitOrder(SPI_MSBFIRST);
+    spi->setSpeed(10*1000*1000);
+    spi->begin();
+
+    screen=new lnSpi9341(240,320,spi,   TFT_DC, TFT_CS, TFT_RST);
+    screen->init();
+    screen->setRotation(1);
+    screen->fillScreen(0);
+    screen->setFontFamily( &FreeSans9pt7b, &FreeSans18pt7b, &FreeSans24pt7b) ;
+    screen->setFontSize(ili9341::MediumFont);
+    screen->setTextColor(0xffff,0);
 }
 /**
  * 
@@ -147,8 +127,9 @@ void    MainTask::run(void)
 
   
   initTft();   
-  //tft->fillScreen(ILI9341_BLACK);
-  //tft->myDrawString("Hello there !");
+  screen->print(100,100,"Hello there !");
+  screen->square(0x1f,40,40,100,100);
+  screen->square(0x3f<<5,80,120,100,100);
 #if 0
   
   xpt2046=new XPT2046(SPI,TOUCH_CS,TOUCH_IRQ,2400*1000,spiMutex); // 2.4Mbits
@@ -208,12 +189,12 @@ void    MainTask::run(void)
   ina219->setMultiSampling(2);   
 #endif
   config.userSettings.loadSettings();
-  
+#endif
   while(1)
   {
-        loop();
+        xDelay(100);
   }  
-  #endif
+  
 }
 /**
  * 
