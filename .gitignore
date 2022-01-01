@@ -4,3 +4,4 @@ platform*
 *.sw*
 *.net
 *.lib
+.vscode/*
