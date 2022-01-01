@@ -34,7 +34,7 @@ math(EXPR MCU_SPEED_M "${LN_MCU_SPEED}/1000000")
 SET(EXTENSION "${EXTENSION}_${MCU_SPEED_M}M")
 
  
-include_directories(src)
+include_directories(include)
 
 #_______________________
 #  Display
