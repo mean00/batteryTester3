@@ -1,9 +1,6 @@
 #-----------------------------------------------------------------------------
 #
-# CMakeLists for lnDSO
-# An opensource firmware for the DSO SHELL 150
-# With optional hardware mods :
-#   - Alternative rotary encoder wiring : MUCH Better, almost mandatory
+# CMakeLists for lnBatteryTester
 #
 #-----------------------------------------------------------------------------
 
@@ -16,7 +13,7 @@ SET(AF_FOLDER  ${CMAKE_SOURCE_DIR}/lnArduino/)
 include(./mcuSelect.cmake)
 SET(CMAKE_TOOLCHAIN_FILE ${AF_FOLDER}/lnArduino.cmake)
 
-PROJECT(lnDSO NONE) # the NONE is very important !
+PROJECT(lnBatteryTester NONE) # the NONE is very important !
 
 enable_language(C CXX ASM) # this is important too!
 
@@ -57,7 +54,7 @@ ADD_SUBDIRECTORY(src)
 # Build
 #____________________
 GENERATE_GD32_FIRMWARE(lnBatteryTester${EXTENSION})
-TARGET_LINK_LIBRARIES( lnBatteryTester${EXTENSION}  sourceLib )
+TARGET_LINK_LIBRARIES( lnBatteryTester${EXTENSION}  sourceLib backgrounds)
 #TARGET_LINK_LIBRARIES( lnBatteryTester${EXTENSION}  simplerILI9341 assets)
 
 # Summary
