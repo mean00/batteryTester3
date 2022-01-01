@@ -64,9 +64,9 @@ ADD_SUBDIRECTORY(src)
 #____________________
 # Build
 #____________________
-GENERATE_GD32_FIRMWARE(lnDSO${EXTENSION})
-TARGET_LINK_LIBRARIES( lnDSO${EXTENSION}  sourceLib )
-#TARGET_LINK_LIBRARIES( lnDSO${EXTENSION}  simplerILI9341 assets)
+GENERATE_GD32_FIRMWARE(lnBatteryTester${EXTENSION})
+TARGET_LINK_LIBRARIES( lnBatteryTester${EXTENSION}  sourceLib )
+#TARGET_LINK_LIBRARIES( lnBatteryTester${EXTENSION}  simplerILI9341 assets)
 
 # Summary
 MESSAGE(STATUS "Configuration:")

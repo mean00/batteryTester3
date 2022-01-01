@@ -106,6 +106,7 @@ void MainTask::initTft()
     spi->begin();
     spi->setBitOrder(SPI_MSBFIRST);
     spi->setSpeed(20000);
+    spi->setSSEL(-1);
 
 #if 0
 

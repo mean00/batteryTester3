@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "*.txt": "cmake",
+        "array": "cpp",
+        "string": "cpp",
+        "string_view": "cpp",
+        "ranges": "cpp"
+    },
+    "cmake.buildDirectory" : "build"
+}
