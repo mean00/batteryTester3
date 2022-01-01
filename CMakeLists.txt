@@ -55,7 +55,7 @@ ADD_SUBDIRECTORY(src)
 #____________________
 GENERATE_GD32_FIRMWARE(lnBatteryTester${EXTENSION})
 TARGET_LINK_LIBRARIES( lnBatteryTester${EXTENSION}  sourceLib backgrounds)
-#TARGET_LINK_LIBRARIES( lnBatteryTester${EXTENSION}  simplerILI9341 assets)
+TARGET_LINK_LIBRARIES( lnBatteryTester${EXTENSION}  simplerILI9341 ) #assets)
 
 # Summary
 MESSAGE(STATUS "Configuration:")

@@ -4,7 +4,7 @@
  * (c) mean 2018 fixounet@free.fr
  ****************************************************/
 
-#include "RotaryEncoder.h"
+
 #include "push_button.h"
 #include "screenBase.h"
 #include "screenIdle.h"
@@ -14,6 +14,7 @@
 #include "dso_eeprom.h"
 #include "batterySensor.h"
 #include "lnSPI.h"
+#include "gd32_spi.h"
 
 extern const GFXfont FreeSans24pt7b ;
 extern const GFXfont FreeSans18pt7b ;
@@ -73,7 +74,7 @@ public:
             void    loop(void) ;
 protected:
             TFT_eSPI             *tft=NULL;
-            lnRotary             *rotary=NULL;
+            
             batScreen            *currentScreen=NULL;
          //   XPT2046              *xpt2046=NULL;
             int                  gateVoltage=0;    
@@ -90,6 +91,8 @@ protected:
  */
 void MainTask::initTft()
 {
+
+  
     if(tft)
     {
         delete tft;    
@@ -107,6 +110,10 @@ void MainTask::initTft()
     spi->setBitOrder(SPI_MSBFIRST);
     spi->setSpeed(20000);
     spi->setSSEL(-1);
+
+    lnSpi9341 *screen=new lnSpi9341(320,240,spi,   TFT_DC, TFT_CS, TFT_RST);
+    screen->init();
+    screen->fillScreen(0);
 
 #if 0
 
@@ -129,6 +136,7 @@ void setup()
   lnPinMode(PWM_PIN,lnPWM);  
   digitalWrite(PWM_PIN,0);
   MainTask *mainTask=new MainTask();
+  mainTask->start();
 
 }
 /**
@@ -137,13 +145,11 @@ void setup()
 void    MainTask::run(void)
 {  
 
-  rotary=new lnRotary(ROTARY_PUSH,ROTARY_LEFT,ROTARY_RIGHT);
-  rotary->start();
-  #if 0
+  
   initTft();   
-  tft->fillScreen(ILI9341_BLACK);
-  tft->myDrawString("Hello there !");
-
+  //tft->fillScreen(ILI9341_BLACK);
+  //tft->myDrawString("Hello there !");
+#if 0
   
   xpt2046=new XPT2046(SPI,TOUCH_CS,TOUCH_IRQ,2400*1000,spiMutex); // 2.4Mbits
   if(! DSOEeprom::read())
@@ -224,8 +230,6 @@ void MainTask::loop(void)
         s->draw();
         
         // Purge pending events if any
-        rotary->readEvent();
-        rotary->getCount();        
     }
     xDelay(50);
 }
