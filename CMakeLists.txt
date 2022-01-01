@@ -8,9 +8,9 @@
 #-----------------------------------------------------------------------------
 
 cmake_minimum_required(VERSION 3.0)
-MESSAGE(STATUS "===============")
-MESSAGE(STATUS "Starting lnDSO")
-MESSAGE(STATUS "===============")
+MESSAGE(STATUS "======================")
+MESSAGE(STATUS "Starting BatteryTester")
+MESSAGE(STATUS "======================")
 
 SET(AF_FOLDER  ${CMAKE_SOURCE_DIR}/lnArduino/)
 include(./mcuSelect.cmake)
