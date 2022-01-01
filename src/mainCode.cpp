@@ -9,7 +9,7 @@
 #include "screenBase.h"
 #include "screenIdle.h"
 #include "screenDischarging.h"
-#include "../assets/backgrounds/gfxfont.h"
+#include "gfxfont.h"
 #include "xpt2046.h"
 #include "dso_eeprom.h"
 #include "batterySensor.h"
