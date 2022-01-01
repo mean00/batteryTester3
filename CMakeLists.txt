@@ -20,14 +20,6 @@ PROJECT(lnDSO NONE) # the NONE is very important !
 
 enable_language(C CXX ASM) # this is important too!
 
-#____________________
-# Options
-#____________________
-OPTION(USE_VANILLA_HW "user unmodified pins for rotary encoder"             FALSE)
-OPTION(USE_ROTARY_FULL_STEP "Use full step for rotary encoder, else half step"  FALSE)
-OPTION(USE_VANILLA_HW   "Use unmodified rotary encoder"                     FALSE)
-OPTION(USE_USB          "Enable USB support"                                FALSE)
-
 #
 
 include_directories(${CMAKE_SOURCE_DIR})
