@@ -86,7 +86,8 @@ protected:
 
 };
 
-
+extern const uint8_t dso_resetOff[];
+extern const uint8_t dso_wakeOn[];
 /**
  * 
  */
@@ -101,9 +102,11 @@ void MainTask::initTft()
     spi->begin();
 
     screen=new lnSpi9341(240,320,spi,   TFT_DC, TFT_CS, TFT_RST);
-    screen->init();
+    screen->init(dso_resetOff,dso_wakeOn);
     screen->setRotation(1);
     screen->fillScreen(0);
+    screen->square(0x1F, 0,0,16,16);
+    screen->square(0x1F, 320-17,240-17,16,16);
     screen->setFontFamily( &FreeSans9pt7b, &FreeSans18pt7b, &FreeSans24pt7b) ;
     screen->setFontSize(ili9341::MediumFont);
     screen->setTextColor(0xffff,0);
