@@ -7,7 +7,7 @@
 #include "screenBase.h"
 
 
-typedef enum EndOfChargeCause
+enum EndOfChargeCause
 {
         END_CURRENT_LOW,
         END_VOLTAGE_LOW,

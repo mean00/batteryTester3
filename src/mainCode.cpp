@@ -21,31 +21,30 @@ extern const GFXfont FreeSans18pt7b ;
 extern const GFXfont FreeSans9pt7b ;
 
 //extern void touchCalibration(XPT2046 *xpt, TFT_eSPI *tft);
-lnSpi9341 *screen=NULL;
+
 #include "myPinout.h"
 //#define TEST_DIS 
-
 
 //
 // Our globals
 
 batConfig            config=
 {
-    200,      // Wire resistor, computed automatically
-    0,      //int     currentDischargeMa;
-    3000,   //     minimumVoltage;
-    
-    0,      //uint32_t duration;
-    0,      // float    sumMa;
-    
-#ifdef TEST_DIS    
-    200,
-#else
-    500,    // int     targetDischargeMa;
-#endif
-    
-    NULL,   // TFT
-    NULL    
+  {
+    100,  //int     resistor1000; // 1000x the wiring resistor
+    500,  //int     initialDischargeMa;
+    3000  //int     minimumVoltage;  
+  },
+  0, // duration
+  0, // sumMa
+  0, // targetDischargeMa
+  0, // currentDisc
+  NULL, // screen
+  NULL, // MCP
+  NULL, // rotary
+  NULL, // INA
+  0,    // batteyResistance 
+
 };
 #if 0
 #define BootSequence(x,y) {Logger(x);  tft->setCursor(10, y*2);       tft->myDrawString(x);xDelay(10);}
@@ -63,7 +62,8 @@ class MainTask : public xTask//,XPT2046Hook
 public:
             MainTask() : xTask("MainTask",10,800)
             {
-
+              screen=NULL;
+              currentScreen=NULL;
             }
             virtual void pressEvent(int x,int y)
             {
@@ -73,15 +73,15 @@ public:
             void    initTft();
             void    loop(void) ;
 protected:
-            TFT_eSPI             *tft=NULL;
             
-            batScreen            *currentScreen=NULL;
-         //   XPT2046              *xpt2046=NULL;
+            ili9341              *screen;
+            batScreen            *currentScreen;         
             int                  gateVoltage=0;    
             xMutex               *spiMutex;
             CurrentState         currentState;
             BatterySensor        *batSensor;
             hwlnSPIClass         *spi;
+            //   XPT2046              *xpt2046=NULL;
 
 };
 
@@ -117,7 +117,6 @@ void setup()
   digitalWrite(PWM_PIN,0);
   MainTask *mainTask=new MainTask();
   mainTask->start();
-
 }
 /**
  * 
