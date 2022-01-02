@@ -134,7 +134,7 @@ void setup()
 void    MainTask::run(void)
 {  
 
-#if 0  
+#if 1  
   initTft();   
   screen->print(100,100,"Hello there !");
   screen->square(0x1f,40,40,100,100);

@@ -27,7 +27,7 @@ void adcEngine::start()
 {
     xTaskCreate(trampoline, "ADCEngine",512,this,5,NULL);
 }
-#define NB 4
+#define NB 10
 /**
  * 
  */
@@ -37,7 +37,8 @@ void adcEngine::run()
     lnPin pins[16];
     for(int i=0;i<_nbPins;i++)
         pins[i]=_entries[i]._pin;
-    _adc->setSource(3,3,400,_nbPins,pins); // every 10 ms
+    int fq=1000/50; // 50 ms
+    _adc->setSource(3,3,fq,_nbPins,pins); // every 50 ms
     uint16_t capture[NB*_nbPins];
     while(1)
     {
