@@ -15,6 +15,7 @@
 #include "batterySensor.h"
 #include "lnSPI.h"
 #include "gd32_spi.h"
+#include "adc_engine.h"
 
 extern const GFXfont FreeSans24pt7b ;
 extern const GFXfont FreeSans18pt7b ;
@@ -110,6 +111,12 @@ void MainTask::initTft()
 /**
  * 
  */
+
+void engineCb(void *cookie, lnPin p, int value)
+{
+  Logger("Pin:%x Value=%d\n",p,value);
+}
+
 void setup() 
 {
   // Shutdown ref
@@ -117,6 +124,9 @@ void setup()
   digitalWrite(PWM_PIN,0);
   MainTask *mainTask=new MainTask();
   mainTask->start();
+
+ 
+
 }
 /**
  * 
@@ -124,11 +134,18 @@ void setup()
 void    MainTask::run(void)
 {  
 
-  
+#if 0  
   initTft();   
   screen->print(100,100,"Hello there !");
   screen->square(0x1f,40,40,100,100);
   screen->square(0x3f<<5,80,120,100,100);
+#endif
+
+  adcEngine *engine=new adcEngine;
+  engine->add(PA1,engineCb,NULL);
+  engine->add(PA2,engineCb,NULL);
+  engine->start();
+
 #if 0
   
   xpt2046=new XPT2046(SPI,TOUCH_CS,TOUCH_IRQ,2400*1000,spiMutex); // 2.4Mbits

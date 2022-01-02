@@ -6,6 +6,7 @@ ADD_LIBRARY(  sourceLib
             
             #items.cpp
             mainCode.cpp
+            utils/adc_engine.cpp
             #push_button.cpp
             #screenBase.cpp
             #screenCalibration.cpp
