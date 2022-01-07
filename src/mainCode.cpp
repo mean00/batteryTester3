@@ -88,6 +88,7 @@ protected:
 
 extern const uint8_t dso_resetOff[];
 extern const uint8_t dso_wakeOn[];
+
 /**
  * 
  */
@@ -98,7 +99,7 @@ void MainTask::initTft()
     spi=new hwlnSPIClass(0,-1);
     
     spi->setBitOrder(SPI_MSBFIRST);
-    spi->setSpeed(10*1000*1000);
+    spi->setSpeed(40*1000*1000); // will probably be 36 Mhz
     spi->begin();
 
     screen=new lnSpi9341(240,320,spi,   TFT_DC, TFT_CS, TFT_RST);
@@ -110,6 +111,11 @@ void MainTask::initTft()
     screen->setFontFamily( &FreeSans9pt7b, &FreeSans18pt7b, &FreeSans24pt7b) ;
     screen->setFontSize(ili9341::MediumFont);
     screen->setTextColor(0xffff,0);
+    for(int y=0;y<240;y+=40)
+    {
+      screen->square(0x1F,     0,y,    40,20);
+      screen->square(0x1F<<11, 0,20+y, 40,20);
+    }
 }
 /**
  * 
