@@ -5,6 +5,7 @@ IF(1) # ARM
         SET(LN_MCU             "M3"  CACHE INTERNAL "")
         SET(LN_MCU_FLASH_SIZE  128   CACHE INTERNAL "")
         SET(LN_MCU_RAM_SIZE    20    CACHE INTERNAL "")
+        SET(LN_MCU_SPEED 72000000    CACHE INTERNAL "") 
         SET(LN_SPEC         "picolibc"   CACHE INTERNAL "") # if not set we use nano
     ELSE()
         SET(LN_ARCH            "ARM" CACHE INTERNAL "")
