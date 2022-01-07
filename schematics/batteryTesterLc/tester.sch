@@ -163,7 +163,7 @@ $EndComp
 Wire Wire Line
 	3550 1950 3550 1900
 $Comp
-L tester-rescue:USB_B_Micro-Connector J1
+L tester-rescue:USB_B_Micro-Connector-tester-rescue J1
 U 1 1 5E792D53
 P 10000 1400
 F 0 "J1" H 9771 1298 50  0000 R CNN
@@ -1024,4 +1024,100 @@ Wire Wire Line
 	7050 2400 7050 2600
 Wire Wire Line
 	7050 900  7050 2000
+$Comp
+L Device:R_POT RVY
+U 1 1 61D8C54E
+P 4250 2750
+F 0 "RVY" H 4180 2796 50  0000 R CNN
+F 1 "R_POT" H 4180 2705 50  0000 R CNN
+F 2 "" H 4250 2750 50  0001 C CNN
+F 3 "~" H 4250 2750 50  0001 C CNN
+	1    4250 2750
+	-1   0    0    -1  
+$EndComp
+$Comp
+L Device:R_POT RVX
+U 1 1 61D948C4
+P 4900 2750
+F 0 "RVX" H 4830 2796 50  0000 R CNN
+F 1 "R_POT" H 4830 2705 50  0000 R CNN
+F 2 "" H 4900 2750 50  0001 C CNN
+F 3 "~" H 4900 2750 50  0001 C CNN
+	1    4900 2750
+	-1   0    0    -1  
+$EndComp
+$Comp
+L power:+3.3V #PWR?
+U 1 1 61D97E3F
+P 4050 2550
+F 0 "#PWR?" H 4050 2400 50  0001 C CNN
+F 1 "+3.3V" H 4065 2723 50  0000 C CNN
+F 2 "" H 4050 2550 50  0001 C CNN
+F 3 "" H 4050 2550 50  0001 C CNN
+	1    4050 2550
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 61D98F30
+P 4500 3000
+F 0 "#PWR?" H 4500 2750 50  0001 C CNN
+F 1 "GND" H 4505 2827 50  0000 C CNN
+F 2 "" H 4500 3000 50  0001 C CNN
+F 3 "" H 4500 3000 50  0001 C CNN
+	1    4500 3000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4050 2550 4050 2600
+Wire Wire Line
+	4050 2600 4250 2600
+Connection ~ 4250 2600
+Wire Wire Line
+	4250 2600 4900 2600
+Wire Wire Line
+	4250 2900 4500 2900
+Wire Wire Line
+	4500 2900 4500 3000
+Connection ~ 4500 2900
+Wire Wire Line
+	4500 2900 4900 2900
+Wire Wire Line
+	4100 2750 3850 2750
+Wire Wire Line
+	3850 2750 3850 3500
+Wire Wire Line
+	3850 3500 3550 3500
+Wire Wire Line
+	4750 2750 4750 3600
+Wire Wire Line
+	4750 3600 3550 3600
+$Comp
+L Switch:SW_Push SW?
+U 1 1 61DC3EAE
+P 5400 2700
+F 0 "SW?" V 5354 2848 50  0000 L CNN
+F 1 "Joystick" V 5445 2848 50  0000 L CNN
+F 2 "" H 5400 2900 50  0001 C CNN
+F 3 "~" H 5400 2900 50  0001 C CNN
+	1    5400 2700
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	4900 2900 5400 2900
+Connection ~ 4900 2900
+Wire Wire Line
+	2250 3500 3100 3500
+Wire Wire Line
+	3100 3500 3100 2800
+Wire Wire Line
+	3100 2800 3700 2800
+Wire Wire Line
+	3700 2800 3700 2200
+Wire Wire Line
+	3700 2200 4750 2200
+Wire Wire Line
+	4750 2200 4750 2500
+Wire Wire Line
+	4750 2500 5400 2500
 $EndSCHEMATC
