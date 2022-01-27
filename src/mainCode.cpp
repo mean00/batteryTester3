@@ -9,7 +9,7 @@
 #include "screenBase.h"
 #include "screenIdle.h"
 #include "screenDischarging.h"
-#include "gfxfont.h"
+#include "pfxfont.h"
 #include "xpt2046.h"
 #include "dso_eeprom.h"
 #include "batterySensor.h"
@@ -17,9 +17,11 @@
 #include "gd32_spi.h"
 #include "adc_engine.h"
 
-extern const GFXfont FreeSans24pt7b ;
-extern const GFXfont FreeSans18pt7b ;
-extern const GFXfont FreeSans9pt7b ;
+extern const PFXfont FreeSans24pt7b ;
+extern const PFXfont FreeSans18pt7b ;
+extern const PFXfont FreeSans9pt7b ;
+extern const PFXfont Arcane_Nine24pt7b ;
+extern const PFXfont Arcane_Nine32pt7b ;
 
 //extern void touchCalibration(XPT2046 *xpt, TFT_eSPI *tft);
 
@@ -108,7 +110,7 @@ void MainTask::initTft()
     screen->fillScreen(0);
     screen->square(0x1F, 0,0,16,16);
     screen->square(0x1F, 320-17,240-17,16,16);
-    screen->setFontFamily( &FreeSans9pt7b, &FreeSans18pt7b, &FreeSans24pt7b) ;
+    screen->setFontFamily( &FreeSans9pt7b, &FreeSans18pt7b, &Arcane_Nine32pt7b) ;
     screen->setFontSize(ili9341::MediumFont);
     screen->setTextColor(0xffff,0);
     for(int y=0;y<240;y+=40)
@@ -137,6 +139,21 @@ void setup()
  
 
 }
+
+int buttons[15];
+
+void buttonCb(lnPin pin, void *cookie)
+{
+    buttons[pin-PB0]++;
+}
+
+void initButton(lnPin pin)
+{
+    lnPinMode(pin,lnINPUT_PULLUP);
+    lnExtiAttachInterrupt(pin, LN_EDGE_FALLING, buttonCb, NULL);
+    lnExtiEnableInterrupt(pin);
+}
+
 /**
  * 
  */
@@ -145,15 +162,30 @@ void    MainTask::run(void)
 
 #if 1  
   initTft();   
-  screen->print(100,100,"Hello there !");
+ // screen->print(100,100,"Hello there !");
   screen->square(0x1f,40,40,100,100);
   screen->square(0x3f<<5,80,120,100,100);
 #endif
+  
+    screen->setTextColor(0xffff,0xf);
+    screen->setFontSize(ili9341::SmallFont);
+    screen->print(8,40,"abcdefgh.123456789");
+    screen->setFontSize(ili9341::BigFont);
+    
+    while(1)
+    {
+        int start=lnGetMs();
+        screen->print(8,100,".123456789");
+        int end=lnGetMs();
+        Logger("Print = %d ms\n",end-start);
+    }
 
+#if 0
   adcEngine *engine=new adcEngine;
   engine->add(PA1,engineCb,NULL);
   engine->add(PA2,engineCb,NULL);
   engine->start();
+#endif
 
 #if 0
   
@@ -215,9 +247,24 @@ void    MainTask::run(void)
 #endif
   config.userSettings.loadSettings();
 #endif
+  
+  for(int i=0;i<16;i++) buttons[i]=0;
+  
+  initButton(BUTTON_UP);
+  initButton(BUTTON_DOWN);
+  initButton(BUTTON_LEFT);
+  initButton(BUTTON_RIGHT);
+  initButton(BUTTON_OK);
+  
   while(1)
   {
         xDelay(100);
+        for(int i=0;i<16;i++)
+        {
+            int b=buttons[i];
+            buttons[i]=0;
+            if(b) Logger("%d => %d\n",i,b);
+        }
   }  
   
 }

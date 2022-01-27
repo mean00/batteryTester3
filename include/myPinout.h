@@ -8,8 +8,6 @@
 #define TFT_RST         PB13
 #define TFT_CS          PB12
 
-#define INA219_I2C_ADR  0x40
-#define MCP7245_I2C_ADR 0x60
 
 // TOUCH SCREEN
 #define TOUCH_CS        PB5
@@ -24,9 +22,12 @@
 
 // Current regulation (PWM) pin
 #define PWM_PIN         PB0
-#define PWM_FQ  (20*1000)
+#define PWM_FQ          (20*1000)
 
-#define ROTARY_LEFT  PA14
-#define ROTARY_RIGHT PA15
-#define ROTARY_PUSH  PA13
+#define BUTTON_RIGHT    PB8 // 45        
+#define BUTTON_DOWN     PB9 // 46
+#define BUTTON_OK       PB6 // 42
+#define BUTTON_UP       PB7 // 43
+#define BUTTON_LEFT     PB1 // 19
+// GND
 
