@@ -4,13 +4,13 @@
 #set -x
 export HS_ARG="-w 8 -l 4"
 export HS=/usr/local/bin/heatshrink
-
+export CONVERTHS=../../externals/simplerILI9341/tools/bitmap/convertHS.py
 
 dump()
 {
 export ST="s/generated.*\[/$1\[/g"
 xxd -i generated/$1.hs  | sed "$ST" | sed "s/unsigned/extern const unsigned/g"> generated/$1_compressed.h
-python3 convertHS.py $2 generated/$1_decl.h $1
+python3 $CONVERTHS $2 generated/$1_decl.h $1
 
 }
 
