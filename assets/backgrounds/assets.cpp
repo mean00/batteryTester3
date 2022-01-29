@@ -3,7 +3,7 @@ extern const unsigned char li_ion[];
 extern const unsigned char background[];
 
 #include "generated/li_ion_compressed.h"
-#include "generated/background_compressed.h"
+//#include "generated/background_compressed.h"
 
 #include "generated/bat0_compressed.h"
 #include "generated/bat2_compressed.h"
