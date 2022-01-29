@@ -24,7 +24,7 @@ SET(SIMPLER_ILI9341_2BPP_SUPPORT  ON CACHE INTERNAL "")
 include_directories(${CMAKE_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
-SET(LN_ENABLE_RUST ON CACHED "")
+#SET(LN_ENABLE_RUST ON CACHED "")
 
 add_subdirectory(${AF_FOLDER})
 
@@ -38,21 +38,21 @@ SET(EXTENSION "_${LN_MCU}")
 math(EXPR MCU_SPEED_M "${LN_MCU_SPEED}/1000000")
 SET(EXTENSION "${EXTENSION}_${MCU_SPEED_M}M")
 
- 
+
 include_directories(include)
 
 #_______________________
 #  Display
 #_______________________
-include_directories(externals/simplerILI9341/platformExample/longanNano)
-SET(ILI9341_DRIVER  platformExample/longanNano/gd32_spi.cpp)
-ADD_SUBDIRECTORY(externals/simplerILI9341) 
+include_directories(externals/simplerILI9341/platformExample/lnArduino)
+SET(ILI9341_DRIVER  platformExample/lnArduino/ili_lnSpi.cpp)
+ADD_SUBDIRECTORY(externals/simplerILI9341)
 include_directories(externals/simplerILI9341)
 #
 USE_LIBRARY(NeVerMind)
 USE_LIBRARY(RotaryEncoder)
 
-ADD_SUBDIRECTORY(assets) 
+ADD_SUBDIRECTORY(assets)
 ADD_SUBDIRECTORY(src)
 #
 #____________________
@@ -61,7 +61,7 @@ ADD_SUBDIRECTORY(src)
 GENERATE_GD32_FIRMWARE(lnBatteryTester${EXTENSION})
 TARGET_LINK_LIBRARIES( lnBatteryTester${EXTENSION}  sourceLib backgrounds)
 TARGET_LINK_LIBRARIES( lnBatteryTester${EXTENSION}  simplerILI9341  simplerILI9341HS) #assets)
-TARGET_LINK_LIBRARIES( lnBatteryTester${EXTENSION}  rnArduino)
+#TARGET_LINK_LIBRARIES( lnBatteryTester${EXTENSION}  rnArduino)
 # Summary
 MESSAGE(STATUS "Configuration:")
 MESSAGE(STATUS "\tBuild folder ${CMAKE_BINARY_DIR}")

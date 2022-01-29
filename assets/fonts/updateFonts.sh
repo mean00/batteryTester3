@@ -1,4 +1,4 @@
-flatconvert      -f ttf/Arcane\ Nine.otf -s 32 -b 46 -e 57 -p 2   -o 1bit.h  -c
+flatconvert      -f ttf/Arcane\ Nine.otf -s 32 -b 46 -e 57 -p 2   -o 1bit.h  
 flatconvert      -f ttf/Arcane\ Nine.otf -s 32  -p 2   -o arcane2.h  -c
 flatconvert      -f ttf/Arcane\ Nine.otf -s 32  -p 1   -o arcane1.h  -c
 flatconvert      -f ttf/FreeSans.ttf -s 9  -o FreeSans9pt7b_1bb.h   -p 1

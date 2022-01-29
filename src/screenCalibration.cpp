@@ -19,26 +19,26 @@ batScreen *spawnNewCalibration(batConfig *c)
 
 /**
  * 
- * @return 
+ * @return
  */
 calibrationScreen::calibrationScreen(batConfig *c) : batScreen(c)
 {
 #if 0
-    _config->mcp->setVoltage(0); 
+    _config->mcp->setVoltage(0);
 #endif
     voltage1=voltage2=0;
     amp1=amp2=0;
 }
 /**
- * 
+ *
  */
 calibrationScreen::~calibrationScreen()
 {
-    
-    
+
+
 }
 /**
- * 
+ *
  * @param mV
  * @param mA
  */
@@ -47,12 +47,12 @@ void calibrationScreen::calibrate()
      // got it
     float deltaVoltage=voltage1-voltage2;
     float deltaAmp=amp2-amp1;
-    
+
     float r=(deltaVoltage)/deltaAmp;
     r=r*1000.;
     r-=_config->userSettings.resistor1000;
     if(r<0) r=0;
-    
+
     _config->batteryResistance=r;
 }
 
@@ -78,14 +78,14 @@ void calibrationScreen::sample(int cmd,int &a, int &v)
         mv=_config->ina219->getBusVoltage_V()*1000.;
         ma=_config->ina219->getCurrent_mA();
 #endif
-       
+
         v+=mv;
         a+=ma;
         xDelay(50);
     }
     v/=OVERSAMP;
     a/=OVERSAMP;
-    
+
     Serial1.print("V: ");
     Serial1.print(v);
     Serial1.print("A: ");
@@ -93,12 +93,12 @@ void calibrationScreen::sample(int cmd,int &a, int &v)
 }
 
 batScreen *calibrationScreen::process()
-{     
+{
     sample(200,amp1,voltage1);
-    sample(500,amp2,voltage2);            
+    sample(500,amp2,voltage2);
     // set gate to 0
 #if 0
-    _config->mcp->setVoltage(0); 
+    _config->mcp->setVoltage(0);
 #endif
     calibrate();
     return  spawnNewDischarging(_config,voltage1);
@@ -108,6 +108,6 @@ batScreen *calibrationScreen::process()
 void calibrationScreen::draw()
 {
     setTitle(ILI9341_BLACK,ILI9341_WHITE,4, "    CALIBRATION      ");
-    _tft->setTextColor(ILI9341_WHITE,ILI9341_BLACK);  
-    
+    _tft->setTextColor(ILI9341_WHITE,ILI9341_BLACK);
+
 }

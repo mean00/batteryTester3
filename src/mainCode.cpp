@@ -14,7 +14,7 @@
 #include "dso_eeprom.h"
 #include "batterySensor.h"
 #include "lnSPI.h"
-#include "gd32_spi.h"
+#include "ili_lnSpi.h"
 #include "adc_engine.h"
 
 extern const PFXfont FreeSans24pt7b ;
@@ -103,11 +103,12 @@ void MainTask::initTft()
     spi->setBitOrder(SPI_MSBFIRST);
     spi->setSpeed(40*1000*1000); // will probably be 36 Mhz
     spi->begin();
-
-    screen=new lnSpi9341(240,320,spi,   TFT_DC, TFT_CS, TFT_RST);
+    lnSpi9341  *screenspi=new lnSpi9341(240,320,spi,   TFT_DC, TFT_CS, TFT_RST);
+    screen=screenspi;
     screen->init(dso_resetOff,dso_wakeOn);
     screen->setRotation(1);
     screen->fillScreen(0);
+    screenspi->enableCache(256);
     screen->square(0x1F, 0,0,16,16);
     screen->square(0x1F, 320-17,240-17,16,16);
     screen->setFontFamily( &FreeSans9pt7b, &FreeSans18pt7b, &Arcane_Nine32pt7b) ;
@@ -153,7 +154,7 @@ void initButton(lnPin pin)
     lnExtiAttachInterrupt(pin, LN_EDGE_FALLING, buttonCb, NULL);
     lnExtiEnableInterrupt(pin);
 }
-
+extern const unsigned char li_ion[];
 /**
  * 
  */
@@ -170,7 +171,13 @@ void    MainTask::run(void)
     screen->setTextColor(0xffff,0xf);
     screen->setFontSize(ili9341::SmallFont);
     screen->print(8,40,"abcdefgh.123456789");
+    
+    //screen->drawRLEBitmap(296,80,20,20,0xffff,0,li_ion);
+    screen->drawHSBitmap(296,80,20,20,0xffff,0,li_ion);
+    
     screen->setFontSize(ili9341::BigFont);
+    screen->setFontSize(ili9341::SmallFont);
+    screen->setFontSize(ili9341::MediumFont);
     
     while(1)
     {

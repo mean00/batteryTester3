@@ -5,3 +5,11 @@ platform*
 *.net
 *.lib
 .vscode/*
+assets/backgrounds/generated/*.bin
+assets/backgrounds/generated/*.hs
+.ccls-cache/*
+.cache/
+schematics/batteryTesterLc/sym-lib-table
+ assets/fonts/*_c.h
+ assets/fonts/*_1bb*.h
+schematics/batteryTesterLc/tester-rescue.dcm
